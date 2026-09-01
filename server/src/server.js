@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import prisma from "./lib/prisma.js";
+import authRoutes from "./routes/auth.routes.js";
 
 dotenv.config();
 
@@ -17,6 +18,8 @@ app.use(
 );
 
 app.use(express.json());
+
+app.use("/api/auth", authRoutes);
 
 app.get("/", (req, res) => {
   res.json({
@@ -49,6 +52,7 @@ app.get("/api/db-test", async (req, res) => {
     });
   }
 });
+
 
 app.listen(PORT, () => {
   console.log(
