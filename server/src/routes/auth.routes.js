@@ -1,9 +1,8 @@
 import express from "express";
-import "dotenv/config";
-
 import bcrypt from "bcrypt";
 import prisma from "../lib/prisma.js";
 import jwt from "jsonwebtoken";
+import authenticateToken from "../middleware/auth.middleware.js";
 
 const router = express.Router();
 
@@ -95,7 +94,7 @@ router.post("/login", async (req, res) => {
         message: "Invalid email or password",
       });
     }
-console.log("JWT secret available in login:", !!process.env.JWT_SECRET);
+
     const token = jwt.sign(
   { userId: user.id },
   process.env.JWT_SECRET,
@@ -123,4 +122,11 @@ console.log("JWT secret available in login:", !!process.env.JWT_SECRET);
   }
 });
 
+router.get("/protected", authenticateToken, (req, res) => {
+  res.json({
+    status: "OK",
+    message: "You have access to this protected route",
+    user: req.user,
+  });
+});
 export default router;
