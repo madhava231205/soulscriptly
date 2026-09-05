@@ -4,6 +4,45 @@ import './App.css'
 function App() {
   const [started, setStarted] = useState(false)
   const [name, setName] = useState('')
+  const [email, setEmail] = useState('')
+const [password, setPassword] = useState('')
+  const [message, setMessage] = useState('')
+  const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
+
+async function handleSubmit(event) {
+  event.preventDefault()
+
+  setMessage('')
+  setError('')
+  setLoading(true)
+
+  try {
+    const response = await fetch('http://localhost:5000/api/auth/register', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        name,
+        email,
+        password,
+      }),
+    })
+
+    const data = await response.json()
+
+    if (response.ok) {
+      setMessage(data.message)
+    } else {
+      setError(data.message)
+    }
+  } catch (error) {
+    setError('Unable to connect to server. Please try again.')
+  } finally {
+    setLoading(false)
+  }
+}
 
   return (
     <main>
@@ -11,20 +50,36 @@ function App() {
 
       <p>Your thoughts. Your story.</p>
 
-      <input
-        type="text"
-        placeholder="Enter your name"
-        value={name}
-        onChange={(event) => setName(event.target.value)}
-      />
+      <form onSubmit={handleSubmit}>
+  <input
+    type="text"
+    placeholder="Enter your name"
+    value={name}
+    onChange={(event) => setName(event.target.value)}
+  />
 
-      {name && <p>Hello, {name}! ❤️</p>}
+  <input
+    type="email"
+    placeholder="Enter your email"
+    value={email}
+    onChange={(event) => setEmail(event.target.value)}
+  />
 
-      {started && <p>Welcome to SoulScriptly ❤️</p>}
+  <input
+    type="password"
+    placeholder="Enter your password"
+    value={password}
+    onChange={(event) => setPassword(event.target.value)}
+  />
 
-      <button onClick={() => setStarted(true)}>
-        Get Started
-      </button>
+  <button type="submit" disabled={loading}>
+  {loading ? 'Creating account...' : 'Create Account'}
+</button>
+
+</form>
+{message && <p>{message}</p>}
+{error && <p>{error}</p>}
+
     </main>
   )
 }
