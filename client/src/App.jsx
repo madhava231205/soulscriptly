@@ -10,6 +10,7 @@ const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const [isLogin, setIsLogin] = useState(false)
+  const [notes, setNotes] = useState([])
 
 async function handleSubmit(event) {
   event.preventDefault()
@@ -78,6 +79,30 @@ async function handleLogin(event) {
   }
 }
 
+async function getNotes() {
+  const token = localStorage.getItem('token')
+
+  try {
+    const response = await fetch('http://localhost:5000/api/notes', {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+
+    const data = await response.json()
+
+    if (response.ok) {
+      console.log("Get notes success:", data.notes)
+      setNotes(data.notes)
+      
+
+    } else {
+      console.log(data.message)
+    }
+  } catch (error) {
+    console.error('Get notes error:', error)
+  }
+}
 
   return (
     <main>
@@ -161,6 +186,17 @@ async function handleLogin(event) {
 
 {message && <p>{message}</p>}
 {error && <p>{error}</p>}
+<button type="button" onClick={getNotes}>
+  Load My Notes
+</button>
+{ (notes.map((note) => (
+  <div key={note.id}>
+    <h3>{note.title}</h3>
+    <p>{note.content}</p>
+  </div>
+)))}
+
+
 
     </main>
   )
