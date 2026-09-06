@@ -66,6 +66,7 @@ async function handleLogin(event) {
     const data = await response.json()
 
     if (response.ok) {
+      localStorage.setItem('token', data.token)
       setMessage(data.message)
     } else {
       setError(data.message)
@@ -76,6 +77,7 @@ async function handleLogin(event) {
     setLoading(false)
   }
 }
+
 
   return (
     <main>
@@ -111,6 +113,7 @@ async function handleLogin(event) {
     <button type="button" onClick={() => setIsLogin(false)}>
   Create a new account
 </button>
+
 
   </div>
 
