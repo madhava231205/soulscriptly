@@ -11,6 +11,8 @@ const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const [isLogin, setIsLogin] = useState(false)
   const [notes, setNotes] = useState([])
+  const [noteTitle, setNoteTitle] = useState('')
+const [noteContent, setNoteContent] = useState('')
 
 async function handleSubmit(event) {
   event.preventDefault()
@@ -104,6 +106,42 @@ async function getNotes() {
   }
 }
 
+async function handleCreateNote(event) {
+  event.preventDefault()
+  setMessage('')
+  setError('')
+  setLoading(true)
+
+  const token = localStorage.getItem('token')
+
+  try {
+    const response = await fetch('http://localhost:5000/api/notes', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        title: noteTitle,
+        content: noteContent,
+      }),
+    })
+
+    const data = await response.json()
+
+    if (response.ok) {
+      setNotes((currentNotes) => [data.note, ...currentNotes])
+      setNoteTitle('')
+      setNoteContent('')
+      setMessage('Note saved successfully!')
+    }
+  } catch (error) {
+    console.error('Create note error:', error)
+  }finally {
+  setLoading(false)
+}
+}
+
   return (
     <main>
       <h1>SoulScriptly</h1>
@@ -189,12 +227,36 @@ async function getNotes() {
 <button type="button" onClick={getNotes}>
   Load My Notes
 </button>
+<h2>Create a Note</h2>
+
+<form onSubmit={handleCreateNote}>
+  <input
+    type="text"
+    placeholder="Note title"
+    value={noteTitle}
+    onChange={(event) => setNoteTitle(event.target.value)}
+  />
+
+  <textarea
+    placeholder="Write your note..."
+    value={noteContent}
+    onChange={(event) => setNoteContent(event.target.value)}
+  />
+
+  <button type="submit" disabled={loading}>
+  {loading ? 'Saving...' : 'Save Note'}
+</button>
+</form>
+{message && <p>{message}</p>}
+{error && <p>{error}</p>}
+
 { (notes.map((note) => (
   <div key={note.id}>
     <h3>{note.title}</h3>
     <p>{note.content}</p>
   </div>
 )))}
+
 
 
 
