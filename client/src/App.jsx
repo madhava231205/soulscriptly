@@ -13,6 +13,7 @@ const [password, setPassword] = useState('')
   const [notes, setNotes] = useState([])
   const [noteTitle, setNoteTitle] = useState('')
 const [noteContent, setNoteContent] = useState('')
+const [editingNote, setEditingNote] = useState(null)
 
 async function handleSubmit(event) {
   event.preventDefault()
@@ -108,6 +109,7 @@ async function getNotes() {
 
 async function handleCreateNote(event) {
   event.preventDefault()
+
   setMessage('')
   setError('')
   setLoading(true)
@@ -115,8 +117,16 @@ async function handleCreateNote(event) {
   const token = localStorage.getItem('token')
 
   try {
-    const response = await fetch('http://localhost:5000/api/notes', {
-      method: 'POST',
+    const isEditing = editingNote !== null
+
+    const url = isEditing
+      ? `http://localhost:5000/api/notes/${editingNote.id}`
+      : 'http://localhost:5000/api/notes'
+
+    const method = isEditing ? 'PUT' : 'POST'
+
+    const response = await fetch(url, {
+      method,
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${token}`,
@@ -130,16 +140,70 @@ async function handleCreateNote(event) {
     const data = await response.json()
 
     if (response.ok) {
-      setNotes((currentNotes) => [data.note, ...currentNotes])
+      if (isEditing) {
+        setNotes((currentNotes) =>
+          currentNotes.map((note) =>
+            note.id === editingNote.id ? data.note : note
+          )
+        )
+
+        setMessage('Note updated successfully!')
+      } else {
+        setNotes((currentNotes) => [data.note, ...currentNotes])
+
+        setMessage('Note saved successfully!')
+      }
+
       setNoteTitle('')
       setNoteContent('')
-      setMessage('Note saved successfully!')
+      setEditingNote(null)
+    } else {
+      setError(data.message)
     }
   } catch (error) {
-    console.error('Create note error:', error)
-  }finally {
-  setLoading(false)
+    setError('Unable to connect to server. Please try again.')
+  } finally {
+    setLoading(false)
+  }
 }
+
+function handleEdit(note) {
+  setEditingNote(note)
+  setNoteTitle(note.title)
+  setNoteContent(note.content)
+}
+async function handleDelete(noteId) {
+
+  const confirmed = window.confirm(
+    'Are you sure you want to delete this note?'
+  )
+
+  if (!confirmed) {
+    return
+  }
+  const token = localStorage.getItem('token')
+
+  try {
+    const response = await fetch(
+      `http://localhost:5000/api/notes/${noteId}`,
+      {
+        method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    )
+
+    const data = await response.json()
+
+    if (response.ok) {
+  setNotes((currentNotes) =>
+    currentNotes.filter((note) => note.id !== noteId)
+  )
+}
+  } catch (error) {
+    console.error('Delete note error:', error)
+  }
 }
 
   return (
@@ -244,7 +308,7 @@ async function handleCreateNote(event) {
   />
 
   <button type="submit" disabled={loading}>
-  {loading ? 'Saving...' : 'Save Note'}
+  {loading ? 'Saving...' : editingNote ? 'Update Note' : 'Save Note'}
 </button>
 </form>
 {message && <p>{message}</p>}
@@ -254,6 +318,12 @@ async function handleCreateNote(event) {
   <div key={note.id}>
     <h3>{note.title}</h3>
     <p>{note.content}</p>
+    <button type="button" onClick={() => handleEdit(note)}>
+      Edit
+    </button>
+    <button type="button" onClick={() => handleDelete(note.id)}>
+  Delete
+</button>
   </div>
 )))}
 
