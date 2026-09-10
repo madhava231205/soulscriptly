@@ -1,5 +1,9 @@
 import { useState } from 'react'
 import './App.css'
+import Sidebar from './components/Sidebar'
+import NoteModal from './components/NoteModal'
+import ReadNoteModal from './components/ReadNoteModal'
+import NotesPage from './components/NotesPage'
 
 function App() {
   // -----------------------------
@@ -488,308 +492,30 @@ function App() {
       </header>
 
       {/* Sidebar */}
-      <aside className="sidebar">
-
-        <div className="sidebar-brand">
-          <div className="brand-icon">✦</div>
-
-          <div>
-            <h1>SoulScriptly</h1>
-            <p>Your thoughts. Your story.</p>
-          </div>
-        </div>
-
-        <nav className="sidebar-nav">
-
-          <button
-            className={
-              activePage === 'notes'
-                ? 'nav-item active'
-                : 'nav-item'
-            }
-            onClick={() => setActivePage('notes')}
-          >
-            <span>▣</span>
-            <span>Notes</span>
-          </button>
-
-          <button
-            className={
-              activePage === 'diary'
-                ? 'nav-item active'
-                : 'nav-item'
-            }
-            onClick={() => setActivePage('diary')}
-          >
-            <span>▤</span>
-            <span>Diary</span>
-          </button>
-
-          <button
-            className={
-              activePage === 'favourites'
-                ? 'nav-item active'
-                : 'nav-item'
-            }
-            onClick={() =>
-              setActivePage('favourites')
-            }
-          >
-            <span>★</span>
-            <span>Favourites</span>
-          </button>
-
-          <button
-            className={
-              activePage === 'settings'
-                ? 'nav-item active'
-                : 'nav-item'
-            }
-            onClick={() =>
-              setActivePage('settings')
-            }
-          >
-            <span>⚙</span>
-            <span>Settings</span>
-          </button>
-
-          <button
-            className={
-              activePage === 'profile'
-                ? 'nav-item active'
-                : 'nav-item'
-            }
-            onClick={() =>
-              setActivePage('profile')
-            }
-          >
-            <span>●</span>
-            <span>Profile</span>
-          </button>
-
-        </nav>
-
-        <div className="sidebar-bottom">
-          <p>Small notes.</p>
-          <p>Big dreams. ♥</p>
-
-          <button
-            className="logout-button"
-            onClick={handleLogout}
-          >
-            Logout
-          </button>
-        </div>
-      </aside>
-
+      <Sidebar
+  activePage={activePage}
+  setActivePage={setActivePage}
+  handleLogout={handleLogout}
+/>
       {/* Main content */}
       <main className="main-content">
 
         {activePage === 'notes' && (
-          <>
-            {/* Top bar */}
-            <div className="top-bar">
-
-              <div className="search-box">
-                <span>⌕</span>
-
-                <input
-                  type="text"
-                  placeholder="Search your notes..."
-                />
-              </div>
-
-              <div className="top-right">
-
-                <div className="sort-wrapper">
-                  <label>Sort by</label>
-
-                  <select
-                    value={sortBy}
-                    onChange={(event) =>
-                      setSortBy(event.target.value)
-                    }
-                  >
-                    <option value="newest">
-                      Newest First
-                    </option>
-
-                    <option value="oldest">
-                      Oldest First
-                    </option>
-
-                    <option value="az">
-                      A - Z
-                    </option>
-
-                    <option value="za">
-                      Z - A
-                    </option>
-                  </select>
-                </div>
-
-                <div className="profile-circle">
-                  M
-                </div>
-
-              </div>
-            </div>
-
-            {/* Notes heading */}
-            <section className="notes-header">
-
-              <div>
-                <h2>Notes</h2>
-
-                <p>
-                  Capture your thoughts, ideas and
-                  everything in between.
-                </p>
-              </div>
-
-            </section>
-
-            {/* Messages */}
-            {message && (
-              <div className="toast-message">
-                <div className="toast-icon">✓</div>
-
-                <div>
-                  <strong>{message}</strong>
-                  <span>Your note has been saved.</span>
-                </div>
-
-                <button
-                  onClick={() => setMessage('')}
-                >
-                  ×
-                </button>
-              </div>
+                <NotesPage
+                sortedNotes={sortedNotes}
+                sortBy={sortBy}
+                setSortBy={setSortBy}
+                favouriteNotes={favouriteNotes}
+                toggleFavourite={toggleFavourite}
+                handleRead={handleRead}
+                handleEdit={handleEdit}
+                handleOpenCreateModal={handleOpenCreateModal}
+                message={message}
+                error={error}
+                setMessage={setMessage}
+                setError={setError}
+              />
             )}
-
-            {error && (
-              <div className="toast-message error-toast">
-                <div className="toast-icon">!</div>
-
-                <div>
-                  <strong>{error}</strong>
-                </div>
-
-                <button
-                  onClick={() => setError('')}
-                >
-                  ×
-                </button>
-              </div>
-            )}
-
-            {/* Notes */}
-            {sortedNotes.length === 0 ? (
-              <div className="empty-state">
-                <div className="empty-icon">✎</div>
-
-                <h3>No notes yet</h3>
-
-                <p>
-                  Start writing your first thought.
-                </p>
-
-                <button
-                  className="primary-button"
-                  onClick={handleOpenCreateModal}
-                >
-                  Create Your First Note
-                </button>
-              </div>
-            ) : (
-              <section className="notes-grid">
-
-                {sortedNotes.map((note) => {
-
-                  const isFavourite =
-                    favouriteNotes.includes(note.id)
-
-                  return (
-                    <article
-                      className="note-card"
-                      key={note.id}
-                    >
-
-                      <div className="note-card-header">
-
-                        <h3>{note.title}</h3>
-
-                        <button
-                          className={
-                            isFavourite
-                              ? 'favourite-button favourite-active'
-                              : 'favourite-button'
-                          }
-                          onClick={() =>
-                            toggleFavourite(note.id)
-                          }
-                        >
-                          {isFavourite ? '★' : '☆'}
-                        </button>
-
-                      </div>
-
-                      <p className="note-preview">
-                        {note.content}
-                      </p>
-
-                      <div className="note-meta">
-                        <span>
-                          ◷{' '}
-                          {new Date(
-                            note.createdAt
-                          ).toLocaleDateString()}
-                        </span>
-
-                        <span>
-                          Note
-                        </span>
-                      </div>
-
-                      <div className="note-actions">
-
-                        <button
-                          className="read-button"
-                          onClick={() =>
-                            handleRead(note)
-                          }
-                        >
-                          ◉ Read
-                        </button>
-
-                        <button
-                          className="update-button"
-                          onClick={() =>
-                            handleEdit(note)
-                          }
-                        >
-                          ✎ Update
-                        </button>
-
-                      </div>
-
-                    </article>
-                  )
-                })}
-
-              </section>
-            )}
-
-            {/* Floating add button */}
-            <button
-              className="floating-add-button"
-              onClick={handleOpenCreateModal}
-              aria-label="Add new note"
-            >
-              +
-            </button>
-          </>
-        )}
 
         {activePage !== 'notes' && (
           <div className="coming-soon">
@@ -829,191 +555,30 @@ function App() {
 
       {/* Add / Update modal */}
       {showNoteModal && (
-        <div
-          className="modal-overlay"
-          onClick={(event) => {
-            if (event.target === event.currentTarget) {
-              closeNoteModal()
-            }
-          }}
-        >
-
-          <div className="note-modal">
-
-            <div className="modal-header">
-
-              <div>
-                <h2>
-                  {editingNote
-                    ? 'Update Note'
-                    : 'Add New Note'}
-                </h2>
-
-                <p>
-                  {editingNote
-                    ? 'Make changes to your note.'
-                    : 'Write down what is on your mind.'}
-                </p>
-              </div>
-
-              <button
-                className="modal-close"
-                onClick={closeNoteModal}
-              >
-                ×
-              </button>
-
-            </div>
-
-            <form onSubmit={handleCreateNote}>
-
-              <label>
-                Title <span>*</span>
-              </label>
-
-              <input
-                type="text"
-                placeholder="Enter note title..."
-                value={noteTitle}
-                onChange={(event) =>
-                  setNoteTitle(event.target.value)
-                }
-                required
-              />
-
-              <label>
-                Content <span>*</span>
-              </label>
-
-              <textarea
-                placeholder="Write your thoughts..."
-                value={noteContent}
-                onChange={(event) =>
-                  setNoteContent(event.target.value)
-                }
-                rows="7"
-                maxLength="500"
-                required
-              />
-
-              <div className="character-count">
-                {noteContent.length}/500
-              </div>
-
-              {error && (
-                <div className="modal-error">
-                  {error}
-                </div>
-              )}
-
-              <div className="modal-actions">
-
-                <button
-                  type="button"
-                  className="cancel-button"
-                  onClick={closeNoteModal}
-                >
-                  Cancel
-                </button>
-
-                <button
-                  type="submit"
-                  className="primary-button"
-                  disabled={loading}
-                >
-                  {loading
-                    ? 'Saving...'
-                    : editingNote
-                    ? 'Update Note'
-                    : 'Add Note'}
-                </button>
-
-              </div>
-
-            </form>
-
-          </div>
-        </div>
-      )}
+  <NoteModal
+    noteTitle={noteTitle}
+    setNoteTitle={setNoteTitle}
+    noteContent={noteContent}
+    setNoteContent={setNoteContent}
+    editingNote={editingNote}
+    loading={loading}
+    onSubmit={handleCreateNote}
+    onClose={() => {
+      setShowNoteModal(false)
+      setEditingNote(null)
+      setNoteTitle('')
+      setNoteContent('')
+    }}
+  />
+)}
 
       {/* Read note modal */}
       {selectedNote && (
-        <div
-          className="modal-overlay"
-          onClick={(event) => {
-            if (event.target === event.currentTarget) {
-              setSelectedNote(null)
-            }
-          }}
-        >
-
-          <div className="read-modal">
-
-            <div className="read-header">
-
-              <button
-                className="back-button"
-                onClick={() =>
-                  setSelectedNote(null)
-                }
-              >
-                ←
-              </button>
-
-              <button
-                className="favourite-button favourite-active"
-                onClick={() =>
-                  toggleFavourite(selectedNote.id)
-                }
-              >
-                {favouriteNotes.includes(
-                  selectedNote.id
-                )
-                  ? '★'
-                  : '☆'}
-              </button>
-
-            </div>
-
-            <h2>{selectedNote.title}</h2>
-
-            <div className="read-meta">
-              ◷{' '}
-              {new Date(
-                selectedNote.createdAt
-              ).toLocaleDateString()}
-            </div>
-
-            <div className="read-content">
-              {selectedNote.content}
-            </div>
-
-            <div className="read-footer">
-
-              <button
-                className="update-button"
-                onClick={() => {
-                  setSelectedNote(null)
-                  handleEdit(selectedNote)
-                }}
-              >
-                ✎ Update
-              </button>
-
-              <button
-                className="read-button"
-                onClick={() =>
-                  setSelectedNote(null)
-                }
-              >
-                Close
-              </button>
-
-            </div>
-
-          </div>
-        </div>
-      )}
+  <ReadNoteModal
+    note={selectedNote}
+    onClose={() => setSelectedNote(null)}
+  />
+)}
 
     </div>
   )
