@@ -12,6 +12,8 @@ function NotesPage({
   error,
   setMessage,
   setError,
+  searchTerm,
+  setSearchTerm,
 }) {
   return (
     <>
@@ -24,6 +26,10 @@ function NotesPage({
           <input
             type="text"
             placeholder="Search your notes..."
+            value={searchTerm}
+            onChange={(event) =>
+              setSearchTerm(event.target.value)
+            }
           />
         </div>
 
@@ -122,46 +128,44 @@ function NotesPage({
 
       {/* Notes */}
       {sortedNotes.length === 0 ? (
+  <div className="empty-state">
+    <div className="empty-icon">✎</div>
 
-        <div className="empty-state">
+    <h3>
+      {searchTerm
+        ? 'No matching notes'
+        : 'No notes yet'}
+    </h3>
 
-          <div className="empty-icon">
-            ✎
-          </div>
+    <p>
+      {searchTerm
+        ? 'Try searching with a different word.'
+        : 'Start writing your first thought.'}
+    </p>
 
-          <h3>No notes yet</h3>
-
-          <p>
-            Start writing your first thought.
-          </p>
-
-          <button
-            className="primary-button"
-            onClick={handleOpenCreateModal}
-          >
-            Create Your First Note
-          </button>
-
-        </div>
-
-      ) : (
-
+    {!searchTerm && (
+      <button
+        className="primary-button"
+        onClick={handleOpenCreateModal}
+      >
+        Create Your First Note
+      </button>
+    )}
+  </div>
+        ) : (
         <section className="notes-grid">
-
-          {sortedNotes.map((note) => (
-            <NoteCard
-              key={note.id}
-              note={note}
-              isFavourite={favouriteNotes.includes(note.id)}
-              onToggleFavourite={toggleFavourite}
-              onRead={handleRead}
-              onEdit={handleEdit}
-            />
-          ))}
-
-        </section>
-
-      )}
+            {sortedNotes.map((note) => (
+              <NoteCard
+                  key={note.id}
+                  note={note}
+                  isFavourite={favouriteNotes.includes(note.id)}
+                  onToggleFavourite={toggleFavourite}
+                  onRead={handleRead}
+                  onEdit={handleEdit}
+                />
+            ))}
+          </section>
+    )}
 
       {/* Floating add button */}
       <button

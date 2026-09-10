@@ -4,6 +4,7 @@ import Sidebar from './components/Sidebar'
 import NoteModal from './components/NoteModal'
 import ReadNoteModal from './components/ReadNoteModal'
 import NotesPage from './components/NotesPage'
+import NoteCard from './components/NoteCard'
 
 function App() {
   // -----------------------------
@@ -36,6 +37,7 @@ function App() {
   const [showNoteModal, setShowNoteModal] = useState(false)
   const [selectedNote, setSelectedNote] = useState(null)
   const [sortBy, setSortBy] = useState('newest')
+  const [searchTerm, setSearchTerm] = useState('')
   const [activePage, setActivePage] = useState('notes')
   const [favouriteNotes, setFavouriteNotes] = useState([])
 
@@ -300,26 +302,38 @@ function App() {
   // -----------------------------
   // Sorting
   // -----------------------------
-  const sortedNotes = [...notes].sort((a, b) => {
-    if (sortBy === 'newest') {
-      return new Date(b.createdAt) - new Date(a.createdAt)
-    }
+  const filteredNotes = notes.filter((note) => {
+  const search = searchTerm.toLowerCase()
 
-    if (sortBy === 'oldest') {
-      return new Date(a.createdAt) - new Date(b.createdAt)
-    }
+  return (
+    note.title.toLowerCase().includes(search) ||
+    note.content.toLowerCase().includes(search)
+  )
+})
 
-    if (sortBy === 'az') {
-      return a.title.localeCompare(b.title)
-    }
+const sortedNotes = [...filteredNotes].sort((a, b) => {
+  if (sortBy === 'newest') {
+    return new Date(b.createdAt) - new Date(a.createdAt)
+  }
 
-    if (sortBy === 'za') {
-      return b.title.localeCompare(a.title)
-    }
+  if (sortBy === 'oldest') {
+    return new Date(a.createdAt) - new Date(b.createdAt)
+  }
 
-    return 0
-  })
+  if (sortBy === 'az') {
+    return a.title.localeCompare(b.title)
+  }
 
+  if (sortBy === 'za') {
+    return b.title.localeCompare(a.title)
+  }
+
+  return 0
+})
+
+const favouriteNoteObjects = notes.filter((note) =>
+  favouriteNotes.includes(note.id)
+)
   // -----------------------------
   // Authentication screen
   // -----------------------------
@@ -461,6 +475,8 @@ function App() {
               : 'Already have an account? Login'}
           </button>
         </div>
+
+        
       </main>
     )
   }
@@ -514,8 +530,46 @@ function App() {
                 error={error}
                 setMessage={setMessage}
                 setError={setError}
+                searchTerm={searchTerm}
+                setSearchTerm={setSearchTerm}
               />
             )}
+
+{activePage === 'favourites' && (
+  <>
+    <div className="notes-header">
+      <div>
+        <h2>Favourites</h2>
+        <p>Your most important notes, all in one place.</p>
+      </div>
+    </div>
+
+    {favouriteNoteObjects.length === 0 ? (
+      <div className="empty-state">
+        <div className="empty-icon">★</div>
+
+        <h3>No favourites yet</h3>
+
+        <p>
+          Mark a note as favourite and it will appear here.
+        </p>
+      </div>
+    ) : (
+      <section className="notes-grid">
+        {favouriteNoteObjects.map((note) => (
+          <NoteCard
+            key={note.id}
+            note={note}
+            isFavourite={true}
+            onToggleFavourite={toggleFavourite}
+            onRead={handleRead}
+            onEdit={handleEdit}
+          />
+        ))}
+      </section>
+    )}
+  </>
+)}
 
         {activePage !== 'notes' && (
           <div className="coming-soon">
@@ -582,6 +636,8 @@ function App() {
 
     </div>
   )
+
+  
 }
 
 export default App
