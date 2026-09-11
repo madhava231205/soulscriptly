@@ -158,7 +158,7 @@ function NotesPage({
               <NoteCard
                   key={note.id}
                   note={note}
-                  isFavourite={favouriteNotes.includes(note.id)}
+                  isFavourite={note.isFavourite}
                   onToggleFavourite={toggleFavourite}
                   onRead={handleRead}
                   onEdit={handleEdit}

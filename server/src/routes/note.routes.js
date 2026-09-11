@@ -145,6 +145,50 @@ router.put("/:id", authenticateToken, async (req, res) => {
   }
 });
 
+router.patch("/:id/favourite", authenticateToken, async (req, res) => {
+  try {
+    const noteId = Number(req.params.id)
+
+    const existingNote = await prisma.note.findFirst({
+      where: {
+        id: noteId,
+        userId: req.user.userId,
+      },
+    })
+
+    if (!existingNote) {
+      return res.status(404).json({
+        status: "ERROR",
+        message: "Note not found",
+      })
+    }
+
+    const updatedNote = await prisma.note.update({
+      where: {
+        id: noteId,
+      },
+      data: {
+        isFavourite: !existingNote.isFavourite,
+      },
+    })
+
+    res.json({
+      status: "OK",
+      message: updatedNote.isFavourite
+        ? "Note added to favourites"
+        : "Note removed from favourites",
+      note: updatedNote,
+    })
+  } catch (error) {
+    console.error("Toggle favourite error:", error)
+
+    res.status(500).json({
+      status: "ERROR",
+      message: "Something went wrong",
+    })
+  }
+})
+
 router.delete("/:id", authenticateToken, async (req, res) => {
   try {
     const noteId = Number(req.params.id);

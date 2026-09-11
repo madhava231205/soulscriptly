@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import {useEffect,  useState } from 'react'
 import './App.css'
 import Sidebar from './components/Sidebar'
 import NoteModal from './components/NoteModal'
@@ -161,6 +161,46 @@ function App() {
     }
   }
 
+
+  // -----------------------------
+// Restore session on refresh
+// -----------------------------
+useEffect(() => {
+  const token = localStorage.getItem('token')
+
+  if (!token) {
+    setIsAuthenticated(false)
+    return
+  }
+
+  async function restoreSession() {
+    try {
+      const response = await fetch(
+        'http://localhost:5000/api/auth/protected',
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      )
+
+      if (!response.ok) {
+        localStorage.removeItem('token')
+        setIsAuthenticated(false)
+        return
+      }
+
+      setIsAuthenticated(true)
+      await getNotes()
+    } catch (error) {
+      console.error('Session restore error:', error)
+      localStorage.removeItem('token')
+      setIsAuthenticated(false)
+    }
+  }
+
+  restoreSession()
+}, [])
   // -----------------------------
   // Open create note modal
   // -----------------------------
@@ -268,17 +308,40 @@ function App() {
   // -----------------------------
   // Favourite note
   // -----------------------------
-  function toggleFavourite(noteId) {
-    setFavouriteNotes((currentFavourites) => {
-      if (currentFavourites.includes(noteId)) {
-        return currentFavourites.filter(
-          (id) => id !== noteId
-        )
-      }
+    async function toggleFavourite(noteId) {
+  const token = localStorage.getItem('token')
 
-      return [...currentFavourites, noteId]
-    })
+  if (!token) {
+    return
   }
+
+  try {
+    const response = await fetch(
+      `http://localhost:5000/api/notes/${noteId}/favourite`,
+      {
+        method: 'PATCH',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    )
+
+    const data = await response.json()
+
+    if (response.ok) {
+      setNotes((currentNotes) =>
+        currentNotes.map((note) =>
+          note.id === noteId ? data.note : note
+        )
+      )
+    } else {
+      setError(data.message)
+    }
+  } catch (error) {
+    console.error('Toggle favourite error:', error)
+    setError('Unable to update favourite.')
+  }
+}
 
   // -----------------------------
   // Read note
@@ -331,10 +394,9 @@ const sortedNotes = [...filteredNotes].sort((a, b) => {
   return 0
 })
 
-const favouriteNoteObjects = notes.filter((note) =>
-  favouriteNotes.includes(note.id)
-)
-  // -----------------------------
+const favouriteNoteObjects = notes.filter(
+  (note) => note.isFavourite
+) // -----------------------------
   // Authentication screen
   // -----------------------------
   if (!isAuthenticated) {
@@ -571,7 +633,7 @@ const favouriteNoteObjects = notes.filter((note) =>
   </>
 )}
 
-        {activePage !== 'notes' && (
+        {activePage !== 'notes' && activePage !== 'favourites' && (
           <div className="coming-soon">
             <div className="coming-soon-icon">
               ✦
@@ -581,9 +643,7 @@ const favouriteNoteObjects = notes.filter((note) =>
               {activePage === 'diary' &&
                 'Diary is coming next'}
 
-              {activePage === 'favourites' &&
-                'Favourites'}
-
+              
               {activePage === 'settings' &&
                 'Settings'}
 

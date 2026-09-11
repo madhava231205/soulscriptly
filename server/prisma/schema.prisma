@@ -20,6 +20,7 @@ model Note {
   id        Int      @id @default(autoincrement())
   title     String
   content   String
+  isFavourite Boolean @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
