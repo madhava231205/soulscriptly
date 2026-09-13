@@ -17,7 +17,7 @@ function App() {
   const [message, setMessage] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
-
+  const [currentUser, setCurrentUser] = useState(null)
   const [isLogin, setIsLogin] = useState(true)
   const [isAuthenticated, setIsAuthenticated] = useState(
     Boolean(localStorage.getItem('token'))
@@ -38,7 +38,8 @@ function App() {
   const [selectedNote, setSelectedNote] = useState(null)
   const [sortBy, setSortBy] = useState('newest')
   const [searchTerm, setSearchTerm] = useState('')
-  const [activePage, setActivePage] = useState('notes')
+  const [activePage, setActivePage] = useState(
+  localStorage.getItem('activePage') || 'notes')
   const [favouriteNotes, setFavouriteNotes] = useState([])
 
   // -----------------------------
@@ -113,6 +114,7 @@ function App() {
 
       if (response.ok) {
         localStorage.setItem('token', data.token)
+        setCurrentUser(data.user)
 
         setMessage('')
         setError('')
@@ -165,6 +167,11 @@ function App() {
   // -----------------------------
 // Restore session on refresh
 // -----------------------------
+
+useEffect(() => {
+  localStorage.setItem('activePage', activePage)
+}, [activePage])
+
 useEffect(() => {
   const token = localStorage.getItem('token')
 
@@ -189,8 +196,10 @@ useEffect(() => {
         setIsAuthenticated(false)
         return
       }
+      const data = await response.json()
 
       setIsAuthenticated(true)
+      setCurrentUser(data.user)
       await getNotes()
     } catch (error) {
       console.error('Session restore error:', error)
@@ -355,6 +364,7 @@ useEffect(() => {
   // -----------------------------
   function handleLogout() {
     localStorage.removeItem('token')
+    localStorage.removeItem('activePage')
     setIsAuthenticated(false)
     setNotes([])
     setFavouriteNotes([])
@@ -594,6 +604,7 @@ const favouriteNoteObjects = notes.filter(
                 setError={setError}
                 searchTerm={searchTerm}
                 setSearchTerm={setSearchTerm}
+                currentUser={currentUser}
               />
             )}
 

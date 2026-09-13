@@ -122,11 +122,39 @@ router.post("/login", async (req, res) => {
   }
 });
 
-router.get("/protected", authenticateToken, (req, res) => {
-  res.json({
-    status: "OK",
-    message: "You have access to this protected route",
-    user: req.user,
-  });
+router.get("/protected", authenticateToken, async (req, res) => {
+  try {
+    const user = await prisma.user.findUnique({
+      where: {
+        id: req.user.userId,
+      },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        createdAt: true,
+      },
+    })
+
+    if (!user) {
+      return res.status(404).json({
+        status: "ERROR",
+        message: "User not found",
+      })
+    }
+
+    res.json({
+      status: "OK",
+      message: "You are authenticated",
+      user,
+    })
+  } catch (error) {
+    console.error("Protected route error:", error)
+
+    res.status(500).json({
+      status: "ERROR",
+      message: "Something went wrong",
+    })
+  }
 });
 export default router;

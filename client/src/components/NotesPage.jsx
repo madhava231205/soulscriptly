@@ -3,7 +3,7 @@ function NotesPage({
   sortedNotes,
   sortBy,
   setSortBy,
-  favouriteNotes,
+ 
   toggleFavourite,
   handleRead,
   handleEdit,
@@ -14,6 +14,7 @@ function NotesPage({
   setError,
   searchTerm,
   setSearchTerm,
+  currentUser,
 }) {
   return (
     <>
@@ -63,8 +64,8 @@ function NotesPage({
           </div>
 
           <div className="profile-circle">
-            M
-          </div>
+  {currentUser?.name?.charAt(0).toUpperCase()}
+</div>
 
         </div>
       </div>
