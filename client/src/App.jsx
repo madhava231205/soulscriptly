@@ -358,6 +358,50 @@ useEffect(() => {
   function handleRead(note) {
     setSelectedNote(note)
   }
+  
+
+async function handleDeleteNote(noteId) {
+  const token = localStorage.getItem('token')
+
+  if (!token) {
+    return
+  }
+
+  try {
+    const response = await fetch(
+      `http://localhost:5000/api/notes/${noteId}`,
+      {
+        method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    )
+
+    const data = await response.json()
+
+    if (response.ok) {
+      setNotes((currentNotes) =>
+        currentNotes.filter(
+          (note) => note.id !== noteId
+        )
+      )
+
+      setSelectedNote(null)
+      setMessage('Note deleted successfully')
+      setError('')
+    } else {
+      setError(data.message)
+    }
+  } catch (error) {
+    console.error('Delete note error:', error)
+    setError('Unable to delete note.')
+  }
+}
+
+
+
+
 
   // -----------------------------
   // Logout
@@ -702,6 +746,7 @@ const favouriteNoteObjects = notes.filter(
   <ReadNoteModal
     note={selectedNote}
     onClose={() => setSelectedNote(null)}
+    onDelete={handleDeleteNote}
   />
 )}
 

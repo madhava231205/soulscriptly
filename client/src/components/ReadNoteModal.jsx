@@ -1,6 +1,17 @@
-function ReadNoteModal({ note, onClose }) {
+
+function ReadNoteModal({ note, onClose, onDelete }) {
   if (!note) {
     return null
+  }
+
+  function handleDelete() {
+    const confirmed = window.confirm(
+      'Are you sure you want to delete this note?'
+    )
+
+    if (confirmed) {
+      onDelete(note.id)
+    }
   }
 
   return (
@@ -39,6 +50,14 @@ function ReadNoteModal({ note, onClose }) {
         <div className="read-footer">
           <button
             type="button"
+            className="delete-button"
+            onClick={handleDelete}
+          >
+            🗑 Delete
+          </button>
+
+          <button
+            type="button"
             className="cancel-button"
             onClick={onClose}
           >
@@ -52,3 +71,4 @@ function ReadNoteModal({ note, onClose }) {
 }
 
 export default ReadNoteModal
+

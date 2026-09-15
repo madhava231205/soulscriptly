@@ -984,9 +984,7 @@ button {
    READ MODAL
 ======================================== */
 
-.read-modal {
-  max-width: 650px;
-}
+.read-modal { max-height: 85vh; display: flex; flex-direction: column; }
 
 .read-header {
   display: flex;
@@ -1031,6 +1029,12 @@ button {
   line-height: 1.9;
 
   white-space: pre-wrap;
+  flex: 1; 
+  overflow-y: auto;
+   min-height: 0; 
+   padding-right: 8px; 
+  
+   word-wrap: break-word;
 }
 
 .read-footer {
@@ -1259,4 +1263,20 @@ button {
     display: grid;
     grid-template-columns: 1fr 1fr;
   }
+}
+
+
+.delete-button {
+  border: none;
+  background: #fff0f0;
+  color: #d64545;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.delete-button:hover {
+  background: #ffe0e0;
 }
