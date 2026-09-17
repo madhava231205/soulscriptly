@@ -27,3 +27,8 @@ export type User = Prisma.UserModel
  * 
  */
 export type Note = Prisma.NoteModel
+/**
+ * Model DiaryEntry
+ * 
+ */
+export type DiaryEntry = Prisma.DiaryEntryModel

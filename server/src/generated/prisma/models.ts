@@ -10,4 +10,5 @@
  */
 export type * from './models/User.ts'
 export type * from './models/Note.ts'
+export type * from './models/DiaryEntry.ts'
 export type * from './commonInputTypes.ts'

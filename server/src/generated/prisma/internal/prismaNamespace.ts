@@ -398,7 +398,8 @@ type FieldRefInputType<Model, FieldType> = Model extends never ? never : FieldRe
 
 export const ModelName = {
   User: 'User',
-  Note: 'Note'
+  Note: 'Note',
+  DiaryEntry: 'DiaryEntry'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -414,7 +415,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "note"
+    modelProps: "user" | "note" | "diaryEntry"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -566,6 +567,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    DiaryEntry: {
+      payload: Prisma.$DiaryEntryPayload<ExtArgs>
+      fields: Prisma.DiaryEntryFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.DiaryEntryFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DiaryEntryPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.DiaryEntryFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DiaryEntryPayload>
+        }
+        findFirst: {
+          args: Prisma.DiaryEntryFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DiaryEntryPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.DiaryEntryFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DiaryEntryPayload>
+        }
+        findMany: {
+          args: Prisma.DiaryEntryFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DiaryEntryPayload>[]
+        }
+        create: {
+          args: Prisma.DiaryEntryCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DiaryEntryPayload>
+        }
+        createMany: {
+          args: Prisma.DiaryEntryCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.DiaryEntryCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DiaryEntryPayload>[]
+        }
+        delete: {
+          args: Prisma.DiaryEntryDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DiaryEntryPayload>
+        }
+        update: {
+          args: Prisma.DiaryEntryUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DiaryEntryPayload>
+        }
+        deleteMany: {
+          args: Prisma.DiaryEntryDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.DiaryEntryUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.DiaryEntryUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DiaryEntryPayload>[]
+        }
+        upsert: {
+          args: Prisma.DiaryEntryUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DiaryEntryPayload>
+        }
+        aggregate: {
+          args: Prisma.DiaryEntryAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateDiaryEntry>
+        }
+        groupBy: {
+          args: Prisma.DiaryEntryGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.DiaryEntryGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.DiaryEntryCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.DiaryEntryCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -627,6 +702,18 @@ export const NoteScalarFieldEnum = {
 } as const
 
 export type NoteScalarFieldEnum = (typeof NoteScalarFieldEnum)[keyof typeof NoteScalarFieldEnum]
+
+
+export const DiaryEntryScalarFieldEnum = {
+  id: 'id',
+  title: 'title',
+  content: 'content',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  userId: 'userId'
+} as const
+
+export type DiaryEntryScalarFieldEnum = (typeof DiaryEntryScalarFieldEnum)[keyof typeof DiaryEntryScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -866,6 +953,7 @@ export type PrismaClientOptions = PrismaClientOptionsWithAccelerateUrl | PrismaC
 export type GlobalOmitConfig = {
   user?: Prisma.UserOmit
   note?: Prisma.NoteOmit
+  diaryEntry?: Prisma.DiaryEntryOmit
 }
 
 /* Types for Logging */

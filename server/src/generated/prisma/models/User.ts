@@ -217,6 +217,7 @@ export type UserWhereInput = {
   password?: Prisma.StringFilter<"User"> | string
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   notes?: Prisma.NoteListRelationFilter
+  diaryEntries?: Prisma.DiaryEntryListRelationFilter
 }
 
 export type UserOrderByWithRelationInput = {
@@ -226,6 +227,7 @@ export type UserOrderByWithRelationInput = {
   password?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   notes?: Prisma.NoteOrderByRelationAggregateInput
+  diaryEntries?: Prisma.DiaryEntryOrderByRelationAggregateInput
 }
 
 export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -238,6 +240,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   password?: Prisma.StringFilter<"User"> | string
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   notes?: Prisma.NoteListRelationFilter
+  diaryEntries?: Prisma.DiaryEntryListRelationFilter
 }, "id" | "email">
 
 export type UserOrderByWithAggregationInput = {
@@ -270,6 +273,7 @@ export type UserCreateInput = {
   password: string
   createdAt?: Date | string
   notes?: Prisma.NoteCreateNestedManyWithoutUserInput
+  diaryEntries?: Prisma.DiaryEntryCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateInput = {
@@ -279,6 +283,7 @@ export type UserUncheckedCreateInput = {
   password: string
   createdAt?: Date | string
   notes?: Prisma.NoteUncheckedCreateNestedManyWithoutUserInput
+  diaryEntries?: Prisma.DiaryEntryUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserUpdateInput = {
@@ -287,6 +292,7 @@ export type UserUpdateInput = {
   password?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   notes?: Prisma.NoteUpdateManyWithoutUserNestedInput
+  diaryEntries?: Prisma.DiaryEntryUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateInput = {
@@ -296,6 +302,7 @@ export type UserUncheckedUpdateInput = {
   password?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   notes?: Prisma.NoteUncheckedUpdateManyWithoutUserNestedInput
+  diaryEntries?: Prisma.DiaryEntryUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateManyInput = {
@@ -388,11 +395,26 @@ export type UserUpdateOneRequiredWithoutNotesNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutNotesInput, Prisma.UserUpdateWithoutNotesInput>, Prisma.UserUncheckedUpdateWithoutNotesInput>
 }
 
+export type UserCreateNestedOneWithoutDiaryEntriesInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutDiaryEntriesInput, Prisma.UserUncheckedCreateWithoutDiaryEntriesInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutDiaryEntriesInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutDiaryEntriesNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutDiaryEntriesInput, Prisma.UserUncheckedCreateWithoutDiaryEntriesInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutDiaryEntriesInput
+  upsert?: Prisma.UserUpsertWithoutDiaryEntriesInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutDiaryEntriesInput, Prisma.UserUpdateWithoutDiaryEntriesInput>, Prisma.UserUncheckedUpdateWithoutDiaryEntriesInput>
+}
+
 export type UserCreateWithoutNotesInput = {
   name: string
   email: string
   password: string
   createdAt?: Date | string
+  diaryEntries?: Prisma.DiaryEntryCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutNotesInput = {
@@ -401,6 +423,7 @@ export type UserUncheckedCreateWithoutNotesInput = {
   email: string
   password: string
   createdAt?: Date | string
+  diaryEntries?: Prisma.DiaryEntryUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutNotesInput = {
@@ -424,6 +447,7 @@ export type UserUpdateWithoutNotesInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  diaryEntries?: Prisma.DiaryEntryUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutNotesInput = {
@@ -432,6 +456,57 @@ export type UserUncheckedUpdateWithoutNotesInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  diaryEntries?: Prisma.DiaryEntryUncheckedUpdateManyWithoutUserNestedInput
+}
+
+export type UserCreateWithoutDiaryEntriesInput = {
+  name: string
+  email: string
+  password: string
+  createdAt?: Date | string
+  notes?: Prisma.NoteCreateNestedManyWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutDiaryEntriesInput = {
+  id?: number
+  name: string
+  email: string
+  password: string
+  createdAt?: Date | string
+  notes?: Prisma.NoteUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutDiaryEntriesInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutDiaryEntriesInput, Prisma.UserUncheckedCreateWithoutDiaryEntriesInput>
+}
+
+export type UserUpsertWithoutDiaryEntriesInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutDiaryEntriesInput, Prisma.UserUncheckedUpdateWithoutDiaryEntriesInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutDiaryEntriesInput, Prisma.UserUncheckedCreateWithoutDiaryEntriesInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutDiaryEntriesInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutDiaryEntriesInput, Prisma.UserUncheckedUpdateWithoutDiaryEntriesInput>
+}
+
+export type UserUpdateWithoutDiaryEntriesInput = {
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  notes?: Prisma.NoteUpdateManyWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutDiaryEntriesInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  notes?: Prisma.NoteUncheckedUpdateManyWithoutUserNestedInput
 }
 
 
@@ -441,10 +516,12 @@ export type UserUncheckedUpdateWithoutNotesInput = {
 
 export type UserCountOutputType = {
   notes: number
+  diaryEntries: number
 }
 
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   notes?: boolean | UserCountOutputTypeCountNotesArgs
+  diaryEntries?: boolean | UserCountOutputTypeCountDiaryEntriesArgs
 }
 
 /**
@@ -464,6 +541,13 @@ export type UserCountOutputTypeCountNotesArgs<ExtArgs extends runtime.Types.Exte
   where?: Prisma.NoteWhereInput
 }
 
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountDiaryEntriesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.DiaryEntryWhereInput
+}
+
 
 export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -472,6 +556,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   password?: boolean
   createdAt?: boolean
   notes?: boolean | Prisma.User$notesArgs<ExtArgs>
+  diaryEntries?: boolean | Prisma.User$diaryEntriesArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
@@ -502,6 +587,7 @@ export type UserSelectScalar = {
 export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "email" | "password" | "createdAt", ExtArgs["result"]["user"]>
 export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   notes?: boolean | Prisma.User$notesArgs<ExtArgs>
+  diaryEntries?: boolean | Prisma.User$diaryEntriesArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type UserIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -511,6 +597,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   name: "User"
   objects: {
     notes: Prisma.$NotePayload<ExtArgs>[]
+    diaryEntries: Prisma.$DiaryEntryPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: number
@@ -913,6 +1000,7 @@ readonly fields: UserFieldRefs;
 export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   notes<T extends Prisma.User$notesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$notesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$NotePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  diaryEntries<T extends Prisma.User$diaryEntriesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$diaryEntriesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DiaryEntryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1361,6 +1449,30 @@ export type User$notesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs
   take?: number
   skip?: number
   distinct?: Prisma.NoteScalarFieldEnum | Prisma.NoteScalarFieldEnum[]
+}
+
+/**
+ * User.diaryEntries
+ */
+export type User$diaryEntriesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the DiaryEntry
+   */
+  select?: Prisma.DiaryEntrySelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the DiaryEntry
+   */
+  omit?: Prisma.DiaryEntryOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.DiaryEntryInclude<ExtArgs> | null
+  where?: Prisma.DiaryEntryWhereInput
+  orderBy?: Prisma.DiaryEntryOrderByWithRelationInput | Prisma.DiaryEntryOrderByWithRelationInput[]
+  cursor?: Prisma.DiaryEntryWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.DiaryEntryScalarFieldEnum | Prisma.DiaryEntryScalarFieldEnum[]
 }
 
 /**

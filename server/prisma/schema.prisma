@@ -14,6 +14,7 @@ model User {
   password  String
   createdAt DateTime @default(now())
   notes   Note[]
+  diaryEntries DiaryEntry[]
 }
 
 model Note {
@@ -21,6 +22,17 @@ model Note {
   title     String
   content   String
   isFavourite Boolean @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model DiaryEntry {
+  id        Int      @id @default(autoincrement())
+  title     String
+  content   String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
