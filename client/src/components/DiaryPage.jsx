@@ -10,6 +10,10 @@ const [content, setContent] = useState('')
 const [saving, setSaving] = useState(false)
 const [selectedEntry, setSelectedEntry] = useState(null)
 const [editingEntry, setEditingEntry] = useState(null)
+const [isDiaryUnlocked, setIsDiaryUnlocked] = useState(false)
+const [diaryPin, setDiaryPin] = useState('')
+const [enteredPin, setEnteredPin] = useState('')
+const [pinError, setPinError] = useState('')
   async function getDiaryEntries() {
     const token = localStorage.getItem('token')
 
@@ -205,11 +209,88 @@ async function deleteDiaryEntry(entryId) {
     setError('Unable to delete diary entry.')
   }
 }
+async function unlockDiary(event) {
+  event.preventDefault()
+
+  const token = localStorage.getItem('token')
+
+  if (!token) {
+    setPinError('Please login first.')
+    return
+  }
+
+  if (!enteredPin.trim()) {
+    setPinError('Please enter your Diary PIN.')
+    return
+  }
+
+  try {
+    const response = await fetch(
+      'http://localhost:5000/api/diary/unlock',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          pin: enteredPin,
+        }),
+      }
+    )
+
+    const data = await response.json()
+
+    if (response.ok) {
+      setIsDiaryUnlocked(true)
+      setEnteredPin('')
+      setPinError('')
+    } else {
+      setPinError(data.message)
+    }
+  } catch (error) {
+    console.error('Unlock diary error:', error)
+    setPinError('Unable to unlock diary.')
+  }
+}
 
   useEffect(() => {
     getDiaryEntries()
   }, [])
 
+  if (!isDiaryUnlocked) {
+  return (
+    <div className="diary-lock-screen">
+      <div className="diary-lock-card">
+        <h1>🔐 Diary Locked</h1>
+
+        <p>
+          Enter your diary PIN to continue.
+        </p>
+
+        <form onSubmit={unlockDiary}>
+          <input
+            type="password"
+            inputMode="numeric"
+            placeholder="Enter PIN"
+            value={enteredPin}
+            onChange={(event) =>
+              setEnteredPin(event.target.value)
+            }
+          />
+
+          <button type="submit">
+            Unlock Diary
+          </button>
+        </form>
+
+        {pinError && (
+          <p>{pinError}</p>
+        )}
+      </div>
+    </div>
+  )
+}
   return (
     <div className="diary-page">
       <div className="diary-header">
