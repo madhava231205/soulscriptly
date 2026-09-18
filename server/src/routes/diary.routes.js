@@ -2,6 +2,7 @@
 import express from 'express'
 import prisma from '../lib/prisma.js'
 import authenticateToken from '../middleware/auth.middleware.js'
+import bcrypt from 'bcrypt'
 
 const router = express.Router()
 
@@ -189,8 +190,101 @@ router.delete('/:id', authenticateToken, async (req, res) => {
   }
 })
 
+router.post('/pin', authenticateToken, async (req, res) => {
+  try {
+    const { pin } = req.body || {}
 
+    if (!pin) {
+      return res.status(400).json({
+        status: 'ERROR',
+        message: 'PIN is required',
+      })
+    }
 
+    if (!/^\d{4}$/.test(pin)) {
+      return res.status(400).json({
+        status: 'ERROR',
+        message: 'PIN must be exactly 4 digits',
+      })
+    }
+
+    const hashedPin = await bcrypt.hash(pin, 10)
+
+    await prisma.user.update({
+      where: {
+        id: req.user.userId,
+      },
+      data: {
+        diaryPinHash: hashedPin,
+      },
+    })
+
+    res.json({
+      status: 'OK',
+      message: 'Diary PIN created successfully',
+    })
+  } catch (error) {
+    console.error('Create diary PIN error:', error)
+
+    res.status(500).json({
+      status: 'ERROR',
+      message: 'Something went wrong',
+    })
+  }
+})
+
+router.post('/unlock', authenticateToken, async (req, res) => {
+  try {
+    const { pin } = req.body || {}
+
+    if (!pin) {
+      return res.status(400).json({
+        status: 'ERROR',
+        message: 'PIN is required',
+      })
+    }
+
+    const user = await prisma.user.findUnique({
+      where: {
+        id: req.user.userId,
+      },
+      select: {
+        diaryPinHash: true,
+      },
+    })
+
+    if (!user || !user.diaryPinHash) {
+      return res.status(404).json({
+        status: 'ERROR',
+        message: 'Diary PIN has not been set yet',
+      })
+    }
+
+    const isCorrect = await bcrypt.compare(
+      pin,
+      user.diaryPinHash
+    )
+
+    if (!isCorrect) {
+      return res.status(401).json({
+        status: 'ERROR',
+        message: 'Incorrect Diary PIN',
+      })
+    }
+
+    res.json({
+      status: 'OK',
+      message: 'Diary unlocked successfully',
+    })
+  } catch (error) {
+    console.error('Unlock diary error:', error)
+
+    res.status(500).json({
+      status: 'ERROR',
+      message: 'Something went wrong',
+    })
+  }
+})
 
 
 export default router;

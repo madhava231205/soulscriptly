@@ -40,6 +40,7 @@ export type UserMinAggregateOutputType = {
   email: string | null
   password: string | null
   createdAt: Date | null
+  diaryPinHash: string | null
 }
 
 export type UserMaxAggregateOutputType = {
@@ -48,6 +49,7 @@ export type UserMaxAggregateOutputType = {
   email: string | null
   password: string | null
   createdAt: Date | null
+  diaryPinHash: string | null
 }
 
 export type UserCountAggregateOutputType = {
@@ -56,6 +58,7 @@ export type UserCountAggregateOutputType = {
   email: number
   password: number
   createdAt: number
+  diaryPinHash: number
   _all: number
 }
 
@@ -74,6 +77,7 @@ export type UserMinAggregateInputType = {
   email?: true
   password?: true
   createdAt?: true
+  diaryPinHash?: true
 }
 
 export type UserMaxAggregateInputType = {
@@ -82,6 +86,7 @@ export type UserMaxAggregateInputType = {
   email?: true
   password?: true
   createdAt?: true
+  diaryPinHash?: true
 }
 
 export type UserCountAggregateInputType = {
@@ -90,6 +95,7 @@ export type UserCountAggregateInputType = {
   email?: true
   password?: true
   createdAt?: true
+  diaryPinHash?: true
   _all?: true
 }
 
@@ -185,6 +191,7 @@ export type UserGroupByOutputType = {
   email: string
   password: string
   createdAt: Date
+  diaryPinHash: string | null
   _count: UserCountAggregateOutputType | null
   _avg: UserAvgAggregateOutputType | null
   _sum: UserSumAggregateOutputType | null
@@ -216,6 +223,7 @@ export type UserWhereInput = {
   email?: Prisma.StringFilter<"User"> | string
   password?: Prisma.StringFilter<"User"> | string
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
+  diaryPinHash?: Prisma.StringNullableFilter<"User"> | string | null
   notes?: Prisma.NoteListRelationFilter
   diaryEntries?: Prisma.DiaryEntryListRelationFilter
 }
@@ -226,6 +234,7 @@ export type UserOrderByWithRelationInput = {
   email?: Prisma.SortOrder
   password?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  diaryPinHash?: Prisma.SortOrderInput | Prisma.SortOrder
   notes?: Prisma.NoteOrderByRelationAggregateInput
   diaryEntries?: Prisma.DiaryEntryOrderByRelationAggregateInput
 }
@@ -239,6 +248,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   name?: Prisma.StringFilter<"User"> | string
   password?: Prisma.StringFilter<"User"> | string
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
+  diaryPinHash?: Prisma.StringNullableFilter<"User"> | string | null
   notes?: Prisma.NoteListRelationFilter
   diaryEntries?: Prisma.DiaryEntryListRelationFilter
 }, "id" | "email">
@@ -249,6 +259,7 @@ export type UserOrderByWithAggregationInput = {
   email?: Prisma.SortOrder
   password?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  diaryPinHash?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.UserCountOrderByAggregateInput
   _avg?: Prisma.UserAvgOrderByAggregateInput
   _max?: Prisma.UserMaxOrderByAggregateInput
@@ -265,6 +276,7 @@ export type UserScalarWhereWithAggregatesInput = {
   email?: Prisma.StringWithAggregatesFilter<"User"> | string
   password?: Prisma.StringWithAggregatesFilter<"User"> | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"User"> | Date | string
+  diaryPinHash?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
 }
 
 export type UserCreateInput = {
@@ -272,6 +284,7 @@ export type UserCreateInput = {
   email: string
   password: string
   createdAt?: Date | string
+  diaryPinHash?: string | null
   notes?: Prisma.NoteCreateNestedManyWithoutUserInput
   diaryEntries?: Prisma.DiaryEntryCreateNestedManyWithoutUserInput
 }
@@ -282,6 +295,7 @@ export type UserUncheckedCreateInput = {
   email: string
   password: string
   createdAt?: Date | string
+  diaryPinHash?: string | null
   notes?: Prisma.NoteUncheckedCreateNestedManyWithoutUserInput
   diaryEntries?: Prisma.DiaryEntryUncheckedCreateNestedManyWithoutUserInput
 }
@@ -291,6 +305,7 @@ export type UserUpdateInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  diaryPinHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NoteUpdateManyWithoutUserNestedInput
   diaryEntries?: Prisma.DiaryEntryUpdateManyWithoutUserNestedInput
 }
@@ -301,6 +316,7 @@ export type UserUncheckedUpdateInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  diaryPinHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NoteUncheckedUpdateManyWithoutUserNestedInput
   diaryEntries?: Prisma.DiaryEntryUncheckedUpdateManyWithoutUserNestedInput
 }
@@ -311,6 +327,7 @@ export type UserCreateManyInput = {
   email: string
   password: string
   createdAt?: Date | string
+  diaryPinHash?: string | null
 }
 
 export type UserUpdateManyMutationInput = {
@@ -318,6 +335,7 @@ export type UserUpdateManyMutationInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  diaryPinHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type UserUncheckedUpdateManyInput = {
@@ -326,6 +344,7 @@ export type UserUncheckedUpdateManyInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  diaryPinHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type UserCountOrderByAggregateInput = {
@@ -334,6 +353,7 @@ export type UserCountOrderByAggregateInput = {
   email?: Prisma.SortOrder
   password?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  diaryPinHash?: Prisma.SortOrder
 }
 
 export type UserAvgOrderByAggregateInput = {
@@ -346,6 +366,7 @@ export type UserMaxOrderByAggregateInput = {
   email?: Prisma.SortOrder
   password?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  diaryPinHash?: Prisma.SortOrder
 }
 
 export type UserMinOrderByAggregateInput = {
@@ -354,6 +375,7 @@ export type UserMinOrderByAggregateInput = {
   email?: Prisma.SortOrder
   password?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  diaryPinHash?: Prisma.SortOrder
 }
 
 export type UserSumOrderByAggregateInput = {
@@ -371,6 +393,10 @@ export type StringFieldUpdateOperationsInput = {
 
 export type DateTimeFieldUpdateOperationsInput = {
   set?: Date | string
+}
+
+export type NullableStringFieldUpdateOperationsInput = {
+  set?: string | null
 }
 
 export type IntFieldUpdateOperationsInput = {
@@ -414,6 +440,7 @@ export type UserCreateWithoutNotesInput = {
   email: string
   password: string
   createdAt?: Date | string
+  diaryPinHash?: string | null
   diaryEntries?: Prisma.DiaryEntryCreateNestedManyWithoutUserInput
 }
 
@@ -423,6 +450,7 @@ export type UserUncheckedCreateWithoutNotesInput = {
   email: string
   password: string
   createdAt?: Date | string
+  diaryPinHash?: string | null
   diaryEntries?: Prisma.DiaryEntryUncheckedCreateNestedManyWithoutUserInput
 }
 
@@ -447,6 +475,7 @@ export type UserUpdateWithoutNotesInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  diaryPinHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   diaryEntries?: Prisma.DiaryEntryUpdateManyWithoutUserNestedInput
 }
 
@@ -456,6 +485,7 @@ export type UserUncheckedUpdateWithoutNotesInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  diaryPinHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   diaryEntries?: Prisma.DiaryEntryUncheckedUpdateManyWithoutUserNestedInput
 }
 
@@ -464,6 +494,7 @@ export type UserCreateWithoutDiaryEntriesInput = {
   email: string
   password: string
   createdAt?: Date | string
+  diaryPinHash?: string | null
   notes?: Prisma.NoteCreateNestedManyWithoutUserInput
 }
 
@@ -473,6 +504,7 @@ export type UserUncheckedCreateWithoutDiaryEntriesInput = {
   email: string
   password: string
   createdAt?: Date | string
+  diaryPinHash?: string | null
   notes?: Prisma.NoteUncheckedCreateNestedManyWithoutUserInput
 }
 
@@ -497,6 +529,7 @@ export type UserUpdateWithoutDiaryEntriesInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  diaryPinHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NoteUpdateManyWithoutUserNestedInput
 }
 
@@ -506,6 +539,7 @@ export type UserUncheckedUpdateWithoutDiaryEntriesInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  diaryPinHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NoteUncheckedUpdateManyWithoutUserNestedInput
 }
 
@@ -555,6 +589,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   email?: boolean
   password?: boolean
   createdAt?: boolean
+  diaryPinHash?: boolean
   notes?: boolean | Prisma.User$notesArgs<ExtArgs>
   diaryEntries?: boolean | Prisma.User$diaryEntriesArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
@@ -566,6 +601,7 @@ export type UserSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   email?: boolean
   password?: boolean
   createdAt?: boolean
+  diaryPinHash?: boolean
 }, ExtArgs["result"]["user"]>
 
 export type UserSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -574,6 +610,7 @@ export type UserSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   email?: boolean
   password?: boolean
   createdAt?: boolean
+  diaryPinHash?: boolean
 }, ExtArgs["result"]["user"]>
 
 export type UserSelectScalar = {
@@ -582,9 +619,10 @@ export type UserSelectScalar = {
   email?: boolean
   password?: boolean
   createdAt?: boolean
+  diaryPinHash?: boolean
 }
 
-export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "email" | "password" | "createdAt", ExtArgs["result"]["user"]>
+export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "email" | "password" | "createdAt" | "diaryPinHash", ExtArgs["result"]["user"]>
 export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   notes?: boolean | Prisma.User$notesArgs<ExtArgs>
   diaryEntries?: boolean | Prisma.User$diaryEntriesArgs<ExtArgs>
@@ -605,6 +643,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     email: string
     password: string
     createdAt: Date
+    diaryPinHash: string | null
   }, ExtArgs["result"]["user"]>
   composites: {}
 }
@@ -1035,6 +1074,7 @@ export interface UserFieldRefs {
   readonly email: Prisma.FieldRef<"User", 'String'>
   readonly password: Prisma.FieldRef<"User", 'String'>
   readonly createdAt: Prisma.FieldRef<"User", 'DateTime'>
+  readonly diaryPinHash: Prisma.FieldRef<"User", 'String'>
 }
     
 

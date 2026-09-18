@@ -15,6 +15,7 @@ model User {
   createdAt DateTime @default(now())
   notes   Note[]
   diaryEntries DiaryEntry[]
+  diaryPinHash  String?
 }
 
 model Note {
