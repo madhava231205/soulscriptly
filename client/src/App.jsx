@@ -5,6 +5,7 @@ import NoteModal from './components/NoteModal'
 import ReadNoteModal from './components/ReadNoteModal'
 import NotesPage from './components/NotesPage'
 import NoteCard from './components/NoteCard'
+import DiaryPage from './components/DiaryPage'
 
 function App() {
   // -----------------------------
@@ -688,7 +689,11 @@ const favouriteNoteObjects = notes.filter(
   </>
 )}
 
-        {activePage !== 'notes' && activePage !== 'favourites' && (
+{activePage === 'diary' && (
+  <DiaryPage />
+)}
+
+        {activePage !== 'notes' && activePage !== 'favourites' && activePage !== 'diary' && (
           <div className="coming-soon">
             <div className="coming-soon-icon">
               ✦
