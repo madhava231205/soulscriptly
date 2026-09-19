@@ -11,9 +11,12 @@ const [saving, setSaving] = useState(false)
 const [selectedEntry, setSelectedEntry] = useState(null)
 const [editingEntry, setEditingEntry] = useState(null)
 const [isDiaryUnlocked, setIsDiaryUnlocked] = useState(false)
-const [diaryPin, setDiaryPin] = useState('')
+const [hasDiaryPin, setHasDiaryPin] = useState(null)
 const [enteredPin, setEnteredPin] = useState('')
 const [pinError, setPinError] = useState('')
+const [newPin, setNewPin] = useState('')
+const [confirmPin, setConfirmPin] = useState('')
+const [pinSaving, setPinSaving] = useState(false)
   async function getDiaryEntries() {
     const token = localStorage.getItem('token')
 
@@ -254,29 +257,155 @@ async function unlockDiary(event) {
   }
 }
 
-  useEffect(() => {
-    getDiaryEntries()
-  }, [])
+async function checkDiaryPinStatus() {
+  const token = localStorage.getItem('token')
 
-  if (!isDiaryUnlocked) {
+  if (!token) {
+    setError('Please login first.')
+    return
+  }
+
+  try {
+    const response = await fetch(
+      'http://localhost:5000/api/diary/pin-status',
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    )
+
+    const data = await response.json()
+
+    if (response.ok) {
+      setHasDiaryPin(data.hasPin)
+    } else {
+      setError(data.message)
+    }
+  } catch (error) {
+    console.error('Check diary PIN status error:', error)
+    setError('Unable to check Diary PIN status.')
+  }
+}
+
+async function createDiaryPin(event) {
+  event.preventDefault()
+
+  const token = localStorage.getItem('token')
+
+  if (!token) {
+    setPinError('Please login first.')
+    return
+  }
+
+  if (!/^\d{4}$/.test(newPin)) {
+    setPinError('PIN must be exactly 4 digits.')
+    return
+  }
+
+  if (newPin !== confirmPin) {
+    setPinError('PINs do not match.')
+    return
+  }
+
+  setPinSaving(true)
+  setPinError('')
+
+  try {
+    const response = await fetch(
+      'http://localhost:5000/api/diary/pin',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          pin: newPin,
+        }),
+      }
+    )
+
+    const data = await response.json()
+
+    if (response.ok) {
+      setHasDiaryPin(true)
+      setIsDiaryUnlocked(true)
+      setNewPin('')
+      setConfirmPin('')
+      setPinError('')
+    } else {
+      setPinError(data.message)
+    }
+  } catch (error) {
+    console.error('Create diary PIN error:', error)
+    setPinError('Unable to create Diary PIN.')
+  } finally {
+    setPinSaving(false)
+  }
+}
+ 
+useEffect(() => {
+  checkDiaryPinStatus()
+  getDiaryEntries()
+}, [])
+
+if (hasDiaryPin === false) {
+  return (
+    <div className="diary-lock-screen">
+      <div className="diary-lock-card">
+        <h1>🔐 Create Diary PIN</h1>
+
+        <p>
+          Create a 4-digit PIN to protect your private diary.
+        </p>
+
+        <form onSubmit={createDiaryPin}>
+          <input
+            type="password"
+            inputMode="numeric"
+            maxLength="4"
+            placeholder="Create PIN"
+            value={newPin}
+            onChange={(event) => setNewPin(event.target.value)}
+          />
+
+          <input
+            type="password"
+            inputMode="numeric"
+            maxLength="4"
+            placeholder="Confirm PIN"
+            value={confirmPin}
+            onChange={(event) => setConfirmPin(event.target.value)}
+          />
+
+          <button type="submit" disabled={pinSaving}>
+            {pinSaving ? 'Creating...' : 'Create PIN'}
+          </button>
+        </form>
+
+        {pinError && <p>{pinError}</p>}
+      </div>
+    </div>
+  )
+}
+
+if (!isDiaryUnlocked) {
   return (
     <div className="diary-lock-screen">
       <div className="diary-lock-card">
         <h1>🔐 Diary Locked</h1>
 
-        <p>
-          Enter your diary PIN to continue.
-        </p>
+        <p>Enter your Diary PIN to continue.</p>
 
         <form onSubmit={unlockDiary}>
           <input
             type="password"
             inputMode="numeric"
+            maxLength="4"
             placeholder="Enter PIN"
             value={enteredPin}
-            onChange={(event) =>
-              setEnteredPin(event.target.value)
-            }
+            onChange={(event) => setEnteredPin(event.target.value)}
           />
 
           <button type="submit">
@@ -284,14 +413,13 @@ async function unlockDiary(event) {
           </button>
         </form>
 
-        {pinError && (
-          <p>{pinError}</p>
-        )}
+        {pinError && <p>{pinError}</p>}
       </div>
     </div>
   )
 }
-  return (
+
+return (
     <div className="diary-page">
       <div className="diary-header">
         <h1>My Diary</h1>
