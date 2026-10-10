@@ -56,3 +56,8 @@ export type Note = Prisma.NoteModel
  * 
  */
 export type DiaryEntry = Prisma.DiaryEntryModel
+/**
+ * Model HandwritingSample
+ * 
+ */
+export type HandwritingSample = Prisma.HandwritingSampleModel

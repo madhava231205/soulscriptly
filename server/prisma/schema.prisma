@@ -16,6 +16,7 @@ model User {
   notes   Note[]
   diaryEntries DiaryEntry[]
   diaryPinHash  String?
+  handwritingSamples HandwritingSample[]
 }
 
 model Note {
@@ -39,4 +40,15 @@ model DiaryEntry {
 
   userId    Int
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+model HandwritingSample {
+  id        Int      @id @default(autoincrement())
+  character String
+  imageData String   @db.Text
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, character])
 }

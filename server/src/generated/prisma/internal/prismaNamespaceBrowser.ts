@@ -53,7 +53,8 @@ export const AnyNull = runtime.AnyNull
 export const ModelName = {
   User: 'User',
   Note: 'Note',
-  DiaryEntry: 'DiaryEntry'
+  DiaryEntry: 'DiaryEntry',
+  HandwritingSample: 'HandwritingSample'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -107,6 +108,18 @@ export const DiaryEntryScalarFieldEnum = {
 } as const
 
 export type DiaryEntryScalarFieldEnum = (typeof DiaryEntryScalarFieldEnum)[keyof typeof DiaryEntryScalarFieldEnum]
+
+
+export const HandwritingSampleScalarFieldEnum = {
+  id: 'id',
+  character: 'character',
+  imageData: 'imageData',
+  userId: 'userId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type HandwritingSampleScalarFieldEnum = (typeof HandwritingSampleScalarFieldEnum)[keyof typeof HandwritingSampleScalarFieldEnum]
 
 
 export const SortOrder = {

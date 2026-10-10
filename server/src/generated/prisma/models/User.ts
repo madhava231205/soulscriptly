@@ -226,6 +226,7 @@ export type UserWhereInput = {
   diaryPinHash?: Prisma.StringNullableFilter<"User"> | string | null
   notes?: Prisma.NoteListRelationFilter
   diaryEntries?: Prisma.DiaryEntryListRelationFilter
+  handwritingSamples?: Prisma.HandwritingSampleListRelationFilter
 }
 
 export type UserOrderByWithRelationInput = {
@@ -237,6 +238,7 @@ export type UserOrderByWithRelationInput = {
   diaryPinHash?: Prisma.SortOrderInput | Prisma.SortOrder
   notes?: Prisma.NoteOrderByRelationAggregateInput
   diaryEntries?: Prisma.DiaryEntryOrderByRelationAggregateInput
+  handwritingSamples?: Prisma.HandwritingSampleOrderByRelationAggregateInput
 }
 
 export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -251,6 +253,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   diaryPinHash?: Prisma.StringNullableFilter<"User"> | string | null
   notes?: Prisma.NoteListRelationFilter
   diaryEntries?: Prisma.DiaryEntryListRelationFilter
+  handwritingSamples?: Prisma.HandwritingSampleListRelationFilter
 }, "id" | "email">
 
 export type UserOrderByWithAggregationInput = {
@@ -287,6 +290,7 @@ export type UserCreateInput = {
   diaryPinHash?: string | null
   notes?: Prisma.NoteCreateNestedManyWithoutUserInput
   diaryEntries?: Prisma.DiaryEntryCreateNestedManyWithoutUserInput
+  handwritingSamples?: Prisma.HandwritingSampleCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateInput = {
@@ -298,6 +302,7 @@ export type UserUncheckedCreateInput = {
   diaryPinHash?: string | null
   notes?: Prisma.NoteUncheckedCreateNestedManyWithoutUserInput
   diaryEntries?: Prisma.DiaryEntryUncheckedCreateNestedManyWithoutUserInput
+  handwritingSamples?: Prisma.HandwritingSampleUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserUpdateInput = {
@@ -308,6 +313,7 @@ export type UserUpdateInput = {
   diaryPinHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NoteUpdateManyWithoutUserNestedInput
   diaryEntries?: Prisma.DiaryEntryUpdateManyWithoutUserNestedInput
+  handwritingSamples?: Prisma.HandwritingSampleUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateInput = {
@@ -319,6 +325,7 @@ export type UserUncheckedUpdateInput = {
   diaryPinHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NoteUncheckedUpdateManyWithoutUserNestedInput
   diaryEntries?: Prisma.DiaryEntryUncheckedUpdateManyWithoutUserNestedInput
+  handwritingSamples?: Prisma.HandwritingSampleUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateManyInput = {
@@ -435,6 +442,20 @@ export type UserUpdateOneRequiredWithoutDiaryEntriesNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutDiaryEntriesInput, Prisma.UserUpdateWithoutDiaryEntriesInput>, Prisma.UserUncheckedUpdateWithoutDiaryEntriesInput>
 }
 
+export type UserCreateNestedOneWithoutHandwritingSamplesInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutHandwritingSamplesInput, Prisma.UserUncheckedCreateWithoutHandwritingSamplesInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutHandwritingSamplesInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutHandwritingSamplesNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutHandwritingSamplesInput, Prisma.UserUncheckedCreateWithoutHandwritingSamplesInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutHandwritingSamplesInput
+  upsert?: Prisma.UserUpsertWithoutHandwritingSamplesInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutHandwritingSamplesInput, Prisma.UserUpdateWithoutHandwritingSamplesInput>, Prisma.UserUncheckedUpdateWithoutHandwritingSamplesInput>
+}
+
 export type UserCreateWithoutNotesInput = {
   name: string
   email: string
@@ -442,6 +463,7 @@ export type UserCreateWithoutNotesInput = {
   createdAt?: Date | string
   diaryPinHash?: string | null
   diaryEntries?: Prisma.DiaryEntryCreateNestedManyWithoutUserInput
+  handwritingSamples?: Prisma.HandwritingSampleCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutNotesInput = {
@@ -452,6 +474,7 @@ export type UserUncheckedCreateWithoutNotesInput = {
   createdAt?: Date | string
   diaryPinHash?: string | null
   diaryEntries?: Prisma.DiaryEntryUncheckedCreateNestedManyWithoutUserInput
+  handwritingSamples?: Prisma.HandwritingSampleUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutNotesInput = {
@@ -477,6 +500,7 @@ export type UserUpdateWithoutNotesInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   diaryPinHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   diaryEntries?: Prisma.DiaryEntryUpdateManyWithoutUserNestedInput
+  handwritingSamples?: Prisma.HandwritingSampleUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutNotesInput = {
@@ -487,6 +511,7 @@ export type UserUncheckedUpdateWithoutNotesInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   diaryPinHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   diaryEntries?: Prisma.DiaryEntryUncheckedUpdateManyWithoutUserNestedInput
+  handwritingSamples?: Prisma.HandwritingSampleUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutDiaryEntriesInput = {
@@ -496,6 +521,7 @@ export type UserCreateWithoutDiaryEntriesInput = {
   createdAt?: Date | string
   diaryPinHash?: string | null
   notes?: Prisma.NoteCreateNestedManyWithoutUserInput
+  handwritingSamples?: Prisma.HandwritingSampleCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutDiaryEntriesInput = {
@@ -506,6 +532,7 @@ export type UserUncheckedCreateWithoutDiaryEntriesInput = {
   createdAt?: Date | string
   diaryPinHash?: string | null
   notes?: Prisma.NoteUncheckedCreateNestedManyWithoutUserInput
+  handwritingSamples?: Prisma.HandwritingSampleUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutDiaryEntriesInput = {
@@ -531,6 +558,7 @@ export type UserUpdateWithoutDiaryEntriesInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   diaryPinHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NoteUpdateManyWithoutUserNestedInput
+  handwritingSamples?: Prisma.HandwritingSampleUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutDiaryEntriesInput = {
@@ -541,6 +569,65 @@ export type UserUncheckedUpdateWithoutDiaryEntriesInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   diaryPinHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NoteUncheckedUpdateManyWithoutUserNestedInput
+  handwritingSamples?: Prisma.HandwritingSampleUncheckedUpdateManyWithoutUserNestedInput
+}
+
+export type UserCreateWithoutHandwritingSamplesInput = {
+  name: string
+  email: string
+  password: string
+  createdAt?: Date | string
+  diaryPinHash?: string | null
+  notes?: Prisma.NoteCreateNestedManyWithoutUserInput
+  diaryEntries?: Prisma.DiaryEntryCreateNestedManyWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutHandwritingSamplesInput = {
+  id?: number
+  name: string
+  email: string
+  password: string
+  createdAt?: Date | string
+  diaryPinHash?: string | null
+  notes?: Prisma.NoteUncheckedCreateNestedManyWithoutUserInput
+  diaryEntries?: Prisma.DiaryEntryUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutHandwritingSamplesInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutHandwritingSamplesInput, Prisma.UserUncheckedCreateWithoutHandwritingSamplesInput>
+}
+
+export type UserUpsertWithoutHandwritingSamplesInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutHandwritingSamplesInput, Prisma.UserUncheckedUpdateWithoutHandwritingSamplesInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutHandwritingSamplesInput, Prisma.UserUncheckedCreateWithoutHandwritingSamplesInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutHandwritingSamplesInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutHandwritingSamplesInput, Prisma.UserUncheckedUpdateWithoutHandwritingSamplesInput>
+}
+
+export type UserUpdateWithoutHandwritingSamplesInput = {
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  diaryPinHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notes?: Prisma.NoteUpdateManyWithoutUserNestedInput
+  diaryEntries?: Prisma.DiaryEntryUpdateManyWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutHandwritingSamplesInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  diaryPinHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notes?: Prisma.NoteUncheckedUpdateManyWithoutUserNestedInput
+  diaryEntries?: Prisma.DiaryEntryUncheckedUpdateManyWithoutUserNestedInput
 }
 
 
@@ -551,11 +638,13 @@ export type UserUncheckedUpdateWithoutDiaryEntriesInput = {
 export type UserCountOutputType = {
   notes: number
   diaryEntries: number
+  handwritingSamples: number
 }
 
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   notes?: boolean | UserCountOutputTypeCountNotesArgs
   diaryEntries?: boolean | UserCountOutputTypeCountDiaryEntriesArgs
+  handwritingSamples?: boolean | UserCountOutputTypeCountHandwritingSamplesArgs
 }
 
 /**
@@ -582,6 +671,13 @@ export type UserCountOutputTypeCountDiaryEntriesArgs<ExtArgs extends runtime.Typ
   where?: Prisma.DiaryEntryWhereInput
 }
 
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountHandwritingSamplesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.HandwritingSampleWhereInput
+}
+
 
 export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -592,6 +688,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   diaryPinHash?: boolean
   notes?: boolean | Prisma.User$notesArgs<ExtArgs>
   diaryEntries?: boolean | Prisma.User$diaryEntriesArgs<ExtArgs>
+  handwritingSamples?: boolean | Prisma.User$handwritingSamplesArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
@@ -626,6 +723,7 @@ export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = run
 export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   notes?: boolean | Prisma.User$notesArgs<ExtArgs>
   diaryEntries?: boolean | Prisma.User$diaryEntriesArgs<ExtArgs>
+  handwritingSamples?: boolean | Prisma.User$handwritingSamplesArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type UserIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -636,6 +734,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   objects: {
     notes: Prisma.$NotePayload<ExtArgs>[]
     diaryEntries: Prisma.$DiaryEntryPayload<ExtArgs>[]
+    handwritingSamples: Prisma.$HandwritingSamplePayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: number
@@ -1040,6 +1139,7 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   readonly [Symbol.toStringTag]: "PrismaPromise"
   notes<T extends Prisma.User$notesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$notesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$NotePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   diaryEntries<T extends Prisma.User$diaryEntriesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$diaryEntriesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DiaryEntryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  handwritingSamples<T extends Prisma.User$handwritingSamplesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$handwritingSamplesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$HandwritingSamplePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1513,6 +1613,30 @@ export type User$diaryEntriesArgs<ExtArgs extends runtime.Types.Extensions.Inter
   take?: number
   skip?: number
   distinct?: Prisma.DiaryEntryScalarFieldEnum | Prisma.DiaryEntryScalarFieldEnum[]
+}
+
+/**
+ * User.handwritingSamples
+ */
+export type User$handwritingSamplesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the HandwritingSample
+   */
+  select?: Prisma.HandwritingSampleSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the HandwritingSample
+   */
+  omit?: Prisma.HandwritingSampleOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.HandwritingSampleInclude<ExtArgs> | null
+  where?: Prisma.HandwritingSampleWhereInput
+  orderBy?: Prisma.HandwritingSampleOrderByWithRelationInput | Prisma.HandwritingSampleOrderByWithRelationInput[]
+  cursor?: Prisma.HandwritingSampleWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.HandwritingSampleScalarFieldEnum | Prisma.HandwritingSampleScalarFieldEnum[]
 }
 
 /**

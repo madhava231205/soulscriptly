@@ -399,7 +399,8 @@ type FieldRefInputType<Model, FieldType> = Model extends never ? never : FieldRe
 export const ModelName = {
   User: 'User',
   Note: 'Note',
-  DiaryEntry: 'DiaryEntry'
+  DiaryEntry: 'DiaryEntry',
+  HandwritingSample: 'HandwritingSample'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -415,7 +416,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "note" | "diaryEntry"
+    modelProps: "user" | "note" | "diaryEntry" | "handwritingSample"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -641,6 +642,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    HandwritingSample: {
+      payload: Prisma.$HandwritingSamplePayload<ExtArgs>
+      fields: Prisma.HandwritingSampleFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.HandwritingSampleFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HandwritingSamplePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.HandwritingSampleFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HandwritingSamplePayload>
+        }
+        findFirst: {
+          args: Prisma.HandwritingSampleFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HandwritingSamplePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.HandwritingSampleFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HandwritingSamplePayload>
+        }
+        findMany: {
+          args: Prisma.HandwritingSampleFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HandwritingSamplePayload>[]
+        }
+        create: {
+          args: Prisma.HandwritingSampleCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HandwritingSamplePayload>
+        }
+        createMany: {
+          args: Prisma.HandwritingSampleCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.HandwritingSampleCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HandwritingSamplePayload>[]
+        }
+        delete: {
+          args: Prisma.HandwritingSampleDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HandwritingSamplePayload>
+        }
+        update: {
+          args: Prisma.HandwritingSampleUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HandwritingSamplePayload>
+        }
+        deleteMany: {
+          args: Prisma.HandwritingSampleDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.HandwritingSampleUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.HandwritingSampleUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HandwritingSamplePayload>[]
+        }
+        upsert: {
+          args: Prisma.HandwritingSampleUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HandwritingSamplePayload>
+        }
+        aggregate: {
+          args: Prisma.HandwritingSampleAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateHandwritingSample>
+        }
+        groupBy: {
+          args: Prisma.HandwritingSampleGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.HandwritingSampleGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.HandwritingSampleCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.HandwritingSampleCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -715,6 +790,18 @@ export const DiaryEntryScalarFieldEnum = {
 } as const
 
 export type DiaryEntryScalarFieldEnum = (typeof DiaryEntryScalarFieldEnum)[keyof typeof DiaryEntryScalarFieldEnum]
+
+
+export const HandwritingSampleScalarFieldEnum = {
+  id: 'id',
+  character: 'character',
+  imageData: 'imageData',
+  userId: 'userId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type HandwritingSampleScalarFieldEnum = (typeof HandwritingSampleScalarFieldEnum)[keyof typeof HandwritingSampleScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -963,6 +1050,7 @@ export type GlobalOmitConfig = {
   user?: Prisma.UserOmit
   note?: Prisma.NoteOmit
   diaryEntry?: Prisma.DiaryEntryOmit
+  handwritingSample?: Prisma.HandwritingSampleOmit
 }
 
 /* Types for Logging */

@@ -66,6 +66,38 @@ router.get('/', authenticateToken, async (req, res) => {
   }
 })
 
+router.get('/pin-status', authenticateToken, async (req, res) => {
+  try {
+    const user = await prisma.user.findUnique({
+      where: {
+        id: req.user.userId,
+      },
+      select: {
+        diaryPinHash: true,
+      },
+    })
+
+    if (!user) {
+      return res.status(404).json({
+        status: 'ERROR',
+        message: 'User not found',
+      })
+    }
+
+    res.json({
+      status: 'OK',
+      hasPin: Boolean(user.diaryPinHash),
+    })
+  } catch (error) {
+    console.error('Get diary PIN status error:', error)
+
+    res.status(500).json({
+      status: 'ERROR',
+      message: 'Something went wrong',
+    })
+  }
+})
+
 
 router.get('/:id', authenticateToken, async (req, res) => {
   try {
@@ -285,6 +317,7 @@ router.post('/unlock', authenticateToken, async (req, res) => {
     })
   }
 })
+
 
 
 export default router;
