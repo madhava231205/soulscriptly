@@ -6,6 +6,8 @@ import ReadNoteModal from './components/ReadNoteModal'
 import NotesPage from './components/NotesPage'
 import NoteCard from './components/NoteCard'
 import DiaryPage from './components/DiaryPage'
+import HandwritingCanvas from './components/HandwritingCanvas'
+import HandwritingSetup from './components/HandwritingSetup'
 
 function App() {
   // -----------------------------
@@ -23,6 +25,7 @@ function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(
     Boolean(localStorage.getItem('token'))
   )
+  const [handwritingSamples, setHandwritingSamples] = useState([])
 
   // -----------------------------
   // Notes state
@@ -598,6 +601,12 @@ const favouriteNoteObjects = notes.filter(
     )
   }
 
+function handleSaveSample(sample) {
+  setHandwritingSamples((currentSamples) => [
+    ...currentSamples,
+    sample,
+  ])
+}
   // -----------------------------
   // Main application
   // -----------------------------
@@ -755,6 +764,23 @@ const favouriteNoteObjects = notes.filter(
   />
 )}
 
+<HandwritingSetup />
+
+<div>
+  <h3>Saved Samples: {handwritingSamples.length}</h3>
+
+  {handwritingSamples.map((sample, index) => (
+    <div key={index}>
+      <p>Character: {sample.character}</p>
+
+      <img
+        src={sample.imageData}
+        alt={`Handwriting sample for ${sample.character}`}
+        width="150"
+      />
+    </div>
+  ))}
+</div>
     </div>
   )
 
