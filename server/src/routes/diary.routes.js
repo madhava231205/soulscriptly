@@ -97,6 +97,100 @@ router.get('/pin-status', authenticateToken, async (req, res) => {
     })
   }
 })
+router.post(
+  '/handwriting',
+  authenticateToken,
+  async (req, res) => {
+    try {
+      const { character, imageData } = req.body || {}
+
+      if (!character || !imageData) {
+        return res.status(400).json({
+          status: 'ERROR',
+          message: 'Character and image data are required',
+        })
+      }
+
+      if (!/^[A-Z]$/.test(character)) {
+        return res.status(400).json({
+          status: 'ERROR',
+          message: 'Character must be a single uppercase letter',
+        })
+      }
+
+      if (
+        typeof imageData !== 'string' ||
+        !imageData.startsWith('data:image/png;base64,')
+      ) {
+        return res.status(400).json({
+          status: 'ERROR',
+          message: 'A valid PNG image is required',
+        })
+      }
+
+      const sample = await prisma.handwritingSample.upsert({
+        where: {
+          userId_character: {
+            userId: req.user.userId,
+            character,
+          },
+        },
+        update: {
+          imageData,
+        },
+        create: {
+          character,
+          imageData,
+          userId: req.user.userId,
+        },
+      })
+
+      return res.status(201).json({
+        status: 'OK',
+        message: 'Handwriting sample saved successfully',
+        sample: {
+          id: sample.id,
+          character: sample.character,
+          createdAt: sample.createdAt,
+          updatedAt: sample.updatedAt,
+        },
+      })
+    } catch (error) {
+      console.error('Save handwriting sample error:', error)
+
+      return res.status(500).json({
+        status: 'ERROR',
+        message: 'Unable to save handwriting sample',
+      })
+    }
+  }
+)
+
+
+router.get('/handwriting', authenticateToken, async (req, res) => {
+  try {
+    const samples = await prisma.handwritingSample.findMany({
+      where: {
+        userId: req.user.userId,
+      },
+      orderBy: {
+        character: 'asc',
+      },
+    })
+
+    res.json({
+      status: 'OK',
+      samples,
+    })
+  } catch (error) {
+    console.error('Get handwriting samples error:', error)
+
+    res.status(500).json({
+      status: 'ERROR',
+      message: 'Unable to retrieve handwriting samples',
+    })
+  }
+})
 
 
 router.get('/:id', authenticateToken, async (req, res) => {
