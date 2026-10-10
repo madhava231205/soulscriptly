@@ -71,15 +71,35 @@ function HandwritingCanvas({ character, onSave, savedImage }) {
       canvas.height
     )
   }
-  function saveSample() {
+  
+function saveSample() {
   const canvas = canvasRef.current
-  const imageData = canvas.toDataURL('image/png')
+  const context = canvas.getContext('2d')
+
+  const imageData = context.getImageData(
+    0,
+    0,
+    canvas.width,
+    canvas.height
+  )
+
+  const hasDrawing = imageData.data.some(
+    (value, index) => index % 4 === 3 && value !== 0
+  )
+
+  if (!hasDrawing) {
+    alert('Please draw the character before saving.')
+    return
+  }
+
+  const image = canvas.toDataURL('image/png')
 
   onSave({
     character,
-    imageData,
+    imageData: image,
   })
 }
+
 
   return (
     <div>
