@@ -111,7 +111,7 @@ router.post(
         })
       }
 
-      if (!/^[A-Z]$/.test(character)) {
+      if (!/^[A-Za-z]$/.test(character)) {
         return res.status(400).json({
           status: 'ERROR',
           message: 'Character must be a single uppercase letter',
