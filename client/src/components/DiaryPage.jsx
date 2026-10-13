@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react'
+import HandwritingRenderer from './HandwritingRenderer'
 
 function DiaryPage() {
   const [diaryEntries, setDiaryEntries] = useState([])
+  const [handwritingSamples, setHandwritingSamples] = useState({})
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [showCreateForm, setShowCreateForm] = useState(false)
@@ -17,7 +19,43 @@ const [pinError, setPinError] = useState('')
 const [newPin, setNewPin] = useState('')
 const [confirmPin, setConfirmPin] = useState('')
 const [pinSaving, setPinSaving] = useState(false)
-  async function getDiaryEntries() {
+ 
+
+async function getHandwritingSamples() {
+  const token = localStorage.getItem('token')
+
+  if (!token) {
+    return
+  }
+
+  try {
+    const response = await fetch(
+      'http://localhost:5000/api/diary/handwriting',
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    )
+
+    const data = await response.json()
+
+    if (response.ok) {
+      
+      const datasamples = {}
+
+      for (const sample of data.samples) {
+        datasamples[sample.character] = sample.imageData
+      }
+
+      setHandwritingSamples(datasamples)
+    }
+  } catch (error) {
+    console.error('Get handwriting samples error:', error)
+  }
+}
+
+async function getDiaryEntries() {
     const token = localStorage.getItem('token')
 
     if (!token) {
@@ -344,10 +382,11 @@ async function createDiaryPin(event) {
     setPinSaving(false)
   }
 }
- 
+
 useEffect(() => {
   checkDiaryPinStatus()
   getDiaryEntries()
+  getHandwritingSamples()
 }, [])
 
 if (hasDiaryPin === false) {
@@ -538,9 +577,12 @@ return (
         ).toLocaleDateString()}
       </div>
 
-      <div className="read-content">
-        {selectedEntry.content}
-      </div>
+<div className="read-content">
+  <HandwritingRenderer
+    text={selectedEntry.content}
+    handwritingSamples={handwritingSamples}
+  />
+</div>
 
       <div className="read-footer">
         <button

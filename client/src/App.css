@@ -1014,28 +1014,23 @@ button {
   font-size: 12px;
 }
 
+
 .read-content {
-  min-height: 200px;
-
-  padding: 20px;
-
+  min-height: 0;
+  padding: 16px;
   border-radius: 12px;
-
   background: #faf9ff;
-
   color: #555a83;
-
   font-size: 15px;
   line-height: 1.9;
-
   white-space: pre-wrap;
-  flex: 1; 
+  flex: 1;
   overflow-y: auto;
-   min-height: 0; 
-   padding-right: 8px; 
-  
-   word-wrap: break-word;
+  word-wrap: break-word;
+  box-sizing: border-box;
+  width: 100%;
 }
+
 
 .read-footer {
   display: flex;

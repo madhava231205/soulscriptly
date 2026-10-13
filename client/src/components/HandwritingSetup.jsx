@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import HandwritingCanvas from './HandwritingCanvas'
 
-const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('')
+const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'.split('')
 
 function HandwritingSetup() {
   const [currentIndex, setCurrentIndex] = useState(0)
@@ -57,6 +57,7 @@ async function handleSaveSample(sample) {
 async function loadHandwritingSamples() {
   const token = localStorage.getItem('token')
 
+
   if (!token) {
     return
   }
@@ -85,6 +86,17 @@ async function loadHandwritingSamples() {
     })
 
     setHandwritingSamples(savedSamples)
+
+const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'.split('')
+
+const firstMissingIndex = characters.findIndex(
+  (character) => !savedSamples[character]
+)
+
+setCurrentIndex(
+  firstMissingIndex === -1 ? 0 : firstMissingIndex
+)
+
   } catch (error) {
     console.error('Load handwriting samples error:', error)
   }

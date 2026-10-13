@@ -1,0 +1,76 @@
+
+import { useEffect, useState } from 'react'
+import HandwritingRenderer from './HandwritingRenderer'
+
+function HandwritingTest() {
+  const [text, setText] = useState('Hello')
+  const [handwritingSamples, setHandwritingSamples] = useState({})
+
+  useEffect(() => {
+    async function loadSamples() {
+      const token = localStorage.getItem('token')
+
+      if (!token) {
+        return
+      }
+
+      try {
+        const response = await fetch(
+          'http://localhost:5000/api/diary/handwriting',
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        )
+
+        const data = await response.json()
+
+        if (response.ok) {
+          const samples = {}
+
+          data.samples.forEach((sample) => {
+            samples[sample.character] = sample.imageData
+          })
+
+          setHandwritingSamples(samples)
+        }
+      } catch (error) {
+        console.error('Failed to load handwriting samples:', error)
+      }
+    }
+
+    loadSamples()
+  }, [])
+
+  return (
+    <div style={{ padding: '24px' }}>
+      <h1>Handwriting Preview</h1>
+
+      <label htmlFor="handwriting-text">
+        Enter text to preview
+      </label>
+
+      <input
+        id="handwriting-text"
+        value={text}
+        onChange={(event) => setText(event.target.value)}
+        placeholder="Type something..."
+        style={{
+          display: 'block',
+          width: '100%',
+          maxWidth: '500px',
+          padding: '10px',
+          margin: '12px 0',
+        }}
+      />
+
+      <HandwritingRenderer
+        text={text}
+        handwritingSamples={handwritingSamples}
+      />
+    </div>
+  )
+}
+
+export default HandwritingTest

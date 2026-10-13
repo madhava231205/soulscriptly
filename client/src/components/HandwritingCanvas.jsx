@@ -72,6 +72,7 @@ function HandwritingCanvas({ character, onSave, savedImage }) {
     )
   }
   
+
 function saveSample() {
   const canvas = canvasRef.current
   const context = canvas.getContext('2d')
@@ -83,22 +84,73 @@ function saveSample() {
     canvas.height
   )
 
-  const hasDrawing = imageData.data.some(
-    (value, index) => index % 4 === 3 && value !== 0
-  )
+  let minX = canvas.width
+  let minY = canvas.height
+  let maxX = -1
+  let maxY = -1
 
-  if (!hasDrawing) {
+  for (let y = 0; y < canvas.height; y++) {
+    for (let x = 0; x < canvas.width; x++) {
+      const alpha = imageData.data[
+        (y * canvas.width + x) * 4 + 3
+      ]
+
+      if (alpha > 0) {
+        minX = Math.min(minX, x)
+        minY = Math.min(minY, y)
+        maxX = Math.max(maxX, x)
+        maxY = Math.max(maxY, y)
+      }
+    }
+  }
+
+  if (maxX === -1) {
     alert('Please draw the character before saving.')
     return
   }
 
-  const image = canvas.toDataURL('image/png')
+  const padding = 8
+
+  const cropX = Math.max(0, minX - padding)
+  const cropY = Math.max(0, minY - padding)
+  const cropRight = Math.min(
+    canvas.width,
+    maxX + padding + 1
+  )
+  const cropBottom = Math.min(
+    canvas.height,
+    maxY + padding + 1
+  )
+
+  const cropWidth = cropRight - cropX
+  const cropHeight = cropBottom - cropY
+
+  const croppedCanvas = document.createElement('canvas')
+  croppedCanvas.width = cropWidth
+  croppedCanvas.height = cropHeight
+
+  const croppedContext = croppedCanvas.getContext('2d')
+
+  croppedContext.drawImage(
+    canvas,
+    cropX,
+    cropY,
+    cropWidth,
+    cropHeight,
+    0,
+    0,
+    cropWidth,
+    cropHeight
+  )
+
+  const croppedImage = croppedCanvas.toDataURL('image/png')
 
   onSave({
     character,
-    imageData: image,
+    imageData: croppedImage,
   })
 }
+
 
 
   return (

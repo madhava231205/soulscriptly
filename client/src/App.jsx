@@ -8,7 +8,8 @@ import NoteCard from './components/NoteCard'
 import DiaryPage from './components/DiaryPage'
 import HandwritingCanvas from './components/HandwritingCanvas'
 import HandwritingSetup from './components/HandwritingSetup'
-
+import HandwritingRenderer from './components/HandwritingRenderer'
+import HandwritingTest from './components/HandwritingTest'
 function App() {
   // -----------------------------
   // Authentication state
@@ -765,22 +766,8 @@ function handleSaveSample(sample) {
 )}
 
 <HandwritingSetup />
+<HandwritingTest />
 
-<div>
-  <h3>Saved Samples: {handwritingSamples.length}</h3>
-
-  {handwritingSamples.map((sample, index) => (
-    <div key={index}>
-      <p>Character: {sample.character}</p>
-
-      <img
-        src={sample.imageData}
-        alt={`Handwriting sample for ${sample.character}`}
-        width="150"
-      />
-    </div>
-  ))}
-</div>
     </div>
   )
 
