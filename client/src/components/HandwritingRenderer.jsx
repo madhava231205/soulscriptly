@@ -49,6 +49,16 @@ const charactersPerLine = Math.max(
 
     context.clearRect(0, 0, canvas.width, canvas.height)
 
+    context.strokeStyle = 'rgba(130, 120, 175, 0.38)'
+context.lineWidth = 1
+
+for (let lineY = topMargin + 35; lineY < canvas.height; lineY += lineHeight) {
+  context.beginPath()
+  context.moveTo(0, lineY)
+  context.lineTo(canvas.width, lineY)
+  context.stroke()
+}
+
     let x = leftMargin
     let y = topMargin
 
@@ -207,7 +217,7 @@ context.drawImage(
       style={{
         maxWidth: '100%',
         height: 'auto',
-        border: '1px solid #ddd',
+       
         borderRadius: '8px',
         background: 'transparent',
       }}

@@ -1019,7 +1019,9 @@ button {
   min-height: 0;
   padding: 16px;
   border-radius: 12px;
-  background: #faf9ff;
+  background-color: #fffaf0;
+
+
   color: #555a83;
   font-size: 15px;
   line-height: 1.9;
