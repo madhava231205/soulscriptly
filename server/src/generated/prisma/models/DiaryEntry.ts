@@ -229,6 +229,7 @@ export type DiaryEntryWhereInput = {
   updatedAt?: Prisma.DateTimeFilter<"DiaryEntry"> | Date | string
   userId?: Prisma.IntFilter<"DiaryEntry"> | number
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
+  photos?: Prisma.DiaryPhotoListRelationFilter
 }
 
 export type DiaryEntryOrderByWithRelationInput = {
@@ -239,6 +240,7 @@ export type DiaryEntryOrderByWithRelationInput = {
   updatedAt?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   user?: Prisma.UserOrderByWithRelationInput
+  photos?: Prisma.DiaryPhotoOrderByRelationAggregateInput
 }
 
 export type DiaryEntryWhereUniqueInput = Prisma.AtLeast<{
@@ -252,6 +254,7 @@ export type DiaryEntryWhereUniqueInput = Prisma.AtLeast<{
   updatedAt?: Prisma.DateTimeFilter<"DiaryEntry"> | Date | string
   userId?: Prisma.IntFilter<"DiaryEntry"> | number
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
+  photos?: Prisma.DiaryPhotoListRelationFilter
 }, "id">
 
 export type DiaryEntryOrderByWithAggregationInput = {
@@ -286,6 +289,7 @@ export type DiaryEntryCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutDiaryEntriesInput
+  photos?: Prisma.DiaryPhotoCreateNestedManyWithoutDiaryEntryInput
 }
 
 export type DiaryEntryUncheckedCreateInput = {
@@ -295,6 +299,7 @@ export type DiaryEntryUncheckedCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   userId: number
+  photos?: Prisma.DiaryPhotoUncheckedCreateNestedManyWithoutDiaryEntryInput
 }
 
 export type DiaryEntryUpdateInput = {
@@ -303,6 +308,7 @@ export type DiaryEntryUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutDiaryEntriesNestedInput
+  photos?: Prisma.DiaryPhotoUpdateManyWithoutDiaryEntryNestedInput
 }
 
 export type DiaryEntryUncheckedUpdateInput = {
@@ -312,6 +318,7 @@ export type DiaryEntryUncheckedUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   userId?: Prisma.IntFieldUpdateOperationsInput | number
+  photos?: Prisma.DiaryPhotoUncheckedUpdateManyWithoutDiaryEntryNestedInput
 }
 
 export type DiaryEntryCreateManyInput = {
@@ -386,6 +393,11 @@ export type DiaryEntrySumOrderByAggregateInput = {
   userId?: Prisma.SortOrder
 }
 
+export type DiaryEntryScalarRelationFilter = {
+  is?: Prisma.DiaryEntryWhereInput
+  isNot?: Prisma.DiaryEntryWhereInput
+}
+
 export type DiaryEntryCreateNestedManyWithoutUserInput = {
   create?: Prisma.XOR<Prisma.DiaryEntryCreateWithoutUserInput, Prisma.DiaryEntryUncheckedCreateWithoutUserInput> | Prisma.DiaryEntryCreateWithoutUserInput[] | Prisma.DiaryEntryUncheckedCreateWithoutUserInput[]
   connectOrCreate?: Prisma.DiaryEntryCreateOrConnectWithoutUserInput | Prisma.DiaryEntryCreateOrConnectWithoutUserInput[]
@@ -428,11 +440,26 @@ export type DiaryEntryUncheckedUpdateManyWithoutUserNestedInput = {
   deleteMany?: Prisma.DiaryEntryScalarWhereInput | Prisma.DiaryEntryScalarWhereInput[]
 }
 
+export type DiaryEntryCreateNestedOneWithoutPhotosInput = {
+  create?: Prisma.XOR<Prisma.DiaryEntryCreateWithoutPhotosInput, Prisma.DiaryEntryUncheckedCreateWithoutPhotosInput>
+  connectOrCreate?: Prisma.DiaryEntryCreateOrConnectWithoutPhotosInput
+  connect?: Prisma.DiaryEntryWhereUniqueInput
+}
+
+export type DiaryEntryUpdateOneRequiredWithoutPhotosNestedInput = {
+  create?: Prisma.XOR<Prisma.DiaryEntryCreateWithoutPhotosInput, Prisma.DiaryEntryUncheckedCreateWithoutPhotosInput>
+  connectOrCreate?: Prisma.DiaryEntryCreateOrConnectWithoutPhotosInput
+  upsert?: Prisma.DiaryEntryUpsertWithoutPhotosInput
+  connect?: Prisma.DiaryEntryWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.DiaryEntryUpdateToOneWithWhereWithoutPhotosInput, Prisma.DiaryEntryUpdateWithoutPhotosInput>, Prisma.DiaryEntryUncheckedUpdateWithoutPhotosInput>
+}
+
 export type DiaryEntryCreateWithoutUserInput = {
   title: string
   content: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  photos?: Prisma.DiaryPhotoCreateNestedManyWithoutDiaryEntryInput
 }
 
 export type DiaryEntryUncheckedCreateWithoutUserInput = {
@@ -441,6 +468,7 @@ export type DiaryEntryUncheckedCreateWithoutUserInput = {
   content: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  photos?: Prisma.DiaryPhotoUncheckedCreateNestedManyWithoutDiaryEntryInput
 }
 
 export type DiaryEntryCreateOrConnectWithoutUserInput = {
@@ -481,6 +509,56 @@ export type DiaryEntryScalarWhereInput = {
   userId?: Prisma.IntFilter<"DiaryEntry"> | number
 }
 
+export type DiaryEntryCreateWithoutPhotosInput = {
+  title: string
+  content: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  user: Prisma.UserCreateNestedOneWithoutDiaryEntriesInput
+}
+
+export type DiaryEntryUncheckedCreateWithoutPhotosInput = {
+  id?: number
+  title: string
+  content: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  userId: number
+}
+
+export type DiaryEntryCreateOrConnectWithoutPhotosInput = {
+  where: Prisma.DiaryEntryWhereUniqueInput
+  create: Prisma.XOR<Prisma.DiaryEntryCreateWithoutPhotosInput, Prisma.DiaryEntryUncheckedCreateWithoutPhotosInput>
+}
+
+export type DiaryEntryUpsertWithoutPhotosInput = {
+  update: Prisma.XOR<Prisma.DiaryEntryUpdateWithoutPhotosInput, Prisma.DiaryEntryUncheckedUpdateWithoutPhotosInput>
+  create: Prisma.XOR<Prisma.DiaryEntryCreateWithoutPhotosInput, Prisma.DiaryEntryUncheckedCreateWithoutPhotosInput>
+  where?: Prisma.DiaryEntryWhereInput
+}
+
+export type DiaryEntryUpdateToOneWithWhereWithoutPhotosInput = {
+  where?: Prisma.DiaryEntryWhereInput
+  data: Prisma.XOR<Prisma.DiaryEntryUpdateWithoutPhotosInput, Prisma.DiaryEntryUncheckedUpdateWithoutPhotosInput>
+}
+
+export type DiaryEntryUpdateWithoutPhotosInput = {
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  content?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  user?: Prisma.UserUpdateOneRequiredWithoutDiaryEntriesNestedInput
+}
+
+export type DiaryEntryUncheckedUpdateWithoutPhotosInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  content?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  userId?: Prisma.IntFieldUpdateOperationsInput | number
+}
+
 export type DiaryEntryCreateManyUserInput = {
   id?: number
   title: string
@@ -494,6 +572,7 @@ export type DiaryEntryUpdateWithoutUserInput = {
   content?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  photos?: Prisma.DiaryPhotoUpdateManyWithoutDiaryEntryNestedInput
 }
 
 export type DiaryEntryUncheckedUpdateWithoutUserInput = {
@@ -502,6 +581,7 @@ export type DiaryEntryUncheckedUpdateWithoutUserInput = {
   content?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  photos?: Prisma.DiaryPhotoUncheckedUpdateManyWithoutDiaryEntryNestedInput
 }
 
 export type DiaryEntryUncheckedUpdateManyWithoutUserInput = {
@@ -513,6 +593,35 @@ export type DiaryEntryUncheckedUpdateManyWithoutUserInput = {
 }
 
 
+/**
+ * Count Type DiaryEntryCountOutputType
+ */
+
+export type DiaryEntryCountOutputType = {
+  photos: number
+}
+
+export type DiaryEntryCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  photos?: boolean | DiaryEntryCountOutputTypeCountPhotosArgs
+}
+
+/**
+ * DiaryEntryCountOutputType without action
+ */
+export type DiaryEntryCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the DiaryEntryCountOutputType
+   */
+  select?: Prisma.DiaryEntryCountOutputTypeSelect<ExtArgs> | null
+}
+
+/**
+ * DiaryEntryCountOutputType without action
+ */
+export type DiaryEntryCountOutputTypeCountPhotosArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.DiaryPhotoWhereInput
+}
+
 
 export type DiaryEntrySelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -522,6 +631,8 @@ export type DiaryEntrySelect<ExtArgs extends runtime.Types.Extensions.InternalAr
   updatedAt?: boolean
   userId?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  photos?: boolean | Prisma.DiaryEntry$photosArgs<ExtArgs>
+  _count?: boolean | Prisma.DiaryEntryCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["diaryEntry"]>
 
 export type DiaryEntrySelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -556,6 +667,8 @@ export type DiaryEntrySelectScalar = {
 export type DiaryEntryOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "content" | "createdAt" | "updatedAt" | "userId", ExtArgs["result"]["diaryEntry"]>
 export type DiaryEntryInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  photos?: boolean | Prisma.DiaryEntry$photosArgs<ExtArgs>
+  _count?: boolean | Prisma.DiaryEntryCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type DiaryEntryIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -568,6 +681,7 @@ export type $DiaryEntryPayload<ExtArgs extends runtime.Types.Extensions.Internal
   name: "DiaryEntry"
   objects: {
     user: Prisma.$UserPayload<ExtArgs>
+    photos: Prisma.$DiaryPhotoPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: number
@@ -971,6 +1085,7 @@ readonly fields: DiaryEntryFieldRefs;
 export interface Prisma__DiaryEntryClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   user<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  photos<T extends Prisma.DiaryEntry$photosArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.DiaryEntry$photosArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DiaryPhotoPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1404,6 +1519,30 @@ export type DiaryEntryDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.In
    * Limit how many DiaryEntries to delete.
    */
   limit?: number
+}
+
+/**
+ * DiaryEntry.photos
+ */
+export type DiaryEntry$photosArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the DiaryPhoto
+   */
+  select?: Prisma.DiaryPhotoSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the DiaryPhoto
+   */
+  omit?: Prisma.DiaryPhotoOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.DiaryPhotoInclude<ExtArgs> | null
+  where?: Prisma.DiaryPhotoWhereInput
+  orderBy?: Prisma.DiaryPhotoOrderByWithRelationInput | Prisma.DiaryPhotoOrderByWithRelationInput[]
+  cursor?: Prisma.DiaryPhotoWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.DiaryPhotoScalarFieldEnum | Prisma.DiaryPhotoScalarFieldEnum[]
 }
 
 /**

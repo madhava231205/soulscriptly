@@ -400,6 +400,7 @@ export const ModelName = {
   User: 'User',
   Note: 'Note',
   DiaryEntry: 'DiaryEntry',
+  DiaryPhoto: 'DiaryPhoto',
   HandwritingSample: 'HandwritingSample'
 } as const
 
@@ -416,7 +417,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "note" | "diaryEntry" | "handwritingSample"
+    modelProps: "user" | "note" | "diaryEntry" | "diaryPhoto" | "handwritingSample"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -642,6 +643,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    DiaryPhoto: {
+      payload: Prisma.$DiaryPhotoPayload<ExtArgs>
+      fields: Prisma.DiaryPhotoFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.DiaryPhotoFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DiaryPhotoPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.DiaryPhotoFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DiaryPhotoPayload>
+        }
+        findFirst: {
+          args: Prisma.DiaryPhotoFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DiaryPhotoPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.DiaryPhotoFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DiaryPhotoPayload>
+        }
+        findMany: {
+          args: Prisma.DiaryPhotoFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DiaryPhotoPayload>[]
+        }
+        create: {
+          args: Prisma.DiaryPhotoCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DiaryPhotoPayload>
+        }
+        createMany: {
+          args: Prisma.DiaryPhotoCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.DiaryPhotoCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DiaryPhotoPayload>[]
+        }
+        delete: {
+          args: Prisma.DiaryPhotoDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DiaryPhotoPayload>
+        }
+        update: {
+          args: Prisma.DiaryPhotoUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DiaryPhotoPayload>
+        }
+        deleteMany: {
+          args: Prisma.DiaryPhotoDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.DiaryPhotoUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.DiaryPhotoUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DiaryPhotoPayload>[]
+        }
+        upsert: {
+          args: Prisma.DiaryPhotoUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DiaryPhotoPayload>
+        }
+        aggregate: {
+          args: Prisma.DiaryPhotoAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateDiaryPhoto>
+        }
+        groupBy: {
+          args: Prisma.DiaryPhotoGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.DiaryPhotoGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.DiaryPhotoCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.DiaryPhotoCountAggregateOutputType> | number
+        }
+      }
+    }
     HandwritingSample: {
       payload: Prisma.$HandwritingSamplePayload<ExtArgs>
       fields: Prisma.HandwritingSampleFieldRefs
@@ -790,6 +865,16 @@ export const DiaryEntryScalarFieldEnum = {
 } as const
 
 export type DiaryEntryScalarFieldEnum = (typeof DiaryEntryScalarFieldEnum)[keyof typeof DiaryEntryScalarFieldEnum]
+
+
+export const DiaryPhotoScalarFieldEnum = {
+  id: 'id',
+  imageUrl: 'imageUrl',
+  createdAt: 'createdAt',
+  diaryEntryId: 'diaryEntryId'
+} as const
+
+export type DiaryPhotoScalarFieldEnum = (typeof DiaryPhotoScalarFieldEnum)[keyof typeof DiaryPhotoScalarFieldEnum]
 
 
 export const HandwritingSampleScalarFieldEnum = {
@@ -1050,6 +1135,7 @@ export type GlobalOmitConfig = {
   user?: Prisma.UserOmit
   note?: Prisma.NoteOmit
   diaryEntry?: Prisma.DiaryEntryOmit
+  diaryPhoto?: Prisma.DiaryPhotoOmit
   handwritingSample?: Prisma.HandwritingSampleOmit
 }
 

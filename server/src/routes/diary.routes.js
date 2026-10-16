@@ -6,6 +6,7 @@ import bcrypt from 'bcrypt'
 import multer from 'multer'
 import path from 'path'
 import fs from 'fs'
+import { fileTypeFromFile } from 'file-type'
 
 const router = express.Router()
 
@@ -222,6 +223,188 @@ router.get('/handwriting', authenticateToken, async (req, res) => {
     })
   }
 })
+
+
+router.get('/:id/photos', authenticateToken, async (req, res) => {
+  try {
+    const diaryId = Number(req.params.id)
+
+    if (!Number.isInteger(diaryId) || diaryId <= 0) {
+      return res.status(400).json({
+        status: 'ERROR',
+        message: 'Invalid diary entry ID',
+      })
+    }
+
+    const diaryEntry = await prisma.diaryEntry.findFirst({
+      where: {
+        id: diaryId,
+        userId: req.user.userId,
+      },
+    })
+
+    if (!diaryEntry) {
+      return res.status(404).json({
+        status: 'ERROR',
+        message: 'Diary entry not found',
+      })
+    }
+
+    const photos = await prisma.diaryPhoto.findMany({
+      where: {
+        diaryEntryId: diaryId,
+      },
+      orderBy: {
+        createdAt: 'asc',
+      },
+    })
+
+    return res.json({
+      status: 'OK',
+      photos,
+    })
+  } catch (error) {
+    console.error('Get diary photos error:', error)
+
+    return res.status(500).json({
+      status: 'ERROR',
+      message: 'Unable to retrieve diary photos',
+    })
+  }
+})
+
+
+
+router.get('/photos/:photoId/image', authenticateToken, async (req, res) => {
+  try {
+    const photoId = Number(req.params.photoId)
+
+    if (!Number.isInteger(photoId) || photoId <= 0) {
+      return res.status(400).json({
+        status: 'ERROR',
+        message: 'Invalid photo ID',
+      })
+    }
+
+    const photo = await prisma.diaryPhoto.findFirst({
+      where: {
+        id: photoId,
+        diaryEntry: {
+          userId: req.user.userId,
+        },
+      },
+    })
+
+    if (!photo) {
+      return res.status(404).json({
+        status: 'ERROR',
+        message: 'Photo not found',
+      })
+    }
+
+    const filename = path.basename(photo.imageUrl)
+    const imagePath = path.join(process.cwd(), 'src', 'uploads', filename)
+
+    if (!fs.existsSync(imagePath)) {
+      return res.status(404).json({
+        status: 'ERROR',
+        message: 'Image file not found',
+      })
+    }
+
+    return res.sendFile(imagePath)
+  } catch (error) {
+    console.error('Get private diary photo error:', error)
+
+    return res.status(500).json({
+      status: 'ERROR',
+      message: 'Unable to retrieve photo',
+    })
+  }
+})
+
+
+router.post(
+  '/:id/photos',
+  authenticateToken,
+  upload.single('photo'),
+  async (req, res) => {
+    let savedFilePath
+
+    try {
+      const diaryId = Number(req.params.id)
+
+      if (!Number.isInteger(diaryId) || diaryId <= 0) {
+        return res.status(400).json({
+          status: 'ERROR',
+          message: 'Invalid diary entry ID',
+        })
+      }
+
+      if (!req.file) {
+  return res.status(400).json({
+    status: 'ERROR',
+    message: 'Photo file is required',
+  })
+}
+
+savedFilePath = req.file.path
+
+const detectedType = await fileTypeFromFile(savedFilePath)
+const allowedTypes = ['image/jpeg', 'image/png', 'image/webp']
+
+if (!detectedType || !allowedTypes.includes(detectedType.mime)) {
+  fs.unlinkSync(savedFilePath)
+  savedFilePath = undefined
+
+  return res.status(400).json({
+    status: 'ERROR',
+    message: 'Only valid JPG, PNG, and WebP images are allowed',
+  })
+}
+
+      const diaryEntry = await prisma.diaryEntry.findFirst({
+        where: {
+          id: diaryId,
+          userId: req.user.userId,
+        },
+      })
+
+      if (!diaryEntry) {
+        fs.unlinkSync(savedFilePath)
+
+        return res.status(404).json({
+          status: 'ERROR',
+          message: 'Diary entry not found',
+        })
+      }
+
+      const photo = await prisma.diaryPhoto.create({
+        data: {
+          imageUrl: `/uploads/${req.file.filename}`,
+          diaryEntryId: diaryId,
+        },
+      })
+
+      return res.status(201).json({
+        status: 'OK',
+        message: 'Photo uploaded successfully',
+        photo,
+      })
+    } catch (error) {
+      if (savedFilePath && fs.existsSync(savedFilePath)) {
+        fs.unlinkSync(savedFilePath)
+      }
+
+      console.error('Upload diary photo error:', error)
+
+      return res.status(500).json({
+        status: 'ERROR',
+        message: 'Unable to upload photo',
+      })
+    }
+  }
+)
 
 
 router.get('/:id', authenticateToken, async (req, res) => {
@@ -443,6 +626,28 @@ router.post('/unlock', authenticateToken, async (req, res) => {
   }
 })
 
+router.use((err, req, res, next) => {
+  if (err instanceof multer.MulterError) {
+    const message =
+      err.code === 'LIMIT_FILE_SIZE'
+        ? 'Photo must be 5 MB or smaller'
+        : 'Unable to upload photo'
+
+    return res.status(400).json({
+      status: 'ERROR',
+      message,
+    })
+  }
+
+  if (err) {
+    return res.status(400).json({
+      status: 'ERROR',
+      message: err.message || 'Invalid photo upload',
+    })
+  }
+
+  next()
+})
 
 
 export default router;

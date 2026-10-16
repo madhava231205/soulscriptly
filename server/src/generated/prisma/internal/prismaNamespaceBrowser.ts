@@ -54,6 +54,7 @@ export const ModelName = {
   User: 'User',
   Note: 'Note',
   DiaryEntry: 'DiaryEntry',
+  DiaryPhoto: 'DiaryPhoto',
   HandwritingSample: 'HandwritingSample'
 } as const
 
@@ -108,6 +109,16 @@ export const DiaryEntryScalarFieldEnum = {
 } as const
 
 export type DiaryEntryScalarFieldEnum = (typeof DiaryEntryScalarFieldEnum)[keyof typeof DiaryEntryScalarFieldEnum]
+
+
+export const DiaryPhotoScalarFieldEnum = {
+  id: 'id',
+  imageUrl: 'imageUrl',
+  createdAt: 'createdAt',
+  diaryEntryId: 'diaryEntryId'
+} as const
+
+export type DiaryPhotoScalarFieldEnum = (typeof DiaryPhotoScalarFieldEnum)[keyof typeof DiaryPhotoScalarFieldEnum]
 
 
 export const HandwritingSampleScalarFieldEnum = {
