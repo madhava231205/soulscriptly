@@ -19,7 +19,71 @@ const [pinError, setPinError] = useState('')
 const [newPin, setNewPin] = useState('')
 const [confirmPin, setConfirmPin] = useState('')
 const [pinSaving, setPinSaving] = useState(false)
- 
+ const [diaryPhotos, setDiaryPhotos] = useState([])
+const [photoImages, setPhotoImages] = useState({})
+
+
+
+useEffect(() => {
+  let cancelled = false
+  const objectUrls = []
+
+  const loadPhotoImages = async () => {
+    const token = localStorage.getItem('token')
+
+    if (!token || diaryPhotos.length === 0) {
+      setPhotoImages({})
+      return
+    }
+
+    const loadedImages = {}
+
+    try {
+      await Promise.all(
+        diaryPhotos.map(async (photo) => {
+          const response = await fetch(
+            `http://localhost:5000/api/diary/photos/${photo.id}/image`,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          )
+
+          if (!response.ok) {
+            throw new Error(`Could not load photo ${photo.id}`)
+          }
+
+          const blob = await response.blob()
+          const objectUrl = URL.createObjectURL(blob)
+
+          objectUrls.push(objectUrl)
+          loadedImages[photo.id] = objectUrl
+        })
+      )
+
+      if (!cancelled) {
+        setPhotoImages(loadedImages)
+      }
+    } catch (error) {
+      console.error('Load diary images error:', error)
+
+      objectUrls.forEach((url) => URL.revokeObjectURL(url))
+
+      if (!cancelled) {
+        setPhotoImages({})
+      }
+    }
+  }
+
+  loadPhotoImages()
+
+  return () => {
+    cancelled = true
+    objectUrls.forEach((url) => URL.revokeObjectURL(url))
+  }
+}, [diaryPhotos])
+
 
 async function getHandwritingSamples() {
   const token = localStorage.getItem('token')
@@ -88,6 +152,36 @@ async function getDiaryEntries() {
       setLoading(false)
     }
   }
+
+  
+const getDiaryPhotos = async (diaryId) => {
+  try {
+    const token = localStorage.getItem('token')
+
+    const response = await fetch(
+      `http://localhost:5000/api/diary/${diaryId}/photos`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    )
+
+    const data = await response.json()
+
+    if (response.ok) {
+      
+      setDiaryPhotos(data.photos || [])
+    } else {
+      setDiaryPhotos([])
+      console.error('Unable to load diary photos:', data.message)
+    }
+  } catch (error) {
+    setDiaryPhotos([])
+    console.error('Get diary photos error:', error)
+  }
+}
+
 
   async function createDiaryEntry(event) {
   event.preventDefault()
@@ -534,7 +628,10 @@ return (
             <div
               className="diary-card"
               key={entry.id}
-              onClick={() => setSelectedEntry(entry)}
+              onClick={() => {
+                  setSelectedEntry(entry)
+                  getDiaryPhotos(entry.id)
+                  }}
             >
               <h2>{entry.title}</h2>
 
@@ -583,6 +680,30 @@ return (
     handwritingSamples={handwritingSamples}
   />
 </div>
+
+
+
+{diaryPhotos.length > 0 && (
+   <section className="diary-photos-section">
+    <h3>Memories</h3>
+  <div className="diary-photo-gallery">
+    {diaryPhotos.map((photo) => (
+      photoImages[photo.id] && (
+        <img
+          key={photo.id}
+          src={photoImages[photo.id]}
+          alt="Diary memory"
+          className="diary-photo"
+          onError={(event) => {
+            event.currentTarget.style.display = 'none'
+          }}
+        />
+      )
+    ))}
+  </div>
+  </section>
+)}
+
 
       <div className="read-footer">
         <button

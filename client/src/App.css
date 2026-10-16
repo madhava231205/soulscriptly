@@ -984,7 +984,18 @@ button {
    READ MODAL
 ======================================== */
 
-.read-modal { max-height: 85vh; display: flex; flex-direction: column; }
+.read-modal {
+  width: 100%;
+  max-width: 900px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 32px;
+  border-radius: 20px;
+  background: #fff;
+}
 
 .read-header {
   display: flex;
@@ -1014,25 +1025,17 @@ button {
   font-size: 12px;
 }
 
-
 .read-content {
-  min-height: 0;
-  padding: 16px;
-  border-radius: 12px;
-  background-color: #fffaf0;
-
-
-  color: #555a83;
-  font-size: 15px;
-  line-height: 1.9;
-  white-space: pre-wrap;
-  flex: 1;
-  overflow-y: auto;
-  word-wrap: break-word;
-  box-sizing: border-box;
+  flex: 0 0 auto;
   width: 100%;
+  min-height: 180px;
+  padding: 20px;
+  margin-bottom: 24px;
+  border-radius: 14px;
+  background: #fffaf0;
+  overflow: visible;
+  box-sizing: border-box;
 }
-
 
 .read-footer {
   display: flex;
@@ -1276,4 +1279,32 @@ button {
 
 .delete-button:hover {
   background: #ffe0e0;
+}
+
+.diary-photo-gallery {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  width: 100%;
+  min-width: 0;
+  min-height: 220px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 10px 2px 16px;
+  margin: 0 0 20px;
+  box-sizing: border-box;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+}
+
+.diary-photo {
+  display: block;
+  flex: 0 0 260px;
+  width: 260px;
+  height: 200px;
+  object-fit: contain;
+  object-position: center;
+  background: #fffaf0;
+  border-radius: 14px;
+  scroll-snap-align: start;
 }
