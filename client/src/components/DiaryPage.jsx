@@ -21,8 +21,39 @@ const [confirmPin, setConfirmPin] = useState('')
 const [pinSaving, setPinSaving] = useState(false)
  const [diaryPhotos, setDiaryPhotos] = useState([])
 const [photoImages, setPhotoImages] = useState({})
+const [activePhotoIndex, setActivePhotoIndex] = useState(null)
+const [touchStartX, setTouchStartX] = useState(null)
+const [selectedPhotos, setSelectedPhotos] = useState([])
 
+useEffect(() => {
+  if (activePhotoIndex === null) return
 
+  const handleKeyDown = (event) => {
+    if (event.key === 'ArrowLeft') {
+      setActivePhotoIndex((current) =>
+        current > 0 ? current - 1 : current
+      )
+    }
+
+    if (event.key === 'ArrowRight') {
+      setActivePhotoIndex((current) =>
+        current < diaryPhotos.length - 1
+          ? current + 1
+          : current
+      )
+    }
+
+    if (event.key === 'Escape') {
+      setActivePhotoIndex(null)
+    }
+  }
+
+  window.addEventListener('keydown', handleKeyDown)
+
+  return () => {
+    window.removeEventListener('keydown', handleKeyDown)
+  }
+}, [activePhotoIndex, diaryPhotos.length])
 
 useEffect(() => {
   let cancelled = false
@@ -183,6 +214,31 @@ const getDiaryPhotos = async (diaryId) => {
 }
 
 
+async function uploadDiaryPhoto(diaryEntryId, photo, token) {
+  const formData = new FormData()
+  formData.append('photo', photo)
+
+  const response = await fetch(
+    `http://localhost:5000/api/diary/${diaryEntryId}/photos`,
+    {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      body: formData,
+    }
+  )
+
+  const data = await response.json()
+
+  if (!response.ok) {
+    throw new Error(data.message || `Unable to upload ${photo.name}`)
+  }
+
+  return data
+}
+
+
   async function createDiaryEntry(event) {
   event.preventDefault()
 
@@ -219,21 +275,28 @@ const getDiaryPhotos = async (diaryId) => {
 
     const data = await response.json()
 
-    if (response.ok) {
-      setDiaryEntries((currentEntries) => [
-        data.diaryEntry,
-        ...currentEntries,
-      ])
+     if (response.ok) {
+  const newEntry = data.diaryEntry
 
-      setTitle('')
-      setContent('')
-      setShowCreateForm(false)
-    } else {
+  setDiaryEntries((currentEntries) => [
+    newEntry,
+    ...currentEntries,
+  ])
+
+  for (const photo of selectedPhotos) {
+    await uploadDiaryPhoto(newEntry.id, photo, token)
+  }
+
+  setSelectedPhotos([])
+  setTitle('')
+  setContent('')
+  setShowCreateForm(false)
+}else {
       setError(data.message)
     }
   } catch (error) {
     console.error('Create diary entry error:', error)
-    setError('Unable to create diary entry.')
+    setError(error.message ||'Unable to create diary entry.')
   } finally {
     setSaving(false)
   }
@@ -586,6 +649,56 @@ return (
       onChange={(event) => setContent(event.target.value)}
       rows="8"
     />
+    <div className="diary-photo-upload">
+  <label htmlFor="diary-photos">
+    Add photos to your memory
+  </label>
+
+  <input
+    id="diary-photos"
+    type="file"
+    accept="image/jpeg,image/png,image/webp"
+    multiple
+    onChange={(event) => {
+  const newPhotos = Array.from(event.target.files)
+
+  setSelectedPhotos((previousPhotos) => [
+    ...previousPhotos,
+    ...newPhotos,
+  ])
+
+  event.target.value = ''
+}}
+    
+  
+  />
+</div>
+{selectedPhotos.length > 0 && (
+  <div className="selected-photo-list">
+    <p>Selected photos: {selectedPhotos.length}</p>
+
+    <ul>
+      
+{selectedPhotos.map((photo, index) => (
+  <li key={`${photo.name}-${photo.lastModified}-${index}`}>
+    <span>{photo.name}</span>
+
+    <button
+      type="button"
+      onClick={() => {
+        setSelectedPhotos((previousPhotos) =>
+          previousPhotos.filter((_, photoIndex) => photoIndex !== index)
+        )
+      }}
+    >
+      Remove
+    </button>
+  </li>
+))}
+
+    </ul>
+  </div>
+)}
 
     <div>
       <button
@@ -602,6 +715,7 @@ return (
           setTitle('')
           setContent('')
           setError('')
+          setSelectedPhotos([])
         }}
       >
         Cancel
@@ -687,13 +801,14 @@ return (
    <section className="diary-photos-section">
     <h3>Memories</h3>
   <div className="diary-photo-gallery">
-    {diaryPhotos.map((photo) => (
+    {diaryPhotos.map((photo,index) => (
       photoImages[photo.id] && (
         <img
           key={photo.id}
           src={photoImages[photo.id]}
           alt="Diary memory"
           className="diary-photo"
+          onClick={() => setActivePhotoIndex(index)}
           onError={(event) => {
             event.currentTarget.style.display = 'none'
           }}
@@ -732,6 +847,77 @@ return (
       </div>
     </div>
   </div>
+)}
+
+{activePhotoIndex !== null &&
+  diaryPhotos[activePhotoIndex] &&
+  photoImages[diaryPhotos[activePhotoIndex].id] && (
+    <div className="photo-viewer-overlay" 
+    onTouchStart={(event) =>
+  setTouchStartX(event.touches[0].clientX)
+}
+onTouchEnd={(event) => {
+  if (touchStartX === null) return
+
+  const touchEndX = event.changedTouches[0].clientX
+  const swipeDistance = touchEndX - touchStartX
+  const minimumSwipeDistance = 50
+
+  if (Math.abs(swipeDistance) >= minimumSwipeDistance) {
+    if (swipeDistance < 0) {
+      setActivePhotoIndex((current) =>
+        current < diaryPhotos.length - 1
+          ? current + 1
+          : current
+      )
+    } else {
+      setActivePhotoIndex((current) =>
+        current > 0 ? current - 1 : current
+      )
+    }
+  }
+
+  setTouchStartX(null)
+}}>
+      <button
+        type="button"
+        className="photo-viewer-close"
+        onClick={() => setActivePhotoIndex(null)}
+        aria-label="Close photo viewer"
+      >
+        ×
+      </button>
+
+      <button
+  type="button"
+  className="photo-viewer-arrow photo-viewer-prev"
+  onClick={() =>
+    setActivePhotoIndex((current) => current - 1)
+  }
+  disabled={activePhotoIndex === 0}
+  aria-label="Previous photo"
+>
+  ‹
+</button>
+
+<button
+  type="button"
+  className="photo-viewer-arrow photo-viewer-next"
+  onClick={() =>
+    setActivePhotoIndex((current) => current + 1)
+  }
+  disabled={activePhotoIndex === diaryPhotos.length - 1}
+  aria-label="Next photo"
+>
+  ›
+</button>
+
+      <img
+        src={photoImages[diaryPhotos[activePhotoIndex].id]}
+        alt="Diary memory enlarged"
+        className="photo-viewer-image"
+      />
+    </div>
 )}
     </div>
   )
