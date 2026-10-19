@@ -1656,3 +1656,420 @@ button {
     width: 100%;
   }
 }
+
+
+/* Diary entry form */
+.diary-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  margin-bottom: 28px;
+  padding: 28px;
+  border: 1px solid #e7e2ff;
+  border-radius: 18px;
+  background: #ffffff;
+  box-shadow: 0 8px 24px rgba(74, 58, 145, 0.06);
+}
+
+.diary-form > input,
+.diary-form > textarea {
+  width: 100%;
+  padding: 14px 16px;
+  box-sizing: border-box;
+  border: 1px solid #e1dcf5;
+  border-radius: 10px;
+  outline: none;
+  background: #fcfbff;
+  color: #30266f;
+  font: inherit;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.diary-form > input {
+  min-height: 48px;
+}
+
+.diary-form > textarea {
+  min-height: 180px;
+  resize: vertical;
+  line-height: 1.7;
+}
+
+.diary-form > input:focus,
+.diary-form > textarea:focus {
+  border-color: #7968d8;
+  box-shadow: 0 0 0 3px rgba(107, 89, 211, 0.1);
+}
+
+.diary-form > input::placeholder,
+.diary-form > textarea::placeholder {
+  color: #9994b4;
+}
+
+.diary-form > div:last-child {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.diary-form > div:last-child button {
+  min-height: 44px;
+  padding: 11px 20px;
+  border: none;
+  border-radius: 10px;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.diary-form > div:last-child button[type="submit"] {
+  background: #6754cf;
+  color: #ffffff;
+}
+
+.diary-form > div:last-child button[type="submit"]:hover:not(:disabled) {
+  background: #5542b6;
+  transform: translateY(-1px);
+}
+
+.diary-form > div:last-child button[type="submit"]:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.diary-form > div:last-child button[type="button"] {
+  border: 1px solid #e1dcf5;
+  background: #f5f2ff;
+  color: #51438f;
+}
+
+.diary-form > div:last-child button[type="button"]:hover {
+  background: #ebe6ff;
+}
+
+@media (max-width: 600px) {
+  .diary-form {
+    gap: 14px;
+    padding: 18px;
+  }
+
+  .diary-form > div:last-child {
+    flex-direction: column;
+  }
+
+  .diary-form > div:last-child button {
+    width: 100%;
+  }
+}
+
+/* Diary form popup */
+.diary-form-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  box-sizing: border-box;
+  background: rgba(38, 29, 75, 0.42);
+  backdrop-filter: blur(3px);
+}
+
+.diary-form-modal {
+  width: 100%;
+  max-width: 650px;
+  max-height: 90vh;
+  overflow-y: auto;
+  border: 1px solid #e7e2ff;
+  border-radius: 20px;
+  background: #ffffff;
+  box-shadow: 0 24px 70px rgba(38, 29, 75, 0.22);
+}
+
+.diary-form-modal .diary-form {
+  margin: 0;
+  border: none;
+  border-radius: 20px;
+  box-shadow: none;
+}
+
+@media (max-width: 600px) {
+  .diary-form-overlay {
+    align-items: flex-end;
+    padding: 0;
+  }
+
+  .diary-form-modal {
+    max-height: 92vh;
+    border-radius: 20px 20px 0 0;
+  }
+
+  .diary-form-modal .diary-form {
+    padding: 22px 18px;
+  }
+}
+.diary-card-date {
+  display: inline-block;
+  margin-top: 8px;
+  padding: 5px 10px;
+  border-radius: 20px;
+  background: #f0eaff;
+  color: #7863a8;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.3px;
+}
+
+.diary-card {
+  background: #ffffff;
+  border: 1px solid #eee7fa;
+  border-radius: 18px;
+  padding: 20px;
+  margin-bottom: 16px;
+  box-shadow: 0 4px 14px rgba(105, 79, 150, 0.07);
+  cursor: pointer;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.diary-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 22px rgba(105, 79, 150, 0.13);
+  border-color: #d9c9f5;
+}
+
+.diary-card h2 {
+  margin: 0 0 12px;
+  color: #29245c;
+  font-size: 19px;
+  font-weight: 600;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+
+.diary-card p {
+  margin: 0 0 14px;
+  color: #77719a;
+  font-size: 14px;
+  line-height: 1.7;
+
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.diary-list {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+  align-items: stretch;
+}
+
+.diary-card {
+  min-width: 0;
+  padding: 22px;
+  text-align: left;
+  display: flex;
+flex-direction: column;
+height: 250px;
+box-sizing: border-box;
+}
+
+.diary-card-date {
+  margin-top: auto;
+  align-self: flex-start;
+}
+.diary-card h2 {
+  text-align: left;
+}
+
+.diary-card p {
+  text-align: left;
+  overflow-wrap: anywhere;
+  flex: 1;
+min-height: 0;
+}
+
+.floating-calendar-button {
+  position: fixed;
+  right: 28px;
+  bottom: 28px;
+  width: 56px;
+  height: 56px;
+  border: none;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #9b7bea, #7655c9);
+  color: #ffffff;
+  font-size: 25px;
+  box-shadow: 0 6px 18px rgba(118, 85, 201, 0.3);
+  cursor: pointer;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.floating-calendar-button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 9px 22px rgba(118, 85, 201, 0.4);
+}
+
+@media (max-width: 600px) {
+  .floating-calendar-button {
+    right: 18px;
+    bottom: 18px;
+    width: 52px;
+    height: 52px;
+  }
+}
+.diary-calendar-popup {
+  position: fixed;
+  right: 28px;
+  bottom: 96px;
+  width: 300px;
+  padding: 18px;
+  background: #ffffff;
+  border: 1px solid #eee7fa;
+  border-radius: 18px;
+  box-shadow: 0 12px 35px rgba(66, 45, 105, 0.18);
+  z-index: 999;
+  box-sizing: border-box;
+}
+
+.diary-calendar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 18px;
+  color: #29245c;
+}
+
+.diary-calendar-header strong {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.diary-calendar-header button {
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 9px;
+  background: #f3edff;
+  color: #7655c9;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.diary-calendar-weekdays,
+.diary-calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 5px;
+  text-align: center;
+}
+
+.diary-calendar-weekdays {
+  margin-bottom: 8px;
+  color: #9289aa;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.diary-calendar-grid button,
+.diary-calendar-grid > span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  aspect-ratio: 1;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.diary-calendar-grid button {
+  border: none;
+  border-radius: 9px;
+  background: transparent;
+  color: #393251;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.diary-calendar-grid button:hover {
+  background: #eee7ff;
+  color: #7655c9;
+}
+
+@media (max-width: 600px) {
+  .diary-calendar-popup {
+    right: 16px;
+    bottom: 82px;
+    width: min(300px, calc(100vw - 32px));
+  }
+}
+.diary-calendar-grid button.has-diary-entry {
+  background: #f3edff;
+  color: #7655c9;
+  font-weight: 600;
+}
+
+.diary-calendar-grid button.selected-diary-date {
+  background: #7655c9;
+  color: #ffffff;
+  box-shadow: 0 3px 8px rgba(118, 85, 201, 0.25);
+}
+
+.diary-calendar-grid button.selected-diary-date:hover {
+  background: #6544b5;
+  color: #ffffff;
+}
+
+.diary-date-dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: currentColor;
+  position: absolute;
+  bottom: 4px;
+}
+
+.diary-calendar-grid button {
+  position: relative;
+}
+.diary-empty-message {
+  margin: 24px 0;
+  padding: 24px;
+  text-align: center;
+  color: #82779e;
+  background: #faf8ff;
+  border: 1px dashed #dcd0f3;
+  border-radius: 14px;
+  font-size: 14px;
+}
+.diary-calendar-reset {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0 0 18px;
+  padding: 9px 14px;
+  border: 1px solid #e3d8fa;
+  border-radius: 10px;
+  background: #f7f3ff;
+  color: #7655c9;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.diary-calendar-reset:hover {
+  background: #eee7ff;
+  transform: translateY(-1px);
+}

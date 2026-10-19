@@ -764,9 +764,10 @@ function handleSaveSample(sample) {
     onDelete={handleDeleteNote}
   />
 )}
-
-<HandwritingSetup />
+{/*
+<  HandwritingSetup />
 <HandwritingTest />
+*/}
 
     </div>
   )

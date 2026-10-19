@@ -7,6 +7,9 @@ function DiaryPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [showCreateForm, setShowCreateForm] = useState(false)
+  const [showCalendar, setShowCalendar] = useState(false)
+  const [calendarMonth, setCalendarMonth] = useState(new Date())
+const [selectedDate, setSelectedDate] = useState(null)
 const [title, setTitle] = useState('')
 const [content, setContent] = useState('')
 const [saving, setSaving] = useState(false)
@@ -20,10 +23,38 @@ const [newPin, setNewPin] = useState('')
 const [confirmPin, setConfirmPin] = useState('')
 const [pinSaving, setPinSaving] = useState(false)
  const [diaryPhotos, setDiaryPhotos] = useState([])
+ const [editingPhotos, setEditingPhotos] = useState([])
 const [photoImages, setPhotoImages] = useState({})
 const [activePhotoIndex, setActivePhotoIndex] = useState(null)
 const [touchStartX, setTouchStartX] = useState(null)
 const [selectedPhotos, setSelectedPhotos] = useState([])
+
+const calendarYear = calendarMonth.getFullYear()
+const calendarMonthIndex = calendarMonth.getMonth()
+
+const firstDayOfMonth = new Date(
+  calendarYear,
+  calendarMonthIndex,
+  1
+).getDay()
+
+const daysInMonth = new Date(
+  calendarYear,
+  calendarMonthIndex + 1,
+  0
+).getDate()
+
+const filteredDiaryEntries = selectedDate
+  ? diaryEntries.filter((entry) => {
+      const entryDate = new Date(entry.createdAt)
+
+      return (
+        entryDate.getFullYear() === selectedDate.getFullYear() &&
+        entryDate.getMonth() === selectedDate.getMonth() &&
+        entryDate.getDate() === selectedDate.getDate()
+      )
+    })
+  : diaryEntries
 
 useEffect(() => {
   if (activePhotoIndex === null) return
@@ -203,6 +234,7 @@ const getDiaryPhotos = async (diaryId) => {
     if (response.ok) {
       
       setDiaryPhotos(data.photos || [])
+return data.photos || []
     } else {
       setDiaryPhotos([])
       console.error('Unable to load diary photos:', data.message)
@@ -213,6 +245,27 @@ const getDiaryPhotos = async (diaryId) => {
   }
 }
 
+const deleteDiaryPhoto = async (photoId) => {
+  const token = localStorage.getItem('token')
+
+  const response = await fetch(
+    `http://localhost:5000/api/diary/photos/${photoId}`,
+    {
+      method: 'DELETE',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  )
+
+  const data = await response.json()
+
+  if (!response.ok) {
+    throw new Error(data.message || 'Unable to delete photo')
+  }
+
+  return data
+}
 
 async function uploadDiaryPhoto(diaryEntryId, photo, token) {
   const formData = new FormData()
@@ -337,22 +390,31 @@ async function updateDiaryEntry(event) {
 
     const data = await response.json()
 
-    if (response.ok) {
-      setDiaryEntries((currentEntries) =>
-        currentEntries.map((entry) =>
-          entry.id === editingEntry.id
-            ? data.diaryEntry
-            : entry
-        )
-      )
+   
+if (response.ok) {
+  for (const photo of selectedPhotos) {
+    await uploadDiaryPhoto(editingEntry.id, photo, token)
+  }
 
-      setEditingEntry(null)
-      setSelectedEntry(null)
-      setTitle('')
-      setContent('')
-    } else {
-      setError(data.message)
-    }
+  setDiaryEntries((currentEntries) =>
+    currentEntries.map((entry) =>
+      entry.id === editingEntry.id
+        ? data.diaryEntry
+        : entry
+    )
+  )
+
+  await getDiaryPhotos(editingEntry.id)
+
+  setEditingEntry(null)
+  setSelectedEntry(null)
+  setTitle('')
+  setContent('')
+  setSelectedPhotos([])
+  setShowCreateForm(false)
+} else {
+  setError(data.message || 'Unable to update diary entry.')
+} 
   } catch (error) {
     console.error('Update diary entry error:', error)
     setError('Unable to update diary entry.')
@@ -622,16 +684,28 @@ return (
         <p>Your private space for your thoughts and memories.</p>
       
 
+
 <button
-    type="button"
-    onClick={() => setShowCreateForm(true)}
-  >
-    + New Entry
-  </button>
+  type="button"
+  onClick={() => {
+    setEditingEntry(null)
+    setTitle('')
+    setContent('')
+    setError('')
+    setSelectedPhotos([])
+    setShowCreateForm(true)
+  }}
+>
+  + New Entry
+</button>
+
 
         </div>  
 
-        { (showCreateForm || editingEntry ) && (
+        {(showCreateForm || editingEntry) && (
+  <div className="diary-form-overlay">
+    <div className="diary-form-modal">
+   
   <form
     className="diary-form"
     onSubmit={editingEntry ? updateDiaryEntry : createDiaryEntry}
@@ -673,6 +747,42 @@ return (
   
   />
 </div>
+
+
+{editingEntry && editingPhotos.length > 0 && (
+  <div className="selected-photo-list">
+    <p>Existing photos: {editingPhotos.length}</p>
+    <ul>
+      {editingPhotos.map((photo, index) => (
+        <li key={photo.id}>
+          <span>Memory photo {index + 1}</span>
+          <button
+  type="button"
+  onClick={async () => {
+    try {
+      await deleteDiaryPhoto(photo.id)
+
+      setEditingPhotos((previousPhotos) =>
+        previousPhotos.filter((item) => item.id !== photo.id)
+      )
+
+      setDiaryPhotos((previousPhotos) =>
+        previousPhotos.filter((item) => item.id !== photo.id)
+      )
+    } catch (error) {
+      console.error('Delete diary photo error:', error)
+      setError(error.message || 'Unable to delete photo')
+    }
+  }}
+>
+  Remove
+</button>
+        </li>
+      ))}
+    </ul>
+  </div>
+)}
+
 {selectedPhotos.length > 0 && (
   <div className="selected-photo-list">
     <p>Selected photos: {selectedPhotos.length}</p>
@@ -716,12 +826,15 @@ return (
           setContent('')
           setError('')
           setSelectedPhotos([])
+          setEditingEntry(null)
         }}
       >
         Cancel
       </button>
     </div>
   </form>
+  </div>
+  </div>
 )}
 
       {loading && (
@@ -732,13 +845,41 @@ return (
         <p>{error}</p>
       )}
 
-      {!loading && !error && diaryEntries.length === 0 && (
-        <p>No diary entries yet.</p>
-      )}
+      {selectedDate && (
+  <button
+    type="button"
+    className="diary-calendar-reset"
+    onClick={() => setSelectedDate(null)}
+  >
+    ← Show all entries
+  </button>
+)}
 
-      {!loading && !error && diaryEntries.length > 0 && (
-        <div className="diary-list">
-          {diaryEntries.map((entry) => (
+     {!loading && !error && filteredDiaryEntries.length === 0 && (
+  <p className="diary-empty-message">
+    {selectedDate
+      ? 'No diary entries for this date.'
+      : 'No diary entries yet.'}
+  </p>
+)}
+
+
+
+      {!loading && !error && filteredDiaryEntries.length > 0 && (
+   <>
+    {selectedDate && (
+      <h3 className="selected-diary-heading">
+        Diary entries for{' '}
+        {selectedDate.toLocaleDateString('en-US', {
+          month: 'long',
+          day: 'numeric',
+          year: 'numeric',
+        })}
+      </h3>
+    )}
+
+    <div className="diary-list">
+          {filteredDiaryEntries.map((entry) => (
             <div
               className="diary-card"
               key={entry.id}
@@ -753,12 +894,17 @@ return (
                 {entry.content}
               </p>
 
-              <small>
-                {new Date(entry.createdAt).toLocaleDateString()}
-              </small>
+              <small className="diary-card-date">
+  {new Date(entry.createdAt).toLocaleDateString('en-US', {
+    month: 'long',
+    day: 'numeric',
+    year: 'numeric',
+  })}
+</small>
             </div>
           ))}
         </div>
+        </>
       )}
       {selectedEntry && (
   <div className="modal-overlay">
@@ -821,17 +967,25 @@ return (
 
 
       <div className="read-footer">
-        <button
-    type="button"
-    onClick={() => {
-      setEditingEntry(selectedEntry)
-      setTitle(selectedEntry.title)
-      setContent(selectedEntry.content)
-      setSelectedEntry(null)
-    }}
-  >
-    Edit
-  </button>
+        
+<button
+  type="button"
+ 
+onClick={async () => {
+  const entryPhotos = await getDiaryPhotos(selectedEntry.id)
+
+  setEditingPhotos(entryPhotos)
+  setEditingEntry(selectedEntry)
+  setTitle(selectedEntry.title)
+  setContent(selectedEntry.content)
+  setSelectedPhotos([])
+  setSelectedEntry(null)
+  setShowCreateForm(true)
+}}
+>
+  Edit
+</button>
+
   <button
     type="button"
     onClick={() => deleteDiaryEntry(selectedEntry.id)}
@@ -919,6 +1073,107 @@ onTouchEnd={(event) => {
       />
     </div>
 )}
+
+{showCalendar && (
+  <div className="diary-calendar-popup">
+    
+    <div className="diary-calendar-header">
+      <button
+        type="button"
+        onClick={() =>
+          setCalendarMonth(
+            new Date(calendarYear, calendarMonthIndex - 1, 1)
+          )
+        }
+        aria-label="Previous month"
+      >
+        ‹
+      </button>
+
+      <strong>
+        {calendarMonth.toLocaleDateString('en-US', {
+          month: 'long',
+          year: 'numeric',
+        })}
+      </strong>
+
+      <button
+        type="button"
+        onClick={() =>
+          setCalendarMonth(
+            new Date(calendarYear, calendarMonthIndex + 1, 1)
+          )
+        }
+        aria-label="Next month"
+      >
+        ›
+      </button>
+    </div>
+
+    <div className="diary-calendar-weekdays">
+      {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(
+        (day) => (
+          <span key={day}>{day}</span>
+        )
+      )}
+    </div>
+
+    <div className="diary-calendar-grid">
+      {Array.from({ length: firstDayOfMonth }, (_, index) => (
+        <span key={`empty-${index}`} />
+      ))}
+
+      {Array.from({ length: daysInMonth }, (_, index) => {
+        const day = index + 1
+        const date = new Date(calendarYear, calendarMonthIndex, day)
+
+const hasEntry = diaryEntries.some((entry) => {
+  const entryDate = new Date(entry.createdAt)
+
+  return (
+    entryDate.getFullYear() === calendarYear &&
+    entryDate.getMonth() === calendarMonthIndex &&
+    entryDate.getDate() === day
+  )
+})
+
+const isSelected =
+  selectedDate &&
+  selectedDate.getFullYear() === calendarYear &&
+  selectedDate.getMonth() === calendarMonthIndex &&
+  selectedDate.getDate() === day
+
+        return (
+         <button
+  key={day}
+  type="button"
+  className={[
+    hasEntry ? 'has-diary-entry' : '',
+    isSelected ? 'selected-diary-date' : '',
+  ].filter(Boolean).join(' ')}
+  onClick={() => {
+    setSelectedDate(date)
+    setShowCalendar(false)
+  }}
+>
+  {day}
+  {hasEntry && <span className="diary-date-dot" />}
+</button>
+        )
+      })}
+    </div>
+  </div>
+)}
+
+<button
+  type="button"
+  className="floating-calendar-button"
+  onClick={() => setShowCalendar((current) => !current)}
+  aria-label="Open diary calendar"
+  title="Diary calendar"
+>
+  📅
+</button>
     </div>
   )
 }
