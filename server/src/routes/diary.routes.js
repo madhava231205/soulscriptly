@@ -323,6 +323,50 @@ router.get('/photos/:photoId/image', authenticateToken, async (req, res) => {
   }
 })
 
+router.delete('/photos/:photoId', authenticateToken, async (req, res) => {
+  try {
+    const photoId = Number(req.params.photoId)
+
+    if (!Number.isInteger(photoId) || photoId <= 0) {
+      return res.status(400).json({
+        status: 'ERROR',
+        message: 'Invalid photo ID',
+      })
+    }
+
+    const photo = await prisma.diaryPhoto.findFirst({
+      where: {
+        id: photoId,
+        diaryEntry: {
+          userId: req.user.userId,
+        },
+      },
+    })
+
+    if (!photo) {
+      return res.status(404).json({
+        status: 'ERROR',
+        message: 'Photo not found',
+      })
+    }
+
+    await prisma.diaryPhoto.delete({
+      where: { id: photoId },
+    })
+
+    return res.json({
+      status: 'SUCCESS',
+      message: 'Photo deleted successfully',
+    })
+  } catch (error) {
+    console.error('Delete diary photo error:', error)
+
+    return res.status(500).json({
+      status: 'ERROR',
+      message: 'Unable to delete photo',
+    })
+  }
+})
 
 router.post(
   '/:id/photos',
