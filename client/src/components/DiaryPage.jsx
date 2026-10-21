@@ -31,6 +31,7 @@ const [selectedPhotos, setSelectedPhotos] = useState([])
 
 const calendarYear = calendarMonth.getFullYear()
 const calendarMonthIndex = calendarMonth.getMonth()
+const [searchQuery, setSearchQuery] = useState('')
 
 const firstDayOfMonth = new Date(
   calendarYear,
@@ -44,17 +45,31 @@ const daysInMonth = new Date(
   0
 ).getDate()
 
-const filteredDiaryEntries = selectedDate
-  ? diaryEntries.filter((entry) => {
-      const entryDate = new Date(entry.createdAt)
 
-      return (
-        entryDate.getFullYear() === selectedDate.getFullYear() &&
-        entryDate.getMonth() === selectedDate.getMonth() &&
-        entryDate.getDate() === selectedDate.getDate()
-      )
-    })
-  : diaryEntries
+const filteredDiaryEntries = diaryEntries.filter((entry) => {
+  // Keep the existing calendar date filter
+  if (selectedDate) {
+    const entryDate = new Date(entry.createdAt)
+
+    const matchesDate =
+      entryDate.getFullYear() === selectedDate.getFullYear() &&
+      entryDate.getMonth() === selectedDate.getMonth() &&
+      entryDate.getDate() === selectedDate.getDate()
+
+    if (!matchesDate) return false
+  }
+
+  // Search both title and content
+  const query = searchQuery.trim().toLowerCase()
+
+  if (!query) return true
+
+  return (
+    entry.title.toLowerCase().includes(query) ||
+    entry.content.toLowerCase().includes(query)
+  )
+})
+
 
 useEffect(() => {
   if (activePhotoIndex === null) return
@@ -845,7 +860,7 @@ return (
         <p>{error}</p>
       )}
 
-      {selectedDate && (
+      {(selectedDate || searchQuery )&& (
   <button
     type="button"
     className="diary-calendar-reset"
@@ -855,11 +870,30 @@ return (
   </button>
 )}
 
+{!loading && !error && diaryEntries.length > 0 && (
+  <div className="diary-search-wrapper">
+    <span className="diary-search-icon" aria-hidden="true">⌕</span>
+
+    <input
+      type="search"
+      className="diary-search-input"
+      placeholder="Search diary by title or content..."
+      value={searchQuery}
+      onChange={(event) => setSearchQuery(event.target.value)}
+      aria-label="Search diary entries by title or content"
+    />
+
+    
+  </div>
+)}
+
      {!loading && !error && filteredDiaryEntries.length === 0 && (
   <p className="diary-empty-message">
-    {selectedDate
-      ? 'No diary entries for this date.'
-      : 'No diary entries yet.'}
+    {searchQuery.trim()
+      ? 'No diary entries match your search.'
+      : selectedDate
+        ? 'No diary entries for this date.'
+        : 'No diary entries yet.'}
   </p>
 )}
 
@@ -1073,6 +1107,8 @@ onTouchEnd={(event) => {
       />
     </div>
 )}
+
+
 
 {showCalendar && (
   <div className="diary-calendar-popup">
