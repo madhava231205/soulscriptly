@@ -27,7 +27,7 @@ function App() {
     Boolean(localStorage.getItem('token'))
   )
   const [handwritingSamples, setHandwritingSamples] = useState([])
-
+const [settingsSection, setSettingsSection] = useState('main')
   // -----------------------------
   // Notes state
   // -----------------------------
@@ -703,7 +703,54 @@ function handleSaveSample(sample) {
   <DiaryPage />
 )}
 
-        {activePage !== 'notes' && activePage !== 'favourites' && activePage !== 'diary' && (
+{activePage === 'settings' && (
+  <div className="settings-page">
+    <h2>Settings</h2>
+    {settingsSection === 'main' && (
+      <div className="settings-options">
+        <button
+          className="primary-button"
+          onClick={() => setSettingsSection('handwriting-setup')}
+        >
+          Create Your Handwriting
+        </button>
+
+        <button
+          className="primary-button"
+          onClick={() => setSettingsSection('handwriting-preview')}
+        >
+          Handwriting Preview
+        </button>
+      </div>
+    )}
+
+    {settingsSection === 'handwriting-setup' && (
+      <div>
+        <button
+          className="primary-button"
+          onClick={() => setSettingsSection('main')}
+        >
+          ← Back to Settings
+        </button>
+        <HandwritingSetup />
+      </div>
+    )}
+
+    {settingsSection === 'handwriting-preview' && (
+      <div>
+        <button
+          className="primary-button"
+          onClick={() => setSettingsSection('main')}
+        >
+          ← Back to Settings
+        </button>
+        <HandwritingTest />
+      </div>
+    )}
+  </div>
+)}
+
+        {activePage !== 'notes' && activePage !== 'favourites' && activePage !== 'diary' && activePage !== 'settings'  && (
           <div className="coming-soon">
             <div className="coming-soon-icon">
               ✦
