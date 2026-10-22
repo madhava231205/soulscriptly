@@ -707,21 +707,37 @@ function handleSaveSample(sample) {
   <div className="settings-page">
     <h2>Settings</h2>
     {settingsSection === 'main' && (
-      <div className="settings-options">
-        <button
-          className="primary-button"
-          onClick={() => setSettingsSection('handwriting-setup')}
-        >
-          Create Your Handwriting
-        </button>
+      
+<div className="settings-options">
+  <div className="settings-card">
+    <div className="settings-card-icon">✍️</div>
+    <h3>Create Your Handwriting</h3>
+    <p>
+      Teach SoulScriptly to write using your own handwriting samples.
+    </p>
+    <button
+      className="setup-primary-button"
+      onClick={() => setSettingsSection('handwriting-setup')}
+    >
+      Get Started
+    </button>
+  </div>
 
-        <button
-          className="primary-button"
-          onClick={() => setSettingsSection('handwriting-preview')}
-        >
-          Handwriting Preview
-        </button>
-      </div>
+  <div className="settings-card">
+    <div className="settings-card-icon">📖</div>
+    <h3>Handwriting Preview</h3>
+    <p>
+      Preview your text in your saved handwriting style.
+    </p>
+    <button
+      className="preview-primary-button"
+      onClick={() => setSettingsSection('handwriting-preview')}
+    >
+      Open Preview
+    </button>
+  </div>
+</div>
+
     )}
 
     {settingsSection === 'handwriting-setup' && (

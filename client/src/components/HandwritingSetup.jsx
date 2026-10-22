@@ -119,47 +119,74 @@ useEffect(() => {
     }
   }
 
+  
   return (
-    <div>
-      <h1>Create Your Handwriting</h1>
-
-      <h2>Draw the character: {currentCharacter}</h2>
-
-      <p>
-        Character {currentIndex + 1} of {characters.length}
-      </p>
-
-      <HandwritingCanvas
-  key={currentCharacter}
-  character={currentCharacter}
-  onSave={handleSaveSample}
-  savedImage={handwritingSamples[currentCharacter]}
-/>
-
-      <div>
-        <button
-          type="button"
-          onClick={goToPreviousCharacter}
-          disabled={currentIndex === 0}
-        >
-          Previous
-        </button>
-
-        <button
-          type="button"
-          onClick={goToNextCharacter}
-          disabled={currentIndex === characters.length - 1}
-        >
-          Next
-        </button>
+    <div className="handwriting-setup-page">
+      <div className="handwriting-setup-header">
+        <h1>Create Your Handwriting</h1>
+        <p>
+          Personalize SoulScriptly by teaching it how you write each letter.
+        </p>
       </div>
 
-      <p>
-        Samples saved: {Object.keys(handwritingSamples).length} of{' '}
-        {characters.length}
-      </p>
+      <div className="handwriting-setup-card">
+        <div className="handwriting-character-info">
+          
+
+          <p>
+            Character {currentIndex + 1} of {characters.length}
+          </p>
+        </div>
+
+        <div className="handwriting-navigation">
+          <button
+            className="handwriting-nav-button"
+            type="button"
+            onClick={goToPreviousCharacter}
+            disabled={currentIndex === 0}
+          >
+            ← Previous
+          </button>
+
+          <button
+            className="handwriting-nav-button"
+            type="button"
+            onClick={goToNextCharacter}
+            disabled={currentIndex === characters.length - 1}
+          >
+            Next →
+          </button>
+        </div>
+
+        <div className="handwriting-canvas-wrapper">
+          <HandwritingCanvas
+            key={currentCharacter}
+            character={currentCharacter}
+            onSave={handleSaveSample}
+            savedImage={handwritingSamples[currentCharacter]}
+          />
+        </div>
+
+        
+
+        <div className="handwriting-progress">
+          <p>
+            Samples saved: {Object.keys(handwritingSamples).length} of{' '}
+            {characters.length}
+          </p>
+          <div className="handwriting-progress-track">
+            <div
+              className="handwriting-progress-fill"
+              style={{
+                width: `${(Object.keys(handwritingSamples).length / characters.length) * 100}%`,
+              }}
+            />
+          </div>
+        </div>
+      </div>
     </div>
   )
+
 }
 
 export default HandwritingSetup

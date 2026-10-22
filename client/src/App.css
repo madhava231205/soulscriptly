@@ -2169,3 +2169,235 @@ min-height: 0;
 .diary-search-clear:hover {
   background: #eee7ff;
 }
+
+
+/* Settings page */
+.settings-page {
+  padding: 24px;
+}
+
+.settings-page h2 {
+  margin-bottom: 24px;
+}
+
+.settings-options {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+  max-width: 900px;
+}
+
+.settings-card {
+  padding: 28px;
+  border: 1px solid #e7dfeb;
+  border-radius: 18px;
+  background: #fff;
+  box-shadow: 0 4px 14px rgba(50, 30, 60, 0.06);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.settings-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 22px rgba(50, 30, 60, 0.1);
+}
+
+.settings-card-icon {
+  font-size: 32px;
+  margin-bottom: 16px;
+}
+
+.settings-card h3 {
+  margin: 0 0 10px;
+  color: #35263d;
+  font-size: 19px;
+}
+
+.settings-card p {
+  margin: 0 0 22px;
+  color: #756a7b;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+@media (max-width: 650px) {
+  .settings-options {
+    grid-template-columns: 1fr;
+  }
+
+  .settings-page {
+    padding: 16px;
+  }
+}
+
+.setup-primary-button,
+.preview-primary-button {
+  padding: 11px 18px;
+  border: none;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.setup-primary-button {
+  background: #eee4f5;
+  color: #593b70;
+}
+
+.setup-primary-button:hover {
+  background: #e3d3ef;
+  transform: translateY(-1px);
+}
+
+.preview-primary-button {
+  background: #e5edf9;
+  color: #34577e;
+}
+
+.preview-primary-button:hover {
+  background: #d5e3f5;
+  transform: translateY(-1px);
+}
+
+
+
+/* Handwriting setup page */
+.handwriting-setup-page {
+  max-width: 850px;
+  margin: 0 auto;
+  padding: 24px;
+  color: #35263d;
+}
+
+.handwriting-setup-header {
+  margin-bottom: 24px;
+}
+
+.handwriting-setup-header h1 {
+  margin: 0 0 10px;
+  font-size: 28px;
+  color: #35263d;
+}
+
+.handwriting-setup-header p {
+  margin: 0;
+  color: #756a7b;
+  line-height: 1.6;
+}
+
+.handwriting-setup-card {
+  padding: 28px;
+  border: 1px solid #e7dfeb;
+  border-radius: 20px;
+  background: #fff;
+  box-shadow: 0 5px 18px rgba(50, 30, 60, 0.06);
+}
+
+.handwriting-character-info {
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.handwriting-character-info h2 {
+  margin: 0 0 8px;
+  font-size: 21px;
+}
+
+.handwriting-character-info h2 span {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 42px;
+  margin-left: 4px;
+  padding: 4px 12px;
+  border-radius: 10px;
+  background: #eee4f5;
+  color: #593b70;
+}
+
+.handwriting-character-info p {
+  margin: 0;
+  color: #85778c;
+  font-size: 14px;
+}
+
+.handwriting-canvas-wrapper {
+  padding: 16px;
+  border: 1px solid #eee6f2;
+  border-radius: 14px;
+  background: #fcf9fe;
+}
+
+.handwriting-navigation {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 22px;
+}
+
+.handwriting-nav-button {
+  padding: 11px 20px;
+  border: none;
+  border-radius: 10px;
+  background: #eee4f5;
+  color: #593b70;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.handwriting-nav-button:hover:not(:disabled) {
+  background: #e3d3ef;
+  transform: translateY(-1px);
+}
+
+.handwriting-nav-button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.handwriting-progress {
+  margin-top: 24px;
+}
+
+.handwriting-progress p {
+  margin: 0 0 10px;
+  color: #756a7b;
+  font-size: 13px;
+}
+
+.handwriting-progress-track {
+  width: 100%;
+  height: 8px;
+  overflow: hidden;
+  border-radius: 99px;
+  background: #eee6f2;
+}
+
+.handwriting-progress-fill {
+  height: 100%;
+  border-radius: inherit;
+  background: #c7a6dc;
+  transition: width 0.3s ease;
+}
+
+@media (max-width: 600px) {
+  .handwriting-setup-page {
+    padding: 16px;
+  }
+
+  .handwriting-setup-card {
+    padding: 18px;
+  }
+
+  .handwriting-setup-header h1 {
+    font-size: 23px;
+  }
+
+  .handwriting-character-info h2 {
+    font-size: 18px;
+  }
+}
+
