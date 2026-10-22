@@ -10,6 +10,8 @@ import HandwritingCanvas from './components/HandwritingCanvas'
 import HandwritingSetup from './components/HandwritingSetup'
 import HandwritingRenderer from './components/HandwritingRenderer'
 import HandwritingTest from './components/HandwritingTest'
+const [isSidebarOpen, setIsSidebarOpen] = useState(false)
+
 function App() {
   // -----------------------------
   // Authentication state
@@ -624,11 +626,7 @@ function handleSaveSample(sample) {
         <button
           className="mobile-menu-button"
           type="button"
-          onClick={() =>
-            document.body.classList.toggle(
-              'sidebar-open'
-            )
-          }
+          onClick={() => setIsSidebarOpen(!isSidebarOpen)}
         >
           ☰
         </button>
@@ -639,6 +637,8 @@ function handleSaveSample(sample) {
   activePage={activePage}
   setActivePage={setActivePage}
   handleLogout={handleLogout}
+  isSidebarOpen={isSidebarOpen}
+  setIsSidebarOpen={setIsSidebarOpen}
 />
       {/* Main content */}
       <main className="main-content">

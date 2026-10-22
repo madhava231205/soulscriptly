@@ -19,38 +19,45 @@ function HandwritingCanvas({ character, onSave, savedImage }) {
     context.lineJoin = 'round'
   }, [])
 
-  function startDrawing(event) {
-    const canvas = canvasRef.current
-    const context = canvas.getContext('2d')
+  
+function startDrawing(event) {
+  const canvas = canvasRef.current
+  const context = canvas.getContext('2d')
+  const rect = canvas.getBoundingClientRect()
 
-    const rect = canvas.getBoundingClientRect()
+  const scaleX = canvas.width / rect.width
+  const scaleY = canvas.height / rect.height
 
-    context.beginPath()
-    context.moveTo(
-      event.clientX - rect.left,
-      event.clientY - rect.top
-    )
+  context.beginPath()
+  context.moveTo(
+    (event.clientX - rect.left) * scaleX,
+    (event.clientY - rect.top) * scaleY
+  )
 
-    setIsDrawing(true)
+  setIsDrawing(true)
+}
+
+
+  
+function draw(event) {
+  if (!isDrawing) {
+    return
   }
 
-  function draw(event) {
-    if (!isDrawing) {
-      return
-    }
+  const canvas = canvasRef.current
+  const context = canvas.getContext('2d')
+  const rect = canvas.getBoundingClientRect()
 
-    const canvas = canvasRef.current
-    const context = canvas.getContext('2d')
+  const scaleX = canvas.width / rect.width
+  const scaleY = canvas.height / rect.height
 
-    const rect = canvas.getBoundingClientRect()
+  context.lineTo(
+    (event.clientX - rect.left) * scaleX,
+    (event.clientY - rect.top) * scaleY
+  )
 
-    context.lineTo(
-      event.clientX - rect.left,
-      event.clientY - rect.top
-    )
-
-    context.stroke()
-  }
+  context.stroke()
+}
 
   function stopDrawing() {
     const canvas = canvasRef.current
@@ -153,50 +160,56 @@ function saveSample() {
 
 
 
+  
   return (
-    <div>
-      <h2>Draw the character: {character}</h2>
-      <canvas
-        ref={canvasRef}
-        width={500}
-        height={300}
-        onPointerDown={startDrawing}
-        onPointerMove={draw}
-        onPointerUp={stopDrawing}
-        onPointerLeave={stopDrawing}
-        style={{
-          border: '1px solid #ccc',
-          borderRadius: '8px',
-          background: '#fff',
-          cursor: 'crosshair',
-        }}
-      />
+    <div className="handwriting-canvas-component">
+      <h2 className="handwriting-canvas-title">
+        Draw the character: <span>{character}</span>
+      </h2>
 
-      <div>
+      <div className="handwriting-drawing-area">
+        <canvas
+          ref={canvasRef}
+          width={500}
+          height={300}
+          onPointerDown={startDrawing}
+          onPointerMove={draw}
+          onPointerUp={stopDrawing}
+          onPointerLeave={stopDrawing}
+          className="handwriting-drawing-canvas"
+        />
+      </div>
+
+      <div className="handwriting-canvas-actions">
         <button
+          className="handwriting-clear-button"
           type="button"
           onClick={clearCanvas}
         >
           Clear
         </button>
-        <button type="button" onClick={saveSample}>
-  Save Sample
-</button>
 
-{savedImage && (
-  <div>
-    <h3>Saved sample for {character}</h3>
-
-    <img
-      src={savedImage}
-      alt={`Saved handwriting for ${character}`}
-      width="200"
-    />
-  </div>
-)}
+        <button
+          className="handwriting-save-button"
+          type="button"
+          onClick={saveSample}
+        >
+          Save Sample
+        </button>
       </div>
+
+      {savedImage && (
+        <div className="handwriting-saved-sample">
+          <h3>Saved sample for {character}</h3>
+          <img
+            src={savedImage}
+            alt={`Saved handwriting for ${character}`}
+          />
+        </div>
+      )}
     </div>
   )
+
 }
 
 export default HandwritingCanvas

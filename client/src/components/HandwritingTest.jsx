@@ -43,34 +43,49 @@ function HandwritingTest() {
     loadSamples()
   }, [])
 
+  
   return (
-    <div style={{ padding: '24px' }}>
-      <h1>Handwriting Preview</h1>
+    <div className="handwriting-test-page">
+      <div className="handwriting-test-header">
+        <h1>Handwriting Preview</h1>
+        <p>
+          See how your saved handwriting transforms typed text into something
+          personal.
+        </p>
+      </div>
 
-      <label htmlFor="handwriting-text">
-        Enter text to preview
-      </label>
+      <div className="handwriting-test-card">
+        <label
+          className="handwriting-test-label"
+          htmlFor="handwriting-text"
+        >
+          Enter text to preview
+        </label>
 
-      <input
-        id="handwriting-text"
-        value={text}
-        onChange={(event) => setText(event.target.value)}
-        placeholder="Type something..."
-        style={{
-          display: 'block',
-          width: '100%',
-          maxWidth: '500px',
-          padding: '10px',
-          margin: '12px 0',
-        }}
-      />
+        <input
+          id="handwriting-text"
+          className="handwriting-test-input"
+          value={text}
+          onChange={(event) => setText(event.target.value)}
+          placeholder="Type something..."
+        />
 
-      <HandwritingRenderer
-        text={text}
-        handwritingSamples={handwritingSamples}
-      />
+        <p className="handwriting-test-note">
+          Note: letters missing from your handwriting samples will appear as
+          blank spaces.
+        </p>
+
+        <div className="handwriting-test-result">
+          <h2>Your preview</h2>
+          <HandwritingRenderer
+            text={text}
+            handwritingSamples={handwritingSamples}
+          />
+        </div>
+      </div>
     </div>
   )
+
 }
 
 export default HandwritingTest
