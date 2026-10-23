@@ -109,3 +109,19 @@ code {
   padding: 4px 8px;
   background: var(--code-bg);
 }
+
+
+/* Dark background behind the mobile sidebar */
+@media (max-width: 768px) {
+  .sidebar-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(20, 15, 30, 0.5);
+    z-index: 1000;
+  }
+
+  .sidebar {
+    z-index: 1001;
+  }
+}
+

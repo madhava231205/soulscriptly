@@ -2,9 +2,12 @@ function Sidebar({
   activePage,
   setActivePage,
   handleLogout,
+  isSidebarOpen,
+  setIsSidebarOpen,
 }) {
+  console.log('Sidebar open:', isSidebarOpen)
   return (
-    <aside className="sidebar">
+    <aside className={`sidebar ${isSidebarOpen ? 'open' : ''}`}>
 
       <div className="sidebar-brand">
         <div className="brand-icon">✦</div>

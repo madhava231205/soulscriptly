@@ -10,7 +10,7 @@ import HandwritingCanvas from './components/HandwritingCanvas'
 import HandwritingSetup from './components/HandwritingSetup'
 import HandwritingRenderer from './components/HandwritingRenderer'
 import HandwritingTest from './components/HandwritingTest'
-const [isSidebarOpen, setIsSidebarOpen] = useState(false)
+
 
 function App() {
   // -----------------------------
@@ -48,7 +48,7 @@ const [settingsSection, setSettingsSection] = useState('main')
   const [activePage, setActivePage] = useState(
   localStorage.getItem('activePage') || 'notes')
   const [favouriteNotes, setFavouriteNotes] = useState([])
-
+const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   // -----------------------------
   // Register
   // -----------------------------
@@ -633,13 +633,27 @@ function handleSaveSample(sample) {
       </header>
 
       {/* Sidebar */}
-      <Sidebar
+      
+{/* Sidebar overlay */}
+{isSidebarOpen && (
+  <div
+    className="sidebar-overlay"
+    onClick={() => setIsSidebarOpen(false)}
+  />
+)}
+
+{/* Sidebar */}
+<Sidebar
   activePage={activePage}
-  setActivePage={setActivePage}
+  setActivePage={(page) => {
+    setActivePage(page)
+    setIsSidebarOpen(false)
+  }}
   handleLogout={handleLogout}
   isSidebarOpen={isSidebarOpen}
   setIsSidebarOpen={setIsSidebarOpen}
 />
+
       {/* Main content */}
       <main className="main-content">
 
