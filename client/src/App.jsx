@@ -10,7 +10,7 @@ import HandwritingCanvas from './components/HandwritingCanvas'
 import HandwritingSetup from './components/HandwritingSetup'
 import HandwritingRenderer from './components/HandwritingRenderer'
 import HandwritingTest from './components/HandwritingTest'
-
+import ProfilePage from './components/ProfilePage'
 
 function App() {
   // -----------------------------
@@ -714,7 +714,11 @@ function handleSaveSample(sample) {
 )}
 
 {activePage === 'diary' && (
-  <DiaryPage />
+  <DiaryPage
+  message={message}
+  error={error}
+  setMessage={setMessage}
+  setError={setError} />
 )}
 
 {activePage === 'settings' && (
@@ -780,7 +784,7 @@ function handleSaveSample(sample) {
   </div>
 )}
 
-        {activePage !== 'notes' && activePage !== 'favourites' && activePage !== 'diary' && activePage !== 'settings'  && (
+        {activePage !== 'notes' && activePage !== 'favourites' && activePage !== 'diary' && activePage !== 'settings'  && activePage != 'profile' && (
           <div className="coming-soon">
             <div className="coming-soon-icon">
               ✦
@@ -794,8 +798,11 @@ function handleSaveSample(sample) {
               {activePage === 'settings' &&
                 'Settings'}
 
-              {activePage === 'profile' &&
-                'Profile'}
+              
+{activePage === 'profile' && (
+  <ProfilePage currentUser={currentUser} />
+)}
+
             </h2>
 
             <p>
@@ -811,6 +818,12 @@ function handleSaveSample(sample) {
             </button>
           </div>
         )}
+
+        
+{activePage === 'profile' && (
+  <ProfilePage currentUser={currentUser} />
+)}
+
 
       </main>
 

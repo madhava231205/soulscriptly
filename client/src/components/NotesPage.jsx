@@ -63,9 +63,7 @@ function NotesPage({
             </select>
           </div>
 
-          <div className="profile-circle">
-  {currentUser?.name?.charAt(0).toUpperCase()}
-</div>
+          
 
         </div>
       </div>

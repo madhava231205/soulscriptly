@@ -6,6 +6,7 @@ function DiaryPage() {
   const [handwritingSamples, setHandwritingSamples] = useState({})
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+   const [Message, setMessage] = useState('')
   const [showCreateForm, setShowCreateForm] = useState(false)
   const [showCalendar, setShowCalendar] = useState(false)
   const [calendarMonth, setCalendarMonth] = useState(new Date())
@@ -345,6 +346,7 @@ async function uploadDiaryPhoto(diaryEntryId, photo, token) {
 
      if (response.ok) {
   const newEntry = data.diaryEntry
+  setMessage('Diary entry created successfully.')
 
   setDiaryEntries((currentEntries) => [
     newEntry,
@@ -359,6 +361,9 @@ async function uploadDiaryPhoto(diaryEntryId, photo, token) {
   setTitle('')
   setContent('')
   setShowCreateForm(false)
+  setTimeout(() => {
+          setMessage('')
+        }, 2500)
 }else {
       setError(data.message)
     }
@@ -851,6 +856,47 @@ return (
   </div>
   </div>
 )}
+
+{Message && (
+        <div className="toast-message">
+
+          <div className="toast-icon">
+            ✓
+          </div>
+
+          <div>
+            <strong>{Message}</strong>
+            <span>Your diary entry has been saved.</span>
+          </div>
+
+          <button
+            onClick={() => setMessage('')}
+          >
+            ×
+          </button>
+
+        </div>
+      )}
+
+{error && (
+        <div className="toast-message error-toast">
+
+          <div className="toast-icon">
+            !
+          </div>
+
+          <div>
+            <strong>{error}</strong>
+          </div>
+
+          <button
+            onClick={() => setError('')}
+          >
+            ×
+          </button>
+
+        </div>
+      )}
 
       {loading && (
         <p>Loading diary entries...</p>
