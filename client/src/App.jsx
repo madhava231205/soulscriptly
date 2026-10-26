@@ -800,7 +800,10 @@ function handleSaveSample(sample) {
 
               
 {activePage === 'profile' && (
-  <ProfilePage currentUser={currentUser} />
+  <ProfilePage
+  currentUser={currentUser}
+  setCurrentUser={setCurrentUser}
+/>
 )}
 
             </h2>
@@ -821,7 +824,10 @@ function handleSaveSample(sample) {
 
         
 {activePage === 'profile' && (
-  <ProfilePage currentUser={currentUser} />
+  <ProfilePage
+  currentUser={currentUser}
+  setCurrentUser={setCurrentUser}
+/>
 )}
 
 
