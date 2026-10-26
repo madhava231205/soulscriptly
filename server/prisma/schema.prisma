@@ -16,6 +16,7 @@ model User {
   notes   Note[]
   diaryEntries DiaryEntry[]
   diaryPinHash  String?
+  profilePicture String?
   handwritingSamples HandwritingSample[]
 }
 

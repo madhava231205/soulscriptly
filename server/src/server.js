@@ -61,6 +61,6 @@ app.get("/api/db-test", async (req, res) => {
 
 app.listen(PORT, () => {
   console.log(
-    `🚀 SoulScriptly server running on http://localhost:${PORT}`
+    ` SoulScriptly server running on http://localhost:${PORT}`
   );
 });

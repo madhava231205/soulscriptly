@@ -41,6 +41,7 @@ export type UserMinAggregateOutputType = {
   password: string | null
   createdAt: Date | null
   diaryPinHash: string | null
+  profilePicture: string | null
 }
 
 export type UserMaxAggregateOutputType = {
@@ -50,6 +51,7 @@ export type UserMaxAggregateOutputType = {
   password: string | null
   createdAt: Date | null
   diaryPinHash: string | null
+  profilePicture: string | null
 }
 
 export type UserCountAggregateOutputType = {
@@ -59,6 +61,7 @@ export type UserCountAggregateOutputType = {
   password: number
   createdAt: number
   diaryPinHash: number
+  profilePicture: number
   _all: number
 }
 
@@ -78,6 +81,7 @@ export type UserMinAggregateInputType = {
   password?: true
   createdAt?: true
   diaryPinHash?: true
+  profilePicture?: true
 }
 
 export type UserMaxAggregateInputType = {
@@ -87,6 +91,7 @@ export type UserMaxAggregateInputType = {
   password?: true
   createdAt?: true
   diaryPinHash?: true
+  profilePicture?: true
 }
 
 export type UserCountAggregateInputType = {
@@ -96,6 +101,7 @@ export type UserCountAggregateInputType = {
   password?: true
   createdAt?: true
   diaryPinHash?: true
+  profilePicture?: true
   _all?: true
 }
 
@@ -192,6 +198,7 @@ export type UserGroupByOutputType = {
   password: string
   createdAt: Date
   diaryPinHash: string | null
+  profilePicture: string | null
   _count: UserCountAggregateOutputType | null
   _avg: UserAvgAggregateOutputType | null
   _sum: UserSumAggregateOutputType | null
@@ -224,6 +231,7 @@ export type UserWhereInput = {
   password?: Prisma.StringFilter<"User"> | string
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   diaryPinHash?: Prisma.StringNullableFilter<"User"> | string | null
+  profilePicture?: Prisma.StringNullableFilter<"User"> | string | null
   notes?: Prisma.NoteListRelationFilter
   diaryEntries?: Prisma.DiaryEntryListRelationFilter
   handwritingSamples?: Prisma.HandwritingSampleListRelationFilter
@@ -236,6 +244,7 @@ export type UserOrderByWithRelationInput = {
   password?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   diaryPinHash?: Prisma.SortOrderInput | Prisma.SortOrder
+  profilePicture?: Prisma.SortOrderInput | Prisma.SortOrder
   notes?: Prisma.NoteOrderByRelationAggregateInput
   diaryEntries?: Prisma.DiaryEntryOrderByRelationAggregateInput
   handwritingSamples?: Prisma.HandwritingSampleOrderByRelationAggregateInput
@@ -251,6 +260,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   password?: Prisma.StringFilter<"User"> | string
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   diaryPinHash?: Prisma.StringNullableFilter<"User"> | string | null
+  profilePicture?: Prisma.StringNullableFilter<"User"> | string | null
   notes?: Prisma.NoteListRelationFilter
   diaryEntries?: Prisma.DiaryEntryListRelationFilter
   handwritingSamples?: Prisma.HandwritingSampleListRelationFilter
@@ -263,6 +273,7 @@ export type UserOrderByWithAggregationInput = {
   password?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   diaryPinHash?: Prisma.SortOrderInput | Prisma.SortOrder
+  profilePicture?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.UserCountOrderByAggregateInput
   _avg?: Prisma.UserAvgOrderByAggregateInput
   _max?: Prisma.UserMaxOrderByAggregateInput
@@ -280,6 +291,7 @@ export type UserScalarWhereWithAggregatesInput = {
   password?: Prisma.StringWithAggregatesFilter<"User"> | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"User"> | Date | string
   diaryPinHash?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
+  profilePicture?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
 }
 
 export type UserCreateInput = {
@@ -288,6 +300,7 @@ export type UserCreateInput = {
   password: string
   createdAt?: Date | string
   diaryPinHash?: string | null
+  profilePicture?: string | null
   notes?: Prisma.NoteCreateNestedManyWithoutUserInput
   diaryEntries?: Prisma.DiaryEntryCreateNestedManyWithoutUserInput
   handwritingSamples?: Prisma.HandwritingSampleCreateNestedManyWithoutUserInput
@@ -300,6 +313,7 @@ export type UserUncheckedCreateInput = {
   password: string
   createdAt?: Date | string
   diaryPinHash?: string | null
+  profilePicture?: string | null
   notes?: Prisma.NoteUncheckedCreateNestedManyWithoutUserInput
   diaryEntries?: Prisma.DiaryEntryUncheckedCreateNestedManyWithoutUserInput
   handwritingSamples?: Prisma.HandwritingSampleUncheckedCreateNestedManyWithoutUserInput
@@ -311,6 +325,7 @@ export type UserUpdateInput = {
   password?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   diaryPinHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  profilePicture?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NoteUpdateManyWithoutUserNestedInput
   diaryEntries?: Prisma.DiaryEntryUpdateManyWithoutUserNestedInput
   handwritingSamples?: Prisma.HandwritingSampleUpdateManyWithoutUserNestedInput
@@ -323,6 +338,7 @@ export type UserUncheckedUpdateInput = {
   password?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   diaryPinHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  profilePicture?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NoteUncheckedUpdateManyWithoutUserNestedInput
   diaryEntries?: Prisma.DiaryEntryUncheckedUpdateManyWithoutUserNestedInput
   handwritingSamples?: Prisma.HandwritingSampleUncheckedUpdateManyWithoutUserNestedInput
@@ -335,6 +351,7 @@ export type UserCreateManyInput = {
   password: string
   createdAt?: Date | string
   diaryPinHash?: string | null
+  profilePicture?: string | null
 }
 
 export type UserUpdateManyMutationInput = {
@@ -343,6 +360,7 @@ export type UserUpdateManyMutationInput = {
   password?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   diaryPinHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  profilePicture?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type UserUncheckedUpdateManyInput = {
@@ -352,6 +370,7 @@ export type UserUncheckedUpdateManyInput = {
   password?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   diaryPinHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  profilePicture?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type UserCountOrderByAggregateInput = {
@@ -361,6 +380,7 @@ export type UserCountOrderByAggregateInput = {
   password?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   diaryPinHash?: Prisma.SortOrder
+  profilePicture?: Prisma.SortOrder
 }
 
 export type UserAvgOrderByAggregateInput = {
@@ -374,6 +394,7 @@ export type UserMaxOrderByAggregateInput = {
   password?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   diaryPinHash?: Prisma.SortOrder
+  profilePicture?: Prisma.SortOrder
 }
 
 export type UserMinOrderByAggregateInput = {
@@ -383,6 +404,7 @@ export type UserMinOrderByAggregateInput = {
   password?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   diaryPinHash?: Prisma.SortOrder
+  profilePicture?: Prisma.SortOrder
 }
 
 export type UserSumOrderByAggregateInput = {
@@ -462,6 +484,7 @@ export type UserCreateWithoutNotesInput = {
   password: string
   createdAt?: Date | string
   diaryPinHash?: string | null
+  profilePicture?: string | null
   diaryEntries?: Prisma.DiaryEntryCreateNestedManyWithoutUserInput
   handwritingSamples?: Prisma.HandwritingSampleCreateNestedManyWithoutUserInput
 }
@@ -473,6 +496,7 @@ export type UserUncheckedCreateWithoutNotesInput = {
   password: string
   createdAt?: Date | string
   diaryPinHash?: string | null
+  profilePicture?: string | null
   diaryEntries?: Prisma.DiaryEntryUncheckedCreateNestedManyWithoutUserInput
   handwritingSamples?: Prisma.HandwritingSampleUncheckedCreateNestedManyWithoutUserInput
 }
@@ -499,6 +523,7 @@ export type UserUpdateWithoutNotesInput = {
   password?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   diaryPinHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  profilePicture?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   diaryEntries?: Prisma.DiaryEntryUpdateManyWithoutUserNestedInput
   handwritingSamples?: Prisma.HandwritingSampleUpdateManyWithoutUserNestedInput
 }
@@ -510,6 +535,7 @@ export type UserUncheckedUpdateWithoutNotesInput = {
   password?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   diaryPinHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  profilePicture?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   diaryEntries?: Prisma.DiaryEntryUncheckedUpdateManyWithoutUserNestedInput
   handwritingSamples?: Prisma.HandwritingSampleUncheckedUpdateManyWithoutUserNestedInput
 }
@@ -520,6 +546,7 @@ export type UserCreateWithoutDiaryEntriesInput = {
   password: string
   createdAt?: Date | string
   diaryPinHash?: string | null
+  profilePicture?: string | null
   notes?: Prisma.NoteCreateNestedManyWithoutUserInput
   handwritingSamples?: Prisma.HandwritingSampleCreateNestedManyWithoutUserInput
 }
@@ -531,6 +558,7 @@ export type UserUncheckedCreateWithoutDiaryEntriesInput = {
   password: string
   createdAt?: Date | string
   diaryPinHash?: string | null
+  profilePicture?: string | null
   notes?: Prisma.NoteUncheckedCreateNestedManyWithoutUserInput
   handwritingSamples?: Prisma.HandwritingSampleUncheckedCreateNestedManyWithoutUserInput
 }
@@ -557,6 +585,7 @@ export type UserUpdateWithoutDiaryEntriesInput = {
   password?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   diaryPinHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  profilePicture?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NoteUpdateManyWithoutUserNestedInput
   handwritingSamples?: Prisma.HandwritingSampleUpdateManyWithoutUserNestedInput
 }
@@ -568,6 +597,7 @@ export type UserUncheckedUpdateWithoutDiaryEntriesInput = {
   password?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   diaryPinHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  profilePicture?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NoteUncheckedUpdateManyWithoutUserNestedInput
   handwritingSamples?: Prisma.HandwritingSampleUncheckedUpdateManyWithoutUserNestedInput
 }
@@ -578,6 +608,7 @@ export type UserCreateWithoutHandwritingSamplesInput = {
   password: string
   createdAt?: Date | string
   diaryPinHash?: string | null
+  profilePicture?: string | null
   notes?: Prisma.NoteCreateNestedManyWithoutUserInput
   diaryEntries?: Prisma.DiaryEntryCreateNestedManyWithoutUserInput
 }
@@ -589,6 +620,7 @@ export type UserUncheckedCreateWithoutHandwritingSamplesInput = {
   password: string
   createdAt?: Date | string
   diaryPinHash?: string | null
+  profilePicture?: string | null
   notes?: Prisma.NoteUncheckedCreateNestedManyWithoutUserInput
   diaryEntries?: Prisma.DiaryEntryUncheckedCreateNestedManyWithoutUserInput
 }
@@ -615,6 +647,7 @@ export type UserUpdateWithoutHandwritingSamplesInput = {
   password?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   diaryPinHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  profilePicture?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NoteUpdateManyWithoutUserNestedInput
   diaryEntries?: Prisma.DiaryEntryUpdateManyWithoutUserNestedInput
 }
@@ -626,6 +659,7 @@ export type UserUncheckedUpdateWithoutHandwritingSamplesInput = {
   password?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   diaryPinHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  profilePicture?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NoteUncheckedUpdateManyWithoutUserNestedInput
   diaryEntries?: Prisma.DiaryEntryUncheckedUpdateManyWithoutUserNestedInput
 }
@@ -686,6 +720,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   password?: boolean
   createdAt?: boolean
   diaryPinHash?: boolean
+  profilePicture?: boolean
   notes?: boolean | Prisma.User$notesArgs<ExtArgs>
   diaryEntries?: boolean | Prisma.User$diaryEntriesArgs<ExtArgs>
   handwritingSamples?: boolean | Prisma.User$handwritingSamplesArgs<ExtArgs>
@@ -699,6 +734,7 @@ export type UserSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   password?: boolean
   createdAt?: boolean
   diaryPinHash?: boolean
+  profilePicture?: boolean
 }, ExtArgs["result"]["user"]>
 
 export type UserSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -708,6 +744,7 @@ export type UserSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   password?: boolean
   createdAt?: boolean
   diaryPinHash?: boolean
+  profilePicture?: boolean
 }, ExtArgs["result"]["user"]>
 
 export type UserSelectScalar = {
@@ -717,9 +754,10 @@ export type UserSelectScalar = {
   password?: boolean
   createdAt?: boolean
   diaryPinHash?: boolean
+  profilePicture?: boolean
 }
 
-export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "email" | "password" | "createdAt" | "diaryPinHash", ExtArgs["result"]["user"]>
+export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "email" | "password" | "createdAt" | "diaryPinHash" | "profilePicture", ExtArgs["result"]["user"]>
 export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   notes?: boolean | Prisma.User$notesArgs<ExtArgs>
   diaryEntries?: boolean | Prisma.User$diaryEntriesArgs<ExtArgs>
@@ -743,6 +781,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     password: string
     createdAt: Date
     diaryPinHash: string | null
+    profilePicture: string | null
   }, ExtArgs["result"]["user"]>
   composites: {}
 }
@@ -1175,6 +1214,7 @@ export interface UserFieldRefs {
   readonly password: Prisma.FieldRef<"User", 'String'>
   readonly createdAt: Prisma.FieldRef<"User", 'DateTime'>
   readonly diaryPinHash: Prisma.FieldRef<"User", 'String'>
+  readonly profilePicture: Prisma.FieldRef<"User", 'String'>
 }
     
 
