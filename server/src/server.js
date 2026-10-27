@@ -5,6 +5,7 @@ import prisma from "./lib/prisma.js";
 import authRoutes from "./routes/auth.routes.js";
 import noteRoutes from "./routes/note.routes.js";
 import diaryRoutes from './routes/diary.routes.js'
+import statsRoutes from "./routes/stats.routes.js";
 
 dotenv.config();
 
@@ -25,6 +26,7 @@ app.use(express.json());
 app.use("/api/auth", authRoutes);
 app.use("/api/notes", noteRoutes);
 app.use("/api/diary", diaryRoutes);
+app.use("/api/stats", statsRoutes);
 
 app.get("/", (req, res) => {
   res.json({
