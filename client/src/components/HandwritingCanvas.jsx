@@ -14,7 +14,7 @@ function HandwritingCanvas({ character, onSave, savedImage }) {
 
     const context = canvas.getContext('2d')
 
-    context.lineWidth = 4
+    context.lineWidth = 3
     context.lineCap = 'round'
     context.lineJoin = 'round'
   }, [])
