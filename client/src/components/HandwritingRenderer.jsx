@@ -15,7 +15,7 @@ function HandwritingRenderer({ text, handwritingSamples }) {
     const context = canvas.getContext('2d')
 
     const canvasWidth = 800
-    const maxLetterWidth = 18
+    const maxLetterWidth = 20
     const letterHeight = 30
     const spacing = 5
     const spaceWidth = 20
@@ -133,62 +133,57 @@ const verticalOffset = ((charCode * 3) % 5) - 2
           letterCanvas.height
         )
 
-        for (let i = 0; i < pixels.data.length; i += 4) {
-          const alpha = pixels.data[i + 3]
-
-          if (alpha > 0) {
-            pixels.data[i] = 0
-            pixels.data[i + 1] = 0
-            pixels.data[i + 2] = 0
-            pixels.data[i + 3] = 255
-          }
-        }
+       
 
         // Preserve the original strokes before thickening them.
-        const sourcePixels = new Uint8ClampedArray(pixels.data)
-        const width = letterCanvas.width
-        const height = letterCanvas.height
+        // Preserve the original colors while thickening strokes.
+const sourcePixels = new Uint8ClampedArray(pixels.data)
+const width = letterCanvas.width
+const height = letterCanvas.height
+const radius = 1
 
-        for (let py = 0; py < height; py++) {
-          for (let px = 0; px < width; px++) {
-            const index = (py * width + px) * 4
+for (let py = 0; py < height; py++) {
+  for (let px = 0; px < width; px++) {
+    const index = (py * width + px) * 4
 
-            if (sourcePixels[index + 3] > 0) {
-              continue
-            }
+    if (sourcePixels[index + 3] > 0) {
+      continue
+    }
 
-            let foundStroke = false
+    let colorIndex = -1
 
-            for (let dy = -1; dy <= 1; dy++) {
-              for (let dx = -1; dx <= 1; dx++) {
-                const nx = px + dx
-                const ny = py + dy
+    for (let dy = -radius; dy <= radius && colorIndex === -1; dy++) {
+      for (let dx = -radius; dx <= radius; dx++) {
+        const nx = px + dx
+        const ny = py + dy
 
-                if (
-                  nx >= 0 &&
-                  nx < width &&
-                  ny >= 0 &&
-                  ny < height
-                ) {
-                  const neighborIndex = (ny * width + nx) * 4
+        if (
+          nx >= 0 &&
+          nx < width &&
+          ny >= 0 &&
+          ny < height
+        ) {
+          const neighborIndex = (ny * width + nx) * 4
 
-                  if (sourcePixels[neighborIndex + 3] > 0) {
-                    foundStroke = true
-                  }
-                }
-              }
-            }
-
-            if (foundStroke) {
-              pixels.data[index] = 0
-              pixels.data[index + 1] = 0
-              pixels.data[index + 2] = 0
-              pixels.data[index + 3] = 255
-            }
+          if (sourcePixels[neighborIndex + 3] > 0) {
+            colorIndex = neighborIndex
+            break
           }
         }
+      }
+    }
 
-        letterContext.putImageData(pixels, 0, 0)
+    if (colorIndex !== -1) {
+      pixels.data[index] = sourcePixels[colorIndex]
+      pixels.data[index + 1] = sourcePixels[colorIndex + 1]
+      pixels.data[index + 2] = sourcePixels[colorIndex + 2]
+      pixels.data[index + 3] = sourcePixels[colorIndex + 3]
+    }
+  }
+}
+
+letterContext.putImageData(pixels, 0, 0)
+letterContext.globalCompositeOperation = 'source-over'
 
        const variedHeight = letterCanvas.height * heightVariation
 const variedY = y + verticalOffset

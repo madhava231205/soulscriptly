@@ -20,6 +20,17 @@ function HandwritingCanvas({ character, onSave, savedImage }) {
     context.lineJoin = 'round'
   }, [])
 
+  useEffect(() => {
+  const canvas = canvasRef.current
+
+  if (!canvas) {
+    return
+  }
+
+  const context = canvas.getContext('2d')
+  context.clearRect(0, 0, canvas.width, canvas.height)
+  setIsDrawing(false)
+}, [character])
   
 function startDrawing(event) {
   const canvas = canvasRef.current
@@ -28,6 +39,8 @@ function startDrawing(event) {
 
   const scaleX = canvas.width / rect.width
   const scaleY = canvas.height / rect.height
+
+  context.strokeStyle = penColor
 
   context.beginPath()
   context.moveTo(
@@ -167,6 +180,16 @@ function saveSample() {
       <h2 className="handwriting-canvas-title">
         Draw the character: <span>{character}</span>
       </h2>
+
+      <div className="handwriting-color-picker">
+  <label htmlFor="pen-color">Pen color:</label>
+  <input
+    id="pen-color"
+    type="color"
+    value={penColor}
+    onChange={(event) => setPenColor(event.target.value)}
+  />
+</div>
 
       <div className="handwriting-drawing-area">
         <canvas

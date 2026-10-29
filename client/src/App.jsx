@@ -484,7 +484,7 @@ const favouriteNoteObjects = notes.filter(
                 : 'Create your account'}
             </h2>
 
-            <p>
+            <p >
               {isLogin
                 ? 'Continue writing your story.'
                 : 'Start your personal journey with SoulScriptly.'}
@@ -623,8 +623,8 @@ function handleSaveSample(sample) {
       {/* Mobile top bar */}
       <header className="mobile-header">
         <div className="brand">
-          <span className="brand-feather">✦</span>
-          <span>SoulScriptly</span>
+          <img src={logo} alt="✦"  />
+          <h1>SoulScriptly</h1>
         </div>
 
         <button

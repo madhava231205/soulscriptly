@@ -160,10 +160,11 @@ useEffect(() => {
 
         <div className="handwriting-canvas-wrapper">
           <HandwritingCanvas
-            key={currentCharacter}
+           
             character={currentCharacter}
             onSave={handleSaveSample}
             savedImage={handwritingSamples[currentCharacter]}
+            
           />
         </div>
 

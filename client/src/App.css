@@ -228,6 +228,14 @@ button {
   color: #30336f;
   font-size: 20px;
 }
+.sidebar-brand:hover h1{
+ color: #5648c7;
+ transform: scale(1.2);
+}
+.brand-text:hover h1{
+  color: #5648c7;
+  transform: scale(1.2);
+}
 
 .sidebar-brand p {
   margin: 3px 0 0;
@@ -824,14 +832,14 @@ button {
   justify-content: center;
   align-items: center;
 
-  padding: 20px;
+  padding: 10px;
 
   background: rgba(30, 31, 65, 0.48);
 
   backdrop-filter: blur(4px);
   
 
-  z-index: 200;
+  z-index: 20;
 }
 
 .note-modal,
@@ -840,6 +848,7 @@ button {
   max-width: 540px;
 
   padding: 28px;
+
 
   border-radius: 20px;
 
@@ -856,7 +865,7 @@ button {
   align-items: flex-start;
   gap: 80px;
 
-  margin-bottom: 25px;
+  margin: 25px;
 }
 
 .modal-header h2 {
@@ -1169,13 +1178,29 @@ button {
   .brand {
     display: flex;
     align-items: center;
-    gap: 7px;
+    gap: 2px;
 
     color: #343771;
 
     font-family: Georgia, serif;
     font-size: 17px;
     font-weight: 600;
+  }
+  .brand img {
+    width: 40px;
+    height: 50px;
+  }
+  .brand h1{
+     color: #30336f;
+  font-size: 20px;
+
+  }
+  .brand:hover {
+    color: #5648c7;
+ transform: scale(1.2);
+  }
+  .brand:hover h1{
+    color: #5648c7;
   }
 
   .brand-feather {
