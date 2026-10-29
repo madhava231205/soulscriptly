@@ -213,6 +213,7 @@ router.patch("/profile", authenticateToken, async (req, res) => {
         name: true,
         email: true,
         createdAt: true,
+        profilePicture: true,
       },
     });
 
