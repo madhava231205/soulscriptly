@@ -67,9 +67,16 @@ button {
 
 .auth-logo {
   display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 42px;
+  
+  justify-content: center;
+  gap: 5px;
+  margin-bottom: 20px;
+  
+}
+.brand-text{
+
+  padding:12px;
+  padding-left:0px;
 }
 
 .logo-feather,
@@ -98,8 +105,10 @@ button {
 }
 
 .auth-heading p {
-  margin: 0 0 28px;
-  color: #777b9f;
+  margin: 5px 0 24px;
+  color: #85778c;
+  font-size: 13px;
+  line-height: 1.6;
 }
 
 .auth-form {
@@ -208,9 +217,9 @@ button {
 .sidebar-brand {
   display: flex;
   align-items: center;
-  gap: 9px;
+  gap: 1px;
 
-  padding: 0 10px;
+  
   margin-bottom: 42px;
 }
 
@@ -223,13 +232,21 @@ button {
 .sidebar-brand p {
   margin: 3px 0 0;
   color: #9798b4;
-  font-size: 9px;
+  font-size: 10px;
 }
 
 .brand-icon {
   font-size: 27px;
 }
 
+.brand-logo img{
+  width: 60px;
+  height: 75px;
+  color:#6654d9;
+}
+.brand-logo:hover img{
+  transform: scale(1.5); 
+}
 .sidebar-nav {
   display: flex;
   flex-direction: column;
@@ -283,10 +300,11 @@ button {
   margin-top: auto;
   padding: 20px 12px 4px;
   text-align: center;
+  
 }
 
 .sidebar-bottom p {
-  margin: 2px 0;
+  
   color: #9293ad;
   font-size: 12px;
 }
@@ -298,7 +316,7 @@ button {
 
 .logout-button {
   width: 100%;
-  margin-top: 18px;
+  margin-top: 5px;
   padding: 9px;
 
   border: 1px solid #dddaf3;
@@ -811,6 +829,7 @@ button {
   background: rgba(30, 31, 65, 0.48);
 
   backdrop-filter: blur(4px);
+  
 
   z-index: 200;
 }
@@ -825,6 +844,7 @@ button {
   border-radius: 20px;
 
   background: white;
+ 
 
   box-shadow:
     0 25px 70px rgba(30, 29, 80, 0.25);
@@ -832,8 +852,9 @@ button {
 
 .modal-header {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
   align-items: flex-start;
+  gap: 80px;
 
   margin-bottom: 25px;
 }
@@ -846,7 +867,7 @@ button {
 }
 
 .modal-header p {
-  margin: 0;
+
 
   color: #8a8ca7;
   font-size: 12px;
@@ -2473,6 +2494,7 @@ min-height: 0;
   font-size: 13px;
   line-height: 1.6;
 }
+
 
 .handwriting-test-result {
   padding: 20px;

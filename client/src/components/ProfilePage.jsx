@@ -390,7 +390,7 @@ useEffect(() => {
 
       <section className="profile-stats">
         <div className="profile-stats-heading">
-          <h3>My Writing Journey ✨</h3>
+          <h3> ✦ My Writing Journey ✦</h3>
           <p>Every little moment you save becomes part of your story.</p>
         </div>
 

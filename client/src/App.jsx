@@ -11,6 +11,7 @@ import HandwritingSetup from './components/HandwritingSetup'
 import HandwritingRenderer from './components/HandwritingRenderer'
 import HandwritingTest from './components/HandwritingTest'
 import ProfilePage from './components/ProfilePage'
+import logo from './assets/logo.png';
 
 function App() {
   // -----------------------------
@@ -466,8 +467,11 @@ const favouriteNoteObjects = notes.filter(
         <div className="auth-card">
 
           <div className="auth-logo">
-            <span className="logo-feather">✦</span>
-            <div>
+            
+            <div className="brand-logo">
+              <img src={logo} alt="✦"  />
+            </div>
+            <div className="brand-text">
               <h1>SoulScriptly</h1>
               <p>Your thoughts. Your story.</p>
             </div>

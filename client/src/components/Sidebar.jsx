@@ -1,3 +1,5 @@
+import logo from '../assets/logo.png';
+
 function Sidebar({
   activePage,
   setActivePage,
@@ -5,13 +7,15 @@ function Sidebar({
   isSidebarOpen,
   setIsSidebarOpen,
 }) {
-  console.log('Sidebar open:', isSidebarOpen)
+  
   return (
     <aside className={`sidebar ${isSidebarOpen ? 'open' : ''}`}>
 
       <div className="sidebar-brand">
-        <div className="brand-icon">✦</div>
-
+        
+<div className="brand-logo">
+  <img src={logo} alt="✦"  />
+</div>
         <div>
           <h1>SoulScriptly</h1>
           <p>Your thoughts. Your story.</p>
