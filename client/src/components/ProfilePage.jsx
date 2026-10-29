@@ -151,6 +151,9 @@ useEffect(() => {
       setName(data.user.name)
       setIsEditing(false)
       setMessage('Name updated successfully!')
+      setTimeout(() => {
+          setMessage('')
+        }, 2500)
     } catch (error) {
       
       setMessage('Could not connect to the server.')

@@ -1013,6 +1013,7 @@ return (
           selectedEntry.createdAt
         ).toLocaleDateString()}
       </div>
+      <p className="handwriting-test-note">Note: letters missing from your handwriting samples will appear as blank spaces.</p>
 
 <div className="read-content">
   <HandwritingRenderer

@@ -4,6 +4,7 @@ function HandwritingCanvas({ character, onSave, savedImage }) {
   const canvasRef = useRef(null)
 
   const [isDrawing, setIsDrawing] = useState(false)
+  const [penColor, setPenColor] = useState('#222222')
 
   useEffect(() => {
     const canvas = canvasRef.current
