@@ -832,14 +832,14 @@ button {
   justify-content: center;
   align-items: center;
 
-  padding: 10px;
+  padding: 20px;
 
   background: rgba(30, 31, 65, 0.48);
 
   backdrop-filter: blur(4px);
   
 
-  z-index: 20;
+  z-index: 200;
 }
 
 .note-modal,
@@ -864,8 +864,7 @@ button {
   justify-content: flex-end;
   align-items: flex-start;
   gap: 80px;
-
-  margin: 25px;
+  margin-bottom: 25px;
 }
 
 .modal-header h2 {
@@ -2767,11 +2766,21 @@ min-height: 0;
 .read-footer {
   display: flex;
   flex-wrap: wrap;
-  justify-content: flex-end;
+  justify-content: space-between;
   gap: 10px;
   margin-top: 28px;
   padding-top: 20px;
   border-top: 1px solid #eee6f2;
+}
+
+.read-footer1{
+  display: flex;
+  gap: 10px;
+}
+
+.read-footer2{
+  display: flex;
+  gap: 10px;
 }
 
 .read-footer button {
@@ -2795,6 +2804,8 @@ min-height: 0;
     max-height: 92vh;
     padding: 20px;
     border-radius: 16px;
+    
+
   }
 
   .read-modal > h2 {
@@ -2806,7 +2817,7 @@ min-height: 0;
   }
 
   .read-footer {
-    justify-content: stretch;
+    justify-content: center;
   }
 
   .read-footer button {

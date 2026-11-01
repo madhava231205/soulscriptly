@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import HandwritingRenderer from './HandwritingRenderer'
+import { jsPDF } from 'jspdf';
 
 function DiaryPage() {
   const [diaryEntries, setDiaryEntries] = useState([])
@@ -29,6 +30,7 @@ const [photoImages, setPhotoImages] = useState({})
 const [activePhotoIndex, setActivePhotoIndex] = useState(null)
 const [touchStartX, setTouchStartX] = useState(null)
 const [selectedPhotos, setSelectedPhotos] = useState([])
+const [exportingPDF, setExportingPDF] = useState(false)
 
 const calendarYear = calendarMonth.getFullYear()
 const calendarMonthIndex = calendarMonth.getMonth()
@@ -258,6 +260,430 @@ return data.photos || []
   } catch (error) {
     setDiaryPhotos([])
     console.error('Get diary photos error:', error)
+  }
+}
+
+const loadHandwritingImage = (imageData) => {
+  return new Promise((resolve, reject) => {
+    const image = new Image()
+
+    image.onload = () => resolve(image)
+    image.onerror = () => reject(
+      new Error('Unable to load handwriting sample')
+    )
+
+    image.src = imageData
+  })
+}
+
+async function exportDiaryEntryPDF() {
+  if (!selectedEntry) return
+
+  setExportingPDF(true)
+  const token = localStorage.getItem('token')
+
+  try {
+    const pdf = new jsPDF({
+  orientation: 'portrait',
+  unit: 'mm',
+  format: 'a4',
+})
+
+const pageWidth = pdf.internal.pageSize.getWidth()
+const pageHeight = pdf.internal.pageSize.getHeight()
+
+const marginLeft = 15
+const marginRight = 15
+const marginTop = 15
+const marginBottom = 15
+
+const contentWidth = pageWidth - marginLeft - marginRight
+const contentHeight = pageHeight - marginTop - marginBottom
+
+pdf.setFont('helvetica', 'bold')
+pdf.setFontSize(18)
+
+pdf.text(
+  selectedEntry.title,
+  marginLeft,
+  marginTop + 5,
+  { maxWidth: contentWidth }
+)
+
+pdf.setFont('helvetica', 'normal')
+pdf.setFontSize(10)
+
+const entryDate = new Date(selectedEntry.createdAt).toLocaleDateString(
+  'en-GB',
+  {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  }
+)
+
+pdf.text(
+  `Created on ${entryDate}`,
+  marginLeft,
+  marginTop + 13
+)
+const exportCanvas = document.createElement('canvas')
+const exportContext = exportCanvas.getContext('2d')
+
+if (!exportContext) {
+  throw new Error('Unable to create export canvas')
+}
+
+const canvasWidth = 800
+const maxLetterWidth = 20
+const letterHeight = 30
+const spacing = 5
+const spaceWidth = 20
+const lineHeight = 42
+const leftMargin = 10
+const rightMargin = 10
+const topMargin = 20
+const bottomMargin = 20
+const canvasPageHeight = 1122
+const handwritingImages = {}
+
+await Promise.all(
+  Object.entries(handwritingSamples).map(async ([character, imageData]) => {
+    try {
+      handwritingImages[character] = await loadHandwritingImage(imageData)
+    } catch (error) {
+      console.warn(`Could not load handwriting sample: ${character}`, error)
+    }
+  })
+)
+const drawRuledLines = (context, height) => {
+  context.strokeStyle = 'rgba(130, 120, 175, 0.38)'
+  context.lineWidth = 1
+
+  for (let y = topMargin + 35; y < height - bottomMargin; y += lineHeight) {
+    context.beginPath()
+    context.moveTo(0, y)
+    context.lineTo(canvasWidth, y)
+    context.stroke()
+  }
+}
+const drawHandwrittenCharacter = (context, character, x, y, textLength) => {
+  const image = handwritingImages[character]
+
+  if (!image) {
+    return maxLetterWidth + spacing
+  }
+
+  const aspectRatio = image.width / image.height
+  const drawHeight = letterHeight
+  const drawWidth = Math.min(maxLetterWidth, drawHeight * aspectRatio)
+
+  const heightVariation =
+    0.97 + ((character.charCodeAt(0) * (textLength + 1)) % 7) / 100
+
+  const verticalOffset =
+    ((character.charCodeAt(0) * 3) % 5) - 2
+
+  const letterCanvas = document.createElement('canvas')
+  letterCanvas.width = Math.max(1, Math.ceil(drawWidth))
+  letterCanvas.height = drawHeight
+
+  const letterContext = letterCanvas.getContext('2d')
+
+  if (!letterContext) {
+    return drawWidth + spacing
+  }
+
+  letterContext.drawImage(
+    image,
+    0,
+    0,
+    letterCanvas.width,
+    letterCanvas.height
+  )
+
+  const imageData = letterContext.getImageData(
+    0,
+    0,
+    letterCanvas.width,
+    letterCanvas.height
+  )
+
+  const pixels = imageData.data
+  const originalPixels = new Uint8ClampedArray(pixels)
+
+  for (let py = 0; py < letterCanvas.height; py++) {
+    for (let px = 0; px < letterCanvas.width; px++) {
+      const index = (py * letterCanvas.width + px) * 4
+
+      if (originalPixels[index + 3] !== 0) continue
+
+      for (let dy = -1; dy <= 1; dy++) {
+        for (let dx = -1; dx <= 1; dx++) {
+          const nx = px + dx
+          const ny = py + dy
+
+          if (
+            nx < 0 ||
+            ny < 0 ||
+            nx >= letterCanvas.width ||
+            ny >= letterCanvas.height
+          ) continue
+
+          const neighborIndex =
+            (ny * letterCanvas.width + nx) * 4
+
+          if (originalPixels[neighborIndex + 3] > 0) {
+            pixels[index] = originalPixels[neighborIndex]
+            pixels[index + 1] = originalPixels[neighborIndex + 1]
+            pixels[index + 2] = originalPixels[neighborIndex + 2]
+            pixels[index + 3] = originalPixels[neighborIndex + 3]
+            break
+          }
+        }
+
+        if (pixels[index + 3] > 0) break
+      }
+    }
+  }
+
+  letterContext.putImageData(imageData, 0, 0)
+
+  context.drawImage(
+    letterCanvas,
+    x,
+    y + verticalOffset,
+    drawWidth,
+    drawHeight * heightVariation
+  )
+
+  return drawWidth + spacing
+}
+const drawHandwrittenText = (context, text) => {
+  let x = leftMargin
+  let y = topMargin + 35
+
+  for (const character of text) {
+    if (character === '\n') {
+      x = leftMargin
+      y += lineHeight
+      continue
+    }
+
+    if (character === ' ') {
+      x += spaceWidth
+      continue
+    }
+
+    if (x + maxLetterWidth > canvasWidth - rightMargin) {
+      x = leftMargin
+      y += lineHeight
+    }
+
+    x += drawHandwrittenCharacter(
+      context,
+      character,
+      x,
+      y,
+      text.length
+    )
+  }
+
+  return y + lineHeight
+}
+const renderHandwritingPage = (pageText) => {
+  exportCanvas.width = canvasWidth
+  exportCanvas.height = canvasPageHeight
+
+  exportContext.clearRect(0, 0, canvasWidth, canvasPageHeight)
+  drawRuledLines(exportContext, canvasPageHeight)
+
+  drawHandwrittenText(exportContext, pageText)
+
+  return exportCanvas.toDataURL('image/png')
+}
+const splitTextIntoPages = (text) => {
+  const lines = []
+  let currentLine = ''
+  let currentWidth = 0
+
+  const availableWidth = canvasWidth - rightMargin
+
+  for (const character of text) {
+    if (character === '\n') {
+      lines.push(currentLine)
+      currentLine = ''
+      currentWidth = 0
+      continue
+    }
+
+    if (character === ' ') {
+      currentLine += character
+      currentWidth += spaceWidth
+      continue
+    }
+
+    const image = handwritingImages[character]
+
+    const aspectRatio = image
+      ? image.width / image.height
+      : 1
+
+    const characterWidth = image
+      ? Math.min(maxLetterWidth, letterHeight * aspectRatio)
+      : maxLetterWidth
+
+    if (currentWidth + maxLetterWidth > availableWidth) {
+      lines.push(currentLine)
+      currentLine = ''
+      currentWidth = 0
+    }
+
+    currentLine += character
+    currentWidth += characterWidth + spacing
+  }
+
+  lines.push(currentLine)
+
+  const linesPerPage = Math.floor(
+    (canvasPageHeight - topMargin - bottomMargin - 35) /
+    lineHeight
+  )
+
+  const pages = []
+
+  for (let i = 0; i < lines.length; i += linesPerPage) {
+    pages.push(lines.slice(i, i + linesPerPage).join('\n'))
+  }
+
+  return pages
+}
+
+const handwritingPages = splitTextIntoPages(selectedEntry.content || '')
+
+handwritingPages.forEach((pageText, index) => {
+  if (index > 0) {
+    pdf.addPage()
+  }
+  
+
+  const imageData = renderHandwritingPage(pageText)
+
+  pdf.addImage(
+    imageData,
+    'PNG',
+    marginLeft,
+    marginTop + 20,
+    contentWidth,
+    contentHeight - 20
+  )
+})
+const photosResponse = await fetch(
+  `http://localhost:5000/api/diary/${selectedEntry.id}/photos`,
+  {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  }
+)
+
+if (!photosResponse.ok) {
+  throw new Error('Unable to load diary photos')
+}
+
+const photosData = await photosResponse.json()
+const entryPhotos = photosData.photos || []
+const photoDataUrls = []
+
+for (const photo of entryPhotos) {
+  const imageResponse = await fetch(
+    `http://localhost:5000/api/diary/photos/${photo.id}/image`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  )
+
+  if (!imageResponse.ok) {
+    console.warn(`Could not load diary photo: ${photo.id}`)
+    continue
+  }
+
+  const imageBlob = await imageResponse.blob()
+
+  const dataUrl = await new Promise((resolve, reject) => {
+    const reader = new FileReader()
+
+    reader.onload = () => resolve(reader.result)
+    reader.onerror = () => reject(
+      new Error('Unable to read diary photo')
+    )
+
+    reader.readAsDataURL(imageBlob)
+  })
+
+  photoDataUrls.push(dataUrl)
+}
+if (photoDataUrls.length > 0) {
+  pdf.addPage()
+
+  pdf.setFont('helvetica', 'bold')
+  pdf.setFontSize(16)
+  pdf.text('Attached Memories', marginLeft, marginTop + 5)
+
+  let photoY = marginTop + 18
+  const photoMaxWidth = contentWidth
+  const photoMaxHeight = 100
+
+  for (const photoDataUrl of photoDataUrls) {
+    const image = await loadHandwritingImage(photoDataUrl)
+
+    const aspectRatio = image.width / image.height
+    let imageWidth = photoMaxWidth
+    let imageHeight = imageWidth / aspectRatio
+
+    if (imageHeight > photoMaxHeight) {
+      imageHeight = photoMaxHeight
+      imageWidth = imageHeight * aspectRatio
+    }
+
+    if (photoY + imageHeight > pageHeight - marginBottom) {
+  pdf.addPage()
+
+  pdf.setFont('helvetica', 'bold')
+  pdf.setFontSize(16)
+  pdf.text('Attached Memories', marginLeft, marginTop + 5)
+
+  photoY = marginTop + 18
+}
+
+    const imageX = marginLeft + (contentWidth - imageWidth) / 2
+
+    pdf.addImage(
+      photoDataUrl,
+      photoDataUrl.startsWith('data:image/png') ? 'PNG' :
+  photoDataUrl.startsWith('data:image/webp') ? 'WEBP' : 'JPEG',
+      imageX,
+      photoY,
+      imageWidth,
+      imageHeight
+    )
+
+    photoY += imageHeight + 12
+  }
+}
+const safeTitle = (selectedEntry.title || 'diary-entry')
+  .replace(/[<>:"/\\|?*\x00-\x1F]/g, '-')
+  .trim()
+
+pdf.save(`${safeTitle || 'diary-entry'}.pdf`)
+
+  } catch (error) {
+    console.error('PDF export error:', error)
+    setError('Unable to export diary entry as PDF.')
+  } finally {
+    setExportingPDF(false)
   }
 }
 
@@ -1048,6 +1474,14 @@ return (
 
 
       <div className="read-footer">
+<div className="read-footer1">
+      <button
+      type="button"
+  onClick={exportDiaryEntryPDF}
+  disabled={exportingPDF}
+>
+  {exportingPDF ? 'downloading...' : 'download as PDF'}
+</button>
         
 <button
   type="button"
@@ -1067,11 +1501,13 @@ onClick={async () => {
   Edit
 </button>
 
+</div>
+<div className="read-footer2">
   <button
     type="button"
     onClick={() => deleteDiaryEntry(selectedEntry.id)}
   >
-    🗑 Delete
+     Delete
   </button>
         <button
           type="button"
@@ -1079,6 +1515,7 @@ onClick={async () => {
         >
           Close
         </button>
+        </div>
       </div>
     </div>
   </div>
