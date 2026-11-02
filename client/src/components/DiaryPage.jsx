@@ -301,13 +301,15 @@ const contentWidth = pageWidth - marginLeft - marginRight
 const contentHeight = pageHeight - marginTop - marginBottom
 
 pdf.setFont('helvetica', 'bold')
-pdf.setFontSize(18)
+pdf.setFontSize(22)
+pdf.setFillColor("#5648c7")
 
 pdf.text(
   selectedEntry.title,
   marginLeft,
   marginTop + 5,
-  { maxWidth: contentWidth }
+  { maxWidth: contentWidth },
+  {color : '#5648c7'},
 )
 
 pdf.setFont('helvetica', 'normal')
@@ -507,7 +509,7 @@ const splitTextIntoPages = (text) => {
   let currentLine = ''
   let currentWidth = 0
 
-  const availableWidth = canvasWidth - rightMargin
+  const availableWidth = canvasWidth - leftMargin - rightMargin
 
   for (const character of text) {
     if (character === '\n') {
@@ -545,10 +547,13 @@ const splitTextIntoPages = (text) => {
 
   lines.push(currentLine)
 
-  const linesPerPage = Math.floor(
-    (canvasPageHeight - topMargin - bottomMargin - 35) /
-    lineHeight
-  )
+  const firstLineY = topMargin + 35
+const maxCharacterHeight = letterHeight * 1.03 + 2
+
+const linesPerPage = Math.floor(
+  (canvasPageHeight - bottomMargin - firstLineY - maxCharacterHeight) /
+  lineHeight
+) + 1
 
   const pages = []
 
@@ -633,45 +638,67 @@ if (photoDataUrls.length > 0) {
   pdf.text('Attached Memories', marginLeft, marginTop + 5)
 
   let photoY = marginTop + 18
-  const photoMaxWidth = contentWidth
-  const photoMaxHeight = 100
 
-  for (const photoDataUrl of photoDataUrls) {
-    const image = await loadHandwritingImage(photoDataUrl)
+const photoGap = 8
+const photoRowGap = 10
+const photoBoxWidth = (contentWidth - photoGap) / 2
+const photoBoxHeight = 65
 
-    const aspectRatio = image.width / image.height
-    let imageWidth = photoMaxWidth
-    let imageHeight = imageWidth / aspectRatio
+let photoColumn = 0
+let photoRowHeight = 0
 
-    if (imageHeight > photoMaxHeight) {
-      imageHeight = photoMaxHeight
-      imageWidth = imageHeight * aspectRatio
+ for (const photoDataUrl of photoDataUrls) {
+  const image = await loadHandwritingImage(photoDataUrl)
+
+  const aspectRatio = image.width / image.height
+
+  let imageWidth = photoBoxWidth
+  let imageHeight = imageWidth / aspectRatio
+
+  if (imageHeight > photoBoxHeight) {
+    imageHeight = photoBoxHeight
+    imageWidth = imageHeight * aspectRatio
+  }
+
+  if (photoColumn === 0) {
+    if (photoY + photoBoxHeight > pageHeight - marginBottom) {
+      pdf.addPage()
+
+      pdf.setFont('helvetica', 'bold')
+      pdf.setFontSize(16)
+      pdf.text('Attached Memories', marginLeft, marginTop + 5)
+
+      photoY = marginTop + 18
     }
 
-    if (photoY + imageHeight > pageHeight - marginBottom) {
-  pdf.addPage()
-
-  pdf.setFont('helvetica', 'bold')
-  pdf.setFontSize(16)
-  pdf.text('Attached Memories', marginLeft, marginTop + 5)
-
-  photoY = marginTop + 18
-}
-
-    const imageX = marginLeft + (contentWidth - imageWidth) / 2
-
-    pdf.addImage(
-      photoDataUrl,
-      photoDataUrl.startsWith('data:image/png') ? 'PNG' :
-  photoDataUrl.startsWith('data:image/webp') ? 'WEBP' : 'JPEG',
-      imageX,
-      photoY,
-      imageWidth,
-      imageHeight
-    )
-
-    photoY += imageHeight + 12
+    photoRowHeight = 0
   }
+
+  const boxX =
+    marginLeft + photoColumn * (photoBoxWidth + photoGap)
+
+  const imageX = boxX + (photoBoxWidth - imageWidth) / 2
+  const imageY = photoY + (photoBoxHeight - imageHeight) / 2
+
+  pdf.addImage(
+    photoDataUrl,
+    photoDataUrl.startsWith('data:image/png') ? 'PNG' :
+      photoDataUrl.startsWith('data:image/webp') ? 'WEBP' : 'JPEG',
+    imageX,
+    imageY,
+    imageWidth,
+    imageHeight
+  )
+
+  photoRowHeight = Math.max(photoRowHeight, photoBoxHeight)
+
+  if (photoColumn === 0) {
+    photoColumn = 1
+  } else {
+    photoColumn = 0
+    photoY += photoRowHeight + photoRowGap
+  }
+}
 }
 const safeTitle = (selectedEntry.title || 'diary-entry')
   .replace(/[<>:"/\\|?*\x00-\x1F]/g, '-')
