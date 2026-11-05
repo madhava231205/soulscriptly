@@ -23,6 +23,16 @@ export * from './enums.ts';
  */
 export type User = Prisma.UserModel
 /**
+ * Model PendingRegistration
+ * 
+ */
+export type PendingRegistration = Prisma.PendingRegistrationModel
+/**
+ * Model PasswordReset
+ * 
+ */
+export type PasswordReset = Prisma.PasswordResetModel
+/**
  * Model Note
  * 
  */

@@ -7,64 +7,375 @@ import multer from "multer";
 import path from "path";
 import fs from "fs";
 import { fileTypeFromFile } from "file-type";
+import { sendEmail } from "../utils/email.js";
+import {
+  generateOtp,
+  hashOtp,
+  getOtpExpiry,
+  canResendOtp,
+} from "../utils/otp.js";
+import crypto from "crypto";
 
 const router = express.Router();
 
 router.post("/register", async (req, res) => {
   try {
-    const { name, email, password } = req.body;
+    const { name, email, password } = req.body || {};
 
-    // 1. Validate input
-    if (!name || !email || !password) {
+    if (!name?.trim() || !email?.trim() || !password) {
       return res.status(400).json({
         status: "ERROR",
-        message: "NOTE: All fields are required fill",
+        message: "Name, email and password are required",
       });
     }
 
-    // 2. Check if user already exists
+    const normalizedEmail = email.trim().toLowerCase();
+
+    if (password.length < 8) {
+      return res.status(400).json({
+        status: "ERROR",
+        message: "Password must be at least 8 characters",
+      });
+    }
+
     const existingUser = await prisma.user.findUnique({
-      where: {
-        email,
-      },
+      where: { email: normalizedEmail },
     });
 
     if (existingUser) {
       return res.status(409).json({
         status: "ERROR",
-        message: "User with this email already exists",
+        message: "An account with this email already exists",
       });
     }
 
-    // 3. Hash password
+    const otp = generateOtp();
+    const otpHash = hashOtp(otp);
     const hashedPassword = await bcrypt.hash(password, 10);
+    const otpExpiresAt = getOtpExpiry();
 
-    // 4. Create user
-    const user = await prisma.user.create({
-      data: {
-        name,
-        email,
+    await prisma.pendingRegistration.upsert({
+      where: { email: normalizedEmail },
+      update: {
+        name: name.trim(),
         password: hashedPassword,
+        otpHash,
+        otpExpiresAt,
+        otpAttempts: 0,
+        otpSentAt: new Date(),
+      },
+      create: {
+        name: name.trim(),
+        email: normalizedEmail,
+        password: hashedPassword,
+        otpHash,
+        otpExpiresAt,
       },
     });
 
-    // 5. Don't send password back to the client
-    const { password: _, ...userWithoutPassword } = user;
+    try {
+      await sendEmail({
+        to: normalizedEmail,
+        subject: "Your SoulScriptly verification code",
+        html: `
+          <div style="font-family: Arial, sans-serif; padding: 20px;">
+            <h2>Welcome to SoulScriptly!</h2>
+            <p>Use this code to verify your email address:</p>
+            <h1 style="letter-spacing: 8px;">${otp}</h1>
+            <p>This code expires in 5 minutes.</p>
+            <p>If you didn't request this, you can ignore this email.</p>
+          </div>
+        `,
+      });
+    } catch (emailError) {
+      await prisma.pendingRegistration.deleteMany({
+        where: { email: normalizedEmail },
+      });
 
-    res.status(201).json({
+      throw emailError;
+    }
+
+    return res.status(200).json({
       status: "OK",
-      message: "User registered successfully",
-      user: userWithoutPassword,
+      message: "Verification code sent to your email",
+      requiresOtpVerification: true,
+      email: normalizedEmail,
     });
   } catch (error) {
-    console.error("Registration error:", error);
+    console.error("Registration OTP error:", error);
 
-    res.status(500).json({
+    return res.status(500).json({
       status: "ERROR",
-      message: "Something went wrong",
+      message: "Could not start registration. Please try again.",
     });
   }
 });
+router.post("/verify-registration-otp", async (req, res) => {
+  try {
+    const { email, otp } = req.body || {};
+
+    if (!email || !otp) {
+      return res.status(400).json({
+        status: "ERROR",
+        message: "Email and OTP are required",
+      });
+    }
+
+    const normalizedEmail = email.trim().toLowerCase();
+
+    if (!/^\d{6}$/.test(String(otp))) {
+      return res.status(400).json({
+        status: "ERROR",
+        message: "Please enter a valid 6-digit OTP",
+      });
+    }
+
+    const pending = await prisma.pendingRegistration.findUnique({
+      where: { email: normalizedEmail },
+    });
+
+    if (!pending) {
+      return res.status(404).json({
+        status: "ERROR",
+        message: "Registration not found. Please register again.",
+      });
+    }
+
+    if (pending.otpExpiresAt <= new Date()) {
+      await prisma.pendingRegistration.delete({
+        where: { email: normalizedEmail },
+      });
+
+      return res.status(400).json({
+        status: "ERROR",
+        message: "OTP has expired. Please register again.",
+      });
+    }
+
+    if (pending.otpAttempts >= 5) {
+      await prisma.pendingRegistration.delete({
+        where: { email: normalizedEmail },
+      });
+
+      return res.status(429).json({
+        status: "ERROR",
+        message: "Too many incorrect attempts. Please register again.",
+      });
+    }
+
+    const submittedHash = Buffer.from(hashOtp(String(otp)), "hex");
+    const storedHash = Buffer.from(pending.otpHash, "hex");
+
+    const isValidOtp =
+      submittedHash.length === storedHash.length &&
+      crypto.timingSafeEqual(submittedHash, storedHash);
+
+    if (!isValidOtp) {
+      const updated = await prisma.pendingRegistration.update({
+        where: { email: normalizedEmail },
+        data: { otpAttempts: { increment: 1 } },
+      });
+
+      if (updated.otpAttempts >= 5) {
+        await prisma.pendingRegistration.deleteMany({
+          where: { email: normalizedEmail },
+        });
+      }
+
+      return res.status(400).json({
+        status: "ERROR",
+        message: "Incorrect OTP",
+        attemptsRemaining: Math.max(0, 5 - updated.otpAttempts),
+      });
+    }
+
+    const user = await prisma.$transaction(async (tx) => {
+      const existingUser = await tx.user.findUnique({
+        where: { email: normalizedEmail },
+      });
+
+      if (existingUser) {
+        throw new Error("ACCOUNT_ALREADY_EXISTS");
+      }
+
+      const createdUser = await tx.user.create({
+        data: {
+          name: pending.name,
+          email: pending.email,
+          password: pending.password,
+        },
+      });
+
+      await tx.pendingRegistration.delete({
+        where: { email: normalizedEmail },
+      });
+
+      return createdUser;
+    });
+
+    const {
+      password: _,
+      ...userWithoutPassword
+    } = user;
+
+    return res.status(201).json({
+      status: "OK",
+      message: "Email verified and account created successfully",
+      user: userWithoutPassword,
+    });
+  } catch (error) {
+    if (error.message === "ACCOUNT_ALREADY_EXISTS") {
+      return res.status(409).json({
+        status: "ERROR",
+        message: "An account with this email already exists",
+      });
+    }
+
+    console.error("Registration OTP verification error:", error);
+
+    return res.status(500).json({
+      status: "ERROR",
+      message: "Could not verify OTP. Please try again.",
+    });
+  }
+});
+router.post("/resend-registration-otp", async (req, res) => {
+  try {
+    const { email } = req.body || {};
+
+    if (!email) {
+      return res.status(400).json({
+        status: "ERROR",
+        message: "Email is required",
+      });
+    }
+
+    const normalizedEmail = email.trim().toLowerCase();
+
+    const pending = await prisma.pendingRegistration.findUnique({
+      where: { email: normalizedEmail },
+    });
+
+    if (!pending) {
+      return res.status(404).json({
+        status: "ERROR",
+        message: "Pending registration not found. Please register again.",
+      });
+    }
+
+    if (!canResendOtp(pending.otpSentAt)) {
+      return res.status(429).json({
+        status: "ERROR",
+        message: "Please wait 60 seconds before requesting another OTP.",
+      });
+    }
+
+    const otp = generateOtp();
+
+    await prisma.pendingRegistration.update({
+      where: { email: normalizedEmail },
+      data: {
+        otpHash: hashOtp(otp),
+        otpExpiresAt: getOtpExpiry(),
+        otpAttempts: 0,
+        otpSentAt: new Date(),
+      },
+    });
+
+    await sendEmail({
+      to: normalizedEmail,
+      subject: "Your new SoulScriptly verification code",
+      html: `
+        <div style="font-family: Arial, sans-serif; padding: 20px;">
+          <h2>SoulScriptly email verification</h2>
+          <p>Your new verification code is:</p>
+          <h1 style="letter-spacing: 8px;">${otp}</h1>
+          <p>This code expires in 5 minutes.</p>
+        </div>
+      `,
+    });
+
+    return res.json({
+      status: "OK",
+      message: "A new verification code has been sent",
+    });
+  } catch (error) {
+    console.error("Resend registration OTP error:", error);
+
+    return res.status(500).json({
+      status: "ERROR",
+      message: "Could not resend OTP. Please try again.",
+    });
+  }
+});
+
+router.post("/forgot-password", async (req, res) => {
+  try {
+    const email = req.body.email?.trim().toLowerCase();
+
+    if (!email) {
+      return res.status(400).json({
+        status: "ERROR",
+        message: "Email is required",
+      });
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { email },
+    });
+
+    // Use the same response whether the account exists or not.
+    if (!user) {
+      return res.status(200).json({
+        status: "OK",
+        message: "If an account exists, a reset code will be sent.",
+      });
+    }
+
+    const otp = generateOtp();
+
+    await prisma.passwordReset.upsert({
+      where: { email },
+      update: {
+        otpHash: hashOtp(otp),
+        otpExpiresAt: getOtpExpiry(),
+        otpAttempts: 0,
+        otpSentAt: new Date(),
+      },
+      create: {
+        email,
+        otpHash: hashOtp(otp),
+        otpExpiresAt: getOtpExpiry(),
+      },
+    });
+
+    await sendEmail({
+      to: email,
+      subject: "SoulScriptly Password Reset Code",
+      html: `
+        <h2>Password Reset</h2>
+        <p>Your SoulScriptly password reset code is:</p>
+        <h1>${otp}</h1>
+        <p>This code expires in 5 minutes.</p>
+        <p>If you didn't request this, you can ignore this email.</p>
+      `,
+    });
+
+    return res.status(200).json({
+      status: "OK",
+      message: "If an account exists, a reset code will be sent.",
+    });
+  } catch (error) {
+    console.error("Forgot password error:", error);
+
+    return res.status(500).json({
+      status: "ERROR",
+      message: "Unable to process your request right now.",
+    });
+  }
+});
+
+
 //login route
 router.post("/login", async (req, res) => {
   try {

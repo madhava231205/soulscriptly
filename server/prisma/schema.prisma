@@ -20,6 +20,29 @@ model User {
   handwritingSamples HandwritingSample[]
 }
 
+model PendingRegistration {
+  id             Int      @id @default(autoincrement())
+  name           String
+  email          String   @unique
+  password       String
+
+  otpHash        String
+  otpExpiresAt   DateTime
+  otpAttempts    Int      @default(0)
+  otpSentAt      DateTime @default(now())
+
+  createdAt      DateTime @default(now())
+}
+
+model PasswordReset {
+  id           Int      @id @default(autoincrement())
+  email        String   @unique
+  otpHash      String
+  otpExpiresAt DateTime
+  otpAttempts  Int      @default(0)
+  otpSentAt    DateTime @default(now())
+  createdAt    DateTime @default(now())
+}
 model Note {
   id        Int      @id @default(autoincrement())
   title     String
