@@ -20,6 +20,9 @@ function App() {
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [pendingEmail, setPendingEmail] = useState('')
+const [isOtpVerification, setIsOtpVerification] = useState(false)
+const [otp, setOtp] = useState('')
 
   const [message, setMessage] = useState('')
   const [error, setError] = useState('')
@@ -54,45 +57,120 @@ const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   // Register
   // -----------------------------
   async function handleSubmit(event) {
-    event.preventDefault()
+  event.preventDefault()
 
-    setMessage('')
-    setError('')
-    setLoading(true)
+  setMessage('')
+  setError('')
+  setLoading(true)
 
-    try {
-      const response = await fetch(
-        'http://localhost:5000/api/auth/register',
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            name,
-            email,
-            password,
-          }),
-        }
-      )
-
-      const data = await response.json()
-
-      if (response.ok) {
-        setMessage('Account created successfully! Please login.')
-        setName('')
-        setPassword('')
-        setIsLogin(true)
-      } else {
-        setError(data.message)
+  try {
+    const response = await fetch(
+      'http://localhost:5000/api/auth/register',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name,
+          email,
+          password,
+        }),
       }
-    } catch (error) {
-      setError('Unable to connect to server. Please try again.')
-    } finally {
-      setLoading(false)
-    }
-  }
+    )
 
+    const data = await response.json()
+
+    if (response.ok) {
+      setPendingEmail(data.email || email)
+      setIsOtpVerification(true)
+      setMessage('A verification code has been sent to your email.')
+      setError('')
+    } else {
+      setError(data.message)
+    }
+  } catch (error) {
+    setError('Unable to connect to server. Please try again.')
+  } finally {
+    setLoading(false)
+  }
+}
+
+async function handleVerifyOtp(event) {
+  event.preventDefault()
+
+  setMessage('')
+  setError('')
+  setLoading(true)
+
+  try {
+    const response = await fetch(
+      'http://localhost:5000/api/auth/verify-registration-otp',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: pendingEmail,
+          otp,
+        }),
+      }
+    )
+
+    const data = await response.json()
+
+    if (response.ok) {
+      setMessage('Account created successfully! Please login.')
+      setName('')
+      setEmail('')
+      setPassword('')
+      setOtp('')
+      setPendingEmail('')
+      setIsOtpVerification(false)
+      setIsLogin(true)
+    } else {
+      setError(data.message || 'OTP verification failed.')
+    }
+  } catch (error) {
+    setError('Unable to connect to server. Please try again.')
+  } finally {
+    setLoading(false)
+  }
+}
+
+const handleResendOtp = async () => {
+  try {
+    setLoading(true)
+    setError('')
+    setMessage('')
+
+    const response = await fetch(
+      'http://localhost:5000/api/auth/resend-registration-otp',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: pendingEmail,
+        }),
+      }
+    )
+
+    const data = await response.json()
+
+    if (!response.ok) {
+      throw new Error(data.message || 'Could not resend OTP')
+    }
+
+    setMessage('A new verification code has been sent to your email.')
+  } catch (error) {
+    setError(error.message)
+  } finally {
+    setLoading(false)
+  }
+}
   // -----------------------------
   // Login
   // -----------------------------
@@ -478,18 +556,22 @@ const favouriteNoteObjects = notes.filter(
           </div>
 
           <div className="auth-heading">
-            <h2>
-              {isLogin
-                ? 'Welcome back'
-                : 'Create your account'}
-            </h2>
+  <h2>
+    {isOtpVerification
+      ? 'Verify your email'
+      : isLogin
+        ? 'Welcome back'
+        : 'Create your account'}
+  </h2>
 
-            <p >
-              {isLogin
-                ? 'Continue writing your story.'
-                : 'Start your personal journey with SoulScriptly.'}
-            </p>
-          </div>
+  <p>
+    {isOtpVerification
+      ? 'Enter the verification code we sent to your email.'
+      : isLogin
+        ? 'Continue writing your story.'
+        : 'Start your personal journey with SoulScriptly.'}
+  </p>
+</div>
 
           {message && (
             <div className="message success-message">
@@ -503,11 +585,45 @@ const favouriteNoteObjects = notes.filter(
             </div>
           )}
 
-          {isLogin ? (
-            <form
-              className="auth-form"
-              onSubmit={handleLogin}
-            >
+          {isOtpVerification ? (
+  <form className="auth-form" onSubmit={handleVerifyOtp}>
+    <label>Verification Code</label>
+
+    <p>Enter the 6-digit code sent to {pendingEmail}</p>
+
+    <input
+      type="text"
+      placeholder="Enter 6-digit OTP"
+      value={otp}
+      onChange={(event) =>
+        setOtp(event.target.value.replace(/\D/g, '').slice(0, 6))
+      }
+      inputMode="numeric"
+      maxLength={6}
+      required
+    />
+
+    <button
+      className="primary-button auth-button"
+      type="submit"
+      disabled={loading || otp.length !== 6}
+    >
+      {loading ? 'Verifying...' : 'Verify Email'}
+    </button>
+    <button
+  type="button"
+  className="auth-switch"
+  onClick={handleResendOtp}
+  disabled={loading}
+>
+  Resend verification code
+</button>
+  </form>
+) : isLogin ? (
+  <form
+    className="auth-form"
+    onSubmit={handleLogin}
+  >
               <label>Email</label>
 
               <input
@@ -588,19 +704,21 @@ const favouriteNoteObjects = notes.filter(
             </form>
           )}
 
-          <button
-            className="auth-switch"
-            type="button"
-            onClick={() => {
-              setIsLogin(!isLogin)
-              setMessage('')
-              setError('')
-            }}
-          >
-            {isLogin
-              ? "Don't have an account? Create one"
-              : 'Already have an account? Login'}
-          </button>
+          {!isOtpVerification && (
+  <button
+    className="auth-switch"
+    type="button"
+    onClick={() => {
+      setIsLogin(!isLogin)
+      setMessage('')
+      setError('')
+    }}
+  >
+    {isLogin
+      ? "Don't have an account? Create one"
+      : 'Already have an account? Login'}
+  </button>
+)}
         </div>
 
         
