@@ -11,6 +11,7 @@ import HandwritingSetup from './components/HandwritingSetup'
 import HandwritingRenderer from './components/HandwritingRenderer'
 import HandwritingTest from './components/HandwritingTest'
 import ProfilePage from './components/ProfilePage'
+import PasswordSecurity from './components/PasswordSecurity'
 import logo from './assets/logo.png';
 
 function App() {
@@ -34,6 +35,11 @@ const [otp, setOtp] = useState('')
   )
   const [handwritingSamples, setHandwritingSamples] = useState([])
 const [settingsSection, setSettingsSection] = useState('main')
+const [isForgotPassword, setIsForgotPassword] = useState(false)
+const [isResetOtp, setIsResetOtp] = useState(false)
+const [resetEmail, setResetEmail] = useState('')
+const [isNewPassword, setIsNewPassword] = useState(false)
+const [newPassword, setNewPassword] = useState('')
   // -----------------------------
   // Notes state
   // -----------------------------
@@ -165,6 +171,127 @@ const handleResendOtp = async () => {
     }
 
     setMessage('A new verification code has been sent to your email.')
+  } catch (error) {
+    setError(error.message)
+  } finally {
+    setLoading(false)
+  }
+}
+const handleForgotPassword = async (event) => {
+  event.preventDefault()
+
+  try {
+    setLoading(true)
+    setError('')
+    setMessage('')
+
+    const response = await fetch(
+      'http://localhost:5000/api/auth/forgot-password',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: resetEmail,
+        }),
+      }
+    )
+
+    const data = await response.json()
+
+    if (!response.ok) {
+      throw new Error(data.message || 'Unable to process request')
+    }
+
+    setIsForgotPassword(false)
+    setIsResetOtp(true)
+    setMessage('If an account exists, a password-reset code will be sent.')
+  } catch (error) {
+    setError(error.message)
+  } finally {
+    setLoading(false)
+  }
+}
+const handleVerifyResetOtp = async (event) => {
+  event.preventDefault()
+
+  try {
+    setLoading(true)
+    setError('')
+    setMessage('')
+
+    const response = await fetch(
+      'http://localhost:5000/api/auth/verify-reset-otp',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: resetEmail,
+          otp,
+        }),
+      }
+    )
+
+    const data = await response.json()
+
+    if (!response.ok) {
+      throw new Error(data.message || 'Invalid verification code')
+    }
+
+  setIsResetOtp(false)
+setIsNewPassword(true)
+setMessage('OTP verified! You can now set a new password.')
+  } catch (error) {
+    setError(error.message)
+  } finally {
+    setLoading(false)
+  }
+}
+const handleResetPassword = async (event) => {
+  event.preventDefault()
+
+ if (newPassword.length < 8) {
+  setError('Password must be at least 8 characters.')
+  return
+}
+
+  try {
+    setLoading(true)
+    setError('')
+    setMessage('')
+
+    const response = await fetch(
+      'http://localhost:5000/api/auth/reset-password',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: resetEmail,
+          newPassword: newPassword,
+        }),
+      }
+    )
+
+    const data = await response.json()
+
+    if (!response.ok) {
+      throw new Error(data.message || 'Unable to reset password')
+    }
+
+   setNewPassword('')
+setOtp('')
+setResetEmail('')
+setIsResetOtp(false)
+setIsNewPassword(false)
+setIsForgotPassword(false)
+setIsLogin(true)
+
+    setMessage('Password reset successfully! Please log in.')
   } catch (error) {
     setError(error.message)
   } finally {
@@ -557,19 +684,31 @@ const favouriteNoteObjects = notes.filter(
 
           <div className="auth-heading">
   <h2>
-    {isOtpVerification
-      ? 'Verify your email'
-      : isLogin
-        ? 'Welcome back'
-        : 'Create your account'}
+    {isNewPassword
+      ? 'Create a new password'
+      : isResetOtp
+        ? 'Verify reset code'
+        : isForgotPassword
+          ? 'Forgot your password?'
+          : isOtpVerification
+            ? 'Verify your email'
+            : isLogin
+              ? 'Welcome back'
+              : 'Create your account'}
   </h2>
 
   <p>
-    {isOtpVerification
-      ? 'Enter the verification code we sent to your email.'
-      : isLogin
-        ? 'Continue writing your story.'
-        : 'Start your personal journey with SoulScriptly.'}
+    {isNewPassword
+      ? 'Choose a strong new password for your account.'
+      : isResetOtp
+        ? `Enter the reset code sent to ${resetEmail}.`
+        : isForgotPassword
+          ? 'Enter your registered email to receive a reset code.'
+          : isOtpVerification
+            ? 'Enter the verification code we sent to your email.'
+            : isLogin
+              ? 'Continue writing your story.'
+              : 'Start your personal journey with SoulScriptly.'}
   </p>
 </div>
 
@@ -585,7 +724,51 @@ const favouriteNoteObjects = notes.filter(
             </div>
           )}
 
-          {isOtpVerification ? (
+          {isForgotPassword ? (
+  <form className="auth-form" onSubmit={handleForgotPassword}>
+    <label>Email</label>
+
+    <input
+      type="email"
+      placeholder="Enter your registered email"
+      value={resetEmail}
+      onChange={(event) => setResetEmail(event.target.value)}
+      required
+    />
+
+    <button
+      className="primary-button auth-button"
+      type="submit"
+      disabled={loading}
+    >
+      {loading ? 'Sending code...' : 'Send Reset Code'}
+    </button>
+  </form>
+) : isResetOtp ? (
+  <form className="auth-form" onSubmit={handleVerifyResetOtp}>
+    <label>Reset Verification Code</label>
+
+    <input
+      type="text"
+      placeholder="Enter 6-digit OTP"
+      value={otp}
+      onChange={(event) =>
+        setOtp(event.target.value.replace(/\D/g, '').slice(0, 6))
+      }
+      inputMode="numeric"
+      maxLength={6}
+      required
+    />
+
+    <button
+      className="primary-button auth-button"
+      type="submit"
+      disabled={loading || otp.length !== 6}
+    >
+      {loading ? 'Verifying...' : 'Verify Reset Code'}
+    </button>
+  </form>
+) : isOtpVerification ? (
   <form className="auth-form" onSubmit={handleVerifyOtp}>
     <label>Verification Code</label>
 
@@ -618,6 +801,27 @@ const favouriteNoteObjects = notes.filter(
 >
   Resend verification code
 </button>
+  </form>
+) : isNewPassword ? (
+  <form className="auth-form" onSubmit={handleResetPassword}>
+    <label>New Password</label>
+
+    <input
+      type="password"
+      placeholder="Enter your new password"
+      value={newPassword}
+      onChange={(event) => setNewPassword(event.target.value)}
+      minLength={8}
+      required
+    />
+
+    <button
+      className="primary-button auth-button"
+      type="submit"
+      disabled={loading || newPassword.length < 8}
+    >
+      {loading ? 'Updating Password...' : 'Reset Password'}
+    </button>
   </form>
 ) : isLogin ? (
   <form
@@ -653,6 +857,19 @@ const favouriteNoteObjects = notes.filter(
               >
                 {loading ? 'Logging in...' : 'Login'}
               </button>
+              <button
+  type="button"
+  className="auth-switch"
+  onClick={() => {
+    setResetEmail(email)
+    setOtp('')
+    setError('')
+    setMessage('')
+    setIsForgotPassword(true)
+  }}
+>
+  Forgot password?
+</button>
             </form>
           ) : (
             <form
@@ -704,7 +921,10 @@ const favouriteNoteObjects = notes.filter(
             </form>
           )}
 
-          {!isOtpVerification && (
+          {!isOtpVerification &&
+  !isForgotPassword &&
+  !isResetOtp &&
+  !isNewPassword && (
   <button
     className="auth-switch"
     type="button"
@@ -876,6 +1096,19 @@ function handleSaveSample(sample) {
       Open Preview
     </button>
   </div>
+  <div className="settings-card">
+  <div className="settings-card-icon">🔐</div>
+  <h3>Password & Security</h3>
+  <p>
+    Manage your account password and protect your private diary.
+  </p>
+  <button
+    className="setup-primary-button"
+    onClick={() => setSettingsSection('password-security')}
+  >
+    Manage Security
+  </button>
+</div>
 </div>
 
     )}
@@ -901,6 +1134,19 @@ function handleSaveSample(sample) {
           ← Back to Settings
         </button>
         <HandwritingTest />
+      </div>
+    )}
+
+    {settingsSection === 'password-security' && (
+      
+      <div>
+        <button
+          className="primary-button"
+          onClick={() => setSettingsSection('main')}
+        >
+          ← Back to Settings
+        </button>
+        <PasswordSecurity  currentUser={currentUser}/>
       </div>
     )}
   </div>

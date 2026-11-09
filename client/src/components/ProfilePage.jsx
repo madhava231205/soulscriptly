@@ -301,7 +301,9 @@ useEffect(() => {
       <button
         type="button"
         onClick={async () => {
-          await handlePictureUpload()
+          await handlePictureUpload();
+          setShowPicturePopup(false);
+
         }}
         disabled={!selectedPicture || isUploadingPicture}
       >
