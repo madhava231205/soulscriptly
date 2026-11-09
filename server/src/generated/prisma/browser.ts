@@ -33,6 +33,11 @@ export type PendingRegistration = Prisma.PendingRegistrationModel
  */
 export type PasswordReset = Prisma.PasswordResetModel
 /**
+ * Model AccountPasswordChange
+ * 
+ */
+export type AccountPasswordChange = Prisma.AccountPasswordChangeModel
+/**
  * Model Note
  * 
  */

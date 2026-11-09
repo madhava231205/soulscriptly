@@ -400,6 +400,7 @@ export const ModelName = {
   User: 'User',
   PendingRegistration: 'PendingRegistration',
   PasswordReset: 'PasswordReset',
+  AccountPasswordChange: 'AccountPasswordChange',
   Note: 'Note',
   DiaryEntry: 'DiaryEntry',
   DiaryPhoto: 'DiaryPhoto',
@@ -419,7 +420,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "pendingRegistration" | "passwordReset" | "note" | "diaryEntry" | "diaryPhoto" | "handwritingSample"
+    modelProps: "user" | "pendingRegistration" | "passwordReset" | "accountPasswordChange" | "note" | "diaryEntry" | "diaryPhoto" | "handwritingSample"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -642,6 +643,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.PasswordResetCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.PasswordResetCountAggregateOutputType> | number
+        }
+      }
+    }
+    AccountPasswordChange: {
+      payload: Prisma.$AccountPasswordChangePayload<ExtArgs>
+      fields: Prisma.AccountPasswordChangeFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.AccountPasswordChangeFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AccountPasswordChangePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.AccountPasswordChangeFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AccountPasswordChangePayload>
+        }
+        findFirst: {
+          args: Prisma.AccountPasswordChangeFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AccountPasswordChangePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.AccountPasswordChangeFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AccountPasswordChangePayload>
+        }
+        findMany: {
+          args: Prisma.AccountPasswordChangeFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AccountPasswordChangePayload>[]
+        }
+        create: {
+          args: Prisma.AccountPasswordChangeCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AccountPasswordChangePayload>
+        }
+        createMany: {
+          args: Prisma.AccountPasswordChangeCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.AccountPasswordChangeCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AccountPasswordChangePayload>[]
+        }
+        delete: {
+          args: Prisma.AccountPasswordChangeDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AccountPasswordChangePayload>
+        }
+        update: {
+          args: Prisma.AccountPasswordChangeUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AccountPasswordChangePayload>
+        }
+        deleteMany: {
+          args: Prisma.AccountPasswordChangeDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.AccountPasswordChangeUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.AccountPasswordChangeUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AccountPasswordChangePayload>[]
+        }
+        upsert: {
+          args: Prisma.AccountPasswordChangeUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AccountPasswordChangePayload>
+        }
+        aggregate: {
+          args: Prisma.AccountPasswordChangeAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateAccountPasswordChange>
+        }
+        groupBy: {
+          args: Prisma.AccountPasswordChangeGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AccountPasswordChangeGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.AccountPasswordChangeCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AccountPasswordChangeCountAggregateOutputType> | number
         }
       }
     }
@@ -1015,10 +1090,25 @@ export const PasswordResetScalarFieldEnum = {
   otpExpiresAt: 'otpExpiresAt',
   otpAttempts: 'otpAttempts',
   otpSentAt: 'otpSentAt',
-  createdAt: 'createdAt'
+  createdAt: 'createdAt',
+  verifiedAt: 'verifiedAt'
 } as const
 
 export type PasswordResetScalarFieldEnum = (typeof PasswordResetScalarFieldEnum)[keyof typeof PasswordResetScalarFieldEnum]
+
+
+export const AccountPasswordChangeScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  otpHash: 'otpHash',
+  otpExpiresAt: 'otpExpiresAt',
+  otpAttempts: 'otpAttempts',
+  otpSentAt: 'otpSentAt',
+  createdAt: 'createdAt',
+  verifiedAt: 'verifiedAt'
+} as const
+
+export type AccountPasswordChangeScalarFieldEnum = (typeof AccountPasswordChangeScalarFieldEnum)[keyof typeof AccountPasswordChangeScalarFieldEnum]
 
 
 export const NoteScalarFieldEnum = {
@@ -1314,6 +1404,7 @@ export type GlobalOmitConfig = {
   user?: Prisma.UserOmit
   pendingRegistration?: Prisma.PendingRegistrationOmit
   passwordReset?: Prisma.PasswordResetOmit
+  accountPasswordChange?: Prisma.AccountPasswordChangeOmit
   note?: Prisma.NoteOmit
   diaryEntry?: Prisma.DiaryEntryOmit
   diaryPhoto?: Prisma.DiaryPhotoOmit

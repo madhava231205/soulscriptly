@@ -54,6 +54,7 @@ export const ModelName = {
   User: 'User',
   PendingRegistration: 'PendingRegistration',
   PasswordReset: 'PasswordReset',
+  AccountPasswordChange: 'AccountPasswordChange',
   Note: 'Note',
   DiaryEntry: 'DiaryEntry',
   DiaryPhoto: 'DiaryPhoto',
@@ -111,10 +112,25 @@ export const PasswordResetScalarFieldEnum = {
   otpExpiresAt: 'otpExpiresAt',
   otpAttempts: 'otpAttempts',
   otpSentAt: 'otpSentAt',
-  createdAt: 'createdAt'
+  createdAt: 'createdAt',
+  verifiedAt: 'verifiedAt'
 } as const
 
 export type PasswordResetScalarFieldEnum = (typeof PasswordResetScalarFieldEnum)[keyof typeof PasswordResetScalarFieldEnum]
+
+
+export const AccountPasswordChangeScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  otpHash: 'otpHash',
+  otpExpiresAt: 'otpExpiresAt',
+  otpAttempts: 'otpAttempts',
+  otpSentAt: 'otpSentAt',
+  createdAt: 'createdAt',
+  verifiedAt: 'verifiedAt'
+} as const
+
+export type AccountPasswordChangeScalarFieldEnum = (typeof AccountPasswordChangeScalarFieldEnum)[keyof typeof AccountPasswordChangeScalarFieldEnum]
 
 
 export const NoteScalarFieldEnum = {

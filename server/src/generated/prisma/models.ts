@@ -11,6 +11,7 @@
 export type * from './models/User.ts'
 export type * from './models/PendingRegistration.ts'
 export type * from './models/PasswordReset.ts'
+export type * from './models/AccountPasswordChange.ts'
 export type * from './models/Note.ts'
 export type * from './models/DiaryEntry.ts'
 export type * from './models/DiaryPhoto.ts'

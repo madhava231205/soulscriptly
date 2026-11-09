@@ -42,6 +42,17 @@ model PasswordReset {
   otpAttempts  Int      @default(0)
   otpSentAt    DateTime @default(now())
   createdAt    DateTime @default(now())
+  verifiedAt DateTime?
+}
+model AccountPasswordChange {
+  id           Int      @id @default(autoincrement())
+  userId       Int      @unique
+  otpHash      String
+  otpExpiresAt DateTime
+  otpAttempts  Int      @default(0)
+  otpSentAt    DateTime @default(now())
+  createdAt    DateTime @default(now())
+  verifiedAt   DateTime?
 }
 model Note {
   id        Int      @id @default(autoincrement())
