@@ -86,7 +86,16 @@ model DiaryPhoto {
   diaryEntryId Int
   diaryEntry   DiaryEntry @relation(fields: [diaryEntryId], references: [id], onDelete: Cascade)
 }
-
+model DiaryPinReset {
+  id           Int      @id @default(autoincrement())
+  userId       Int      @unique
+  otpHash      String
+  otpExpiresAt DateTime
+  otpAttempts  Int      @default(0)
+  otpSentAt    DateTime @default(now())
+  createdAt    DateTime @default(now())
+  verifiedAt   DateTime?
+}
 model HandwritingSample {
   id        Int      @id @default(autoincrement())
 

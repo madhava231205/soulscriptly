@@ -53,6 +53,11 @@ export type DiaryEntry = Prisma.DiaryEntryModel
  */
 export type DiaryPhoto = Prisma.DiaryPhotoModel
 /**
+ * Model DiaryPinReset
+ * 
+ */
+export type DiaryPinReset = Prisma.DiaryPinResetModel
+/**
  * Model HandwritingSample
  * 
  */

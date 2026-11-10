@@ -7,6 +7,14 @@ import multer from 'multer'
 import path from 'path'
 import fs from 'fs'
 import { fileTypeFromFile } from 'file-type'
+import { sendEmail } from "../utils/email.js";
+import {
+  generateOtp,
+  hashOtp,
+  getOtpExpiry,
+  canResendOtp,
+} from "../utils/otp.js";
+import crypto from "crypto";
 
 const router = express.Router()
 
@@ -669,6 +677,200 @@ router.post('/unlock', authenticateToken, async (req, res) => {
     })
   }
 })
+
+
+router.post("/pin-reset/send-otp", authenticateToken, async (req, res) => {
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id: req.user.userId },
+      select: { id: true, email: true },
+    });
+
+    if (!user) {
+      return res.status(404).json({
+        status: "ERROR",
+        message: "User not found",
+      });
+    }
+
+    const existingRequest = await prisma.diaryPinReset.findUnique({
+      where: { userId: user.id },
+    });
+
+    if (existingRequest && !canResendOtp(existingRequest.otpSentAt)) {
+      return res.status(429).json({
+        status: "ERROR",
+        message: "Please wait before requesting another OTP",
+      });
+    }
+
+    const otp = generateOtp();
+
+    await prisma.diaryPinReset.upsert({
+      where: { userId: user.id },
+      update: {
+        otpHash: hashOtp(otp),
+        otpExpiresAt: getOtpExpiry(),
+        otpAttempts: 0,
+        otpSentAt: new Date(),
+        verifiedAt: null,
+      },
+      create: {
+        userId: user.id,
+        otpHash: hashOtp(otp),
+        otpExpiresAt: getOtpExpiry(),
+      },
+    });
+
+    await sendEmail({
+      to: user.email,
+      subject: "SoulScriptly - Diary PIN Reset OTP",
+      html: `<h2>Your Diary PIN reset code is ${otp}</h2>
+             <p>This code expires in 5 minutes.</p>`,
+    });
+
+    return res.status(200).json({
+      status: "SUCCESS",
+      message: "OTP sent to your registered email",
+    });
+  } catch (error) {
+    console.error("Diary PIN reset OTP error:", error);
+
+    return res.status(500).json({
+      status: "ERROR",
+      message: "Could not send verification code",
+    });
+  }
+});
+
+router.post("/pin-reset/verify-otp", authenticateToken, async (req, res) => {
+  try {
+    const { otp } = req.body;
+
+    if (!otp || !/^\d{6}$/.test(otp)) {
+      return res.status(400).json({
+        status: "ERROR",
+        message: "Please enter a valid 6-digit OTP",
+      });
+    }
+
+    const request = await prisma.diaryPinReset.findUnique({
+      where: { userId: req.user.userId },
+    });
+
+    if (!request) {
+      return res.status(400).json({
+        status: "ERROR",
+        message: "Please request an OTP first",
+      });
+    }
+
+    if (request.otpExpiresAt < new Date()) {
+      return res.status(400).json({
+        status: "ERROR",
+        message: "OTP has expired. Please request a new one",
+      });
+    }
+
+    if (request.otpAttempts >= 5) {
+      return res.status(429).json({
+        status: "ERROR",
+        message: "Too many incorrect attempts. Please request a new OTP",
+      });
+    }
+
+    const submittedHash = hashOtp(otp);
+
+    const isValid = crypto.timingSafeEqual(
+      Buffer.from(submittedHash, "hex"),
+      Buffer.from(request.otpHash, "hex")
+    );
+
+    if (!isValid) {
+      await prisma.diaryPinReset.update({
+        where: { userId: req.user.userId },
+        data: { otpAttempts: { increment: 1 } },
+      });
+
+      return res.status(400).json({
+        status: "ERROR",
+        message: "Incorrect OTP",
+      });
+    }
+
+    await prisma.diaryPinReset.update({
+      where: { userId: req.user.userId },
+      data: { verifiedAt: new Date() },
+    });
+
+    return res.status(200).json({
+      status: "SUCCESS",
+      message: "OTP verified successfully",
+    });
+  } catch (error) {
+    console.error("Diary PIN OTP verification error:", error);
+
+    return res.status(500).json({
+      status: "ERROR",
+      message: "OTP verification failed",
+    });
+  }
+});
+// Update Diary PIN after OTP verification
+router.post("/pin-reset/update", authenticateToken, async (req, res) => {
+  try {
+    const { newPin } = req.body;
+
+    if (!newPin || !/^\d{4}$/.test(newPin)) {
+      return res.status(400).json({
+        status: "ERROR",
+        message: "New PIN must be exactly 4 digits",
+      });
+    }
+
+    const request = await prisma.diaryPinReset.findUnique({
+      where: { userId: req.user.userId },
+    });
+
+    if (!request || !request.verifiedAt) {
+      return res.status(400).json({
+        status: "ERROR",
+        message: "Please verify your OTP first",
+      });
+    }
+
+    if (request.otpExpiresAt < new Date()) {
+      return res.status(400).json({
+        status: "ERROR",
+        message: "Verification has expired. Please request a new OTP",
+      });
+    }
+
+    const hashedPin = await bcrypt.hash(newPin, 10);
+
+    await prisma.$transaction([
+      prisma.user.update({
+        where: { id: req.user.userId },
+        data: { diaryPinHash: hashedPin },
+      }),
+      prisma.diaryPinReset.delete({
+        where: { userId: req.user.userId },
+      }),
+    ]);
+
+    return res.status(200).json({
+      status: "SUCCESS",
+      message: "Diary PIN reset successfully",
+    });
+  } catch (error) {
+    console.error("Diary PIN reset update error:", error);
+
+    return res.status(500).json({
+      status: "ERROR",
+      message: "Could not reset Diary PIN",
+    });
+  }
+});
 
 router.use((err, req, res, next) => {
   if (err instanceof multer.MulterError) {

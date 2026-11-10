@@ -58,6 +58,7 @@ export const ModelName = {
   Note: 'Note',
   DiaryEntry: 'DiaryEntry',
   DiaryPhoto: 'DiaryPhoto',
+  DiaryPinReset: 'DiaryPinReset',
   HandwritingSample: 'HandwritingSample'
 } as const
 
@@ -166,6 +167,20 @@ export const DiaryPhotoScalarFieldEnum = {
 } as const
 
 export type DiaryPhotoScalarFieldEnum = (typeof DiaryPhotoScalarFieldEnum)[keyof typeof DiaryPhotoScalarFieldEnum]
+
+
+export const DiaryPinResetScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  otpHash: 'otpHash',
+  otpExpiresAt: 'otpExpiresAt',
+  otpAttempts: 'otpAttempts',
+  otpSentAt: 'otpSentAt',
+  createdAt: 'createdAt',
+  verifiedAt: 'verifiedAt'
+} as const
+
+export type DiaryPinResetScalarFieldEnum = (typeof DiaryPinResetScalarFieldEnum)[keyof typeof DiaryPinResetScalarFieldEnum]
 
 
 export const HandwritingSampleScalarFieldEnum = {

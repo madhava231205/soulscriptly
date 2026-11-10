@@ -404,6 +404,7 @@ export const ModelName = {
   Note: 'Note',
   DiaryEntry: 'DiaryEntry',
   DiaryPhoto: 'DiaryPhoto',
+  DiaryPinReset: 'DiaryPinReset',
   HandwritingSample: 'HandwritingSample'
 } as const
 
@@ -420,7 +421,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "pendingRegistration" | "passwordReset" | "accountPasswordChange" | "note" | "diaryEntry" | "diaryPhoto" | "handwritingSample"
+    modelProps: "user" | "pendingRegistration" | "passwordReset" | "accountPasswordChange" | "note" | "diaryEntry" | "diaryPhoto" | "diaryPinReset" | "handwritingSample"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -942,6 +943,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    DiaryPinReset: {
+      payload: Prisma.$DiaryPinResetPayload<ExtArgs>
+      fields: Prisma.DiaryPinResetFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.DiaryPinResetFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DiaryPinResetPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.DiaryPinResetFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DiaryPinResetPayload>
+        }
+        findFirst: {
+          args: Prisma.DiaryPinResetFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DiaryPinResetPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.DiaryPinResetFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DiaryPinResetPayload>
+        }
+        findMany: {
+          args: Prisma.DiaryPinResetFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DiaryPinResetPayload>[]
+        }
+        create: {
+          args: Prisma.DiaryPinResetCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DiaryPinResetPayload>
+        }
+        createMany: {
+          args: Prisma.DiaryPinResetCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.DiaryPinResetCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DiaryPinResetPayload>[]
+        }
+        delete: {
+          args: Prisma.DiaryPinResetDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DiaryPinResetPayload>
+        }
+        update: {
+          args: Prisma.DiaryPinResetUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DiaryPinResetPayload>
+        }
+        deleteMany: {
+          args: Prisma.DiaryPinResetDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.DiaryPinResetUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.DiaryPinResetUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DiaryPinResetPayload>[]
+        }
+        upsert: {
+          args: Prisma.DiaryPinResetUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DiaryPinResetPayload>
+        }
+        aggregate: {
+          args: Prisma.DiaryPinResetAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateDiaryPinReset>
+        }
+        groupBy: {
+          args: Prisma.DiaryPinResetGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.DiaryPinResetGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.DiaryPinResetCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.DiaryPinResetCountAggregateOutputType> | number
+        }
+      }
+    }
     HandwritingSample: {
       payload: Prisma.$HandwritingSamplePayload<ExtArgs>
       fields: Prisma.HandwritingSampleFieldRefs
@@ -1144,6 +1219,20 @@ export const DiaryPhotoScalarFieldEnum = {
 } as const
 
 export type DiaryPhotoScalarFieldEnum = (typeof DiaryPhotoScalarFieldEnum)[keyof typeof DiaryPhotoScalarFieldEnum]
+
+
+export const DiaryPinResetScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  otpHash: 'otpHash',
+  otpExpiresAt: 'otpExpiresAt',
+  otpAttempts: 'otpAttempts',
+  otpSentAt: 'otpSentAt',
+  createdAt: 'createdAt',
+  verifiedAt: 'verifiedAt'
+} as const
+
+export type DiaryPinResetScalarFieldEnum = (typeof DiaryPinResetScalarFieldEnum)[keyof typeof DiaryPinResetScalarFieldEnum]
 
 
 export const HandwritingSampleScalarFieldEnum = {
@@ -1408,6 +1497,7 @@ export type GlobalOmitConfig = {
   note?: Prisma.NoteOmit
   diaryEntry?: Prisma.DiaryEntryOmit
   diaryPhoto?: Prisma.DiaryPhotoOmit
+  diaryPinReset?: Prisma.DiaryPinResetOmit
   handwritingSample?: Prisma.HandwritingSampleOmit
 }
 
