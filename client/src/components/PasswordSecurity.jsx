@@ -13,10 +13,45 @@ const [message, setMessage] = useState('')
 const [messageType, setMessageType] = useState('')
 const [showNewPassword, setShowNewPassword] = useState(false)
 const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+const [showDiaryPinReset, setShowDiaryPinReset] = useState(false)
+const [diaryOtpSent, setDiaryOtpSent] = useState(false)
+const [diaryOtp, setDiaryOtp] = useState('')
+const [diaryOtpVerified, setDiaryOtpVerified] = useState(false)
+const [newDiaryPin, setNewDiaryPin] = useState('')
+const [confirmDiaryPin, setConfirmDiaryPin] = useState('')
 
 const showMessage = (text, type) => {
   setMessage(text)
   setMessageType(type)
+}
+const handleSendDiaryOtp = async () => {
+  try {
+    const token = localStorage.getItem('token')
+
+    const response = await fetch(
+      'http://localhost:5000/api/diary/pin-reset/send-otp',
+      {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      }
+    )
+
+    const data = await response.json()
+
+    if (!response.ok) {
+      showMessage(data.message || 'Could not send OTP', 'error')
+      return
+    }
+
+    setDiaryOtpSent(true)
+    showMessage('Diary PIN reset OTP sent to your email!', 'success')
+  } catch (error) {
+    console.error('Diary PIN OTP error:', error)
+    showMessage('Something went wrong. Please try again.', 'error')
+  }
 }
 const handleSendOtp = async () => {
   try {
@@ -47,6 +82,36 @@ const handleSendOtp = async () => {
     showMessage('Something went wrong. Please try again.', 'error')
   }
 }
+const handleVerifyDiaryOtp = async () => {
+  try {
+    const token = localStorage.getItem('token')
+
+    const response = await fetch(
+      'http://localhost:5000/api/diary/pin-reset/verify-otp',
+      {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ otp: diaryOtp }),
+      }
+    )
+
+    const data = await response.json()
+
+    if (!response.ok) {
+      showMessage(data.message || 'Could not verify OTP', 'error')
+      return
+    }
+
+    setDiaryOtpVerified(true)
+    showMessage('Diary PIN OTP verified successfully!', 'success')
+  } catch (error) {
+    console.error('Diary OTP verification error:', error)
+    showMessage('Something went wrong. Please try again.', 'error')
+  }
+}
 const handleVerifyOtp = async () => {
   try {
     const token = localStorage.getItem('token')
@@ -74,6 +139,53 @@ const handleVerifyOtp = async () => {
     showMessage('OTP verified successfully!', 'success')
   } catch (error) {
     console.error('Verify OTP error:', error)
+    showMessage('Something went wrong. Please try again.', 'error')
+  }
+}
+const handleUpdateDiaryPin = async () => {
+  if (newDiaryPin.length !== 4) {
+    showMessage('Diary PIN must be exactly 4 digits', 'error')
+    return
+  }
+
+  if (newDiaryPin !== confirmDiaryPin) {
+    showMessage('Diary PINs do not match', 'error')
+    return
+  }
+
+  try {
+    const token = localStorage.getItem('token')
+
+    const response = await fetch(
+      'http://localhost:5000/api/diary/pin-reset/update',
+      {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ newPin: newDiaryPin }),
+      }
+    )
+
+    const data = await response.json()
+
+    if (!response.ok) {
+      showMessage(data.message || 'Could not reset Diary PIN', 'error')
+      return
+    }
+
+    showMessage('Diary PIN reset successfully!', 'success')
+    setTimeout(() => setMessage(''), 2500)
+
+    setShowDiaryPinReset(false)
+    setDiaryOtpSent(false)
+    setDiaryOtp('')
+    setDiaryOtpVerified(false)
+    setNewDiaryPin('')
+    setConfirmDiaryPin('')
+  } catch (error) {
+    console.error('Diary PIN update error:', error)
     showMessage('Something went wrong. Please try again.', 'error')
   }
 }
@@ -131,7 +243,7 @@ setShowConfirmPassword(false)
 
   return (
     <div className="password-security">
-      {!showAccountPassword ? (
+      {!showAccountPassword && !showDiaryPinReset ? (
         <>
           <h2>Password & Security</h2>
           <p>Manage your account and diary passwords.</p>
@@ -159,14 +271,100 @@ setShowConfirmPassword(false)
               </p>
               <button
                 className="setup-primary-button"
-                onClick={() => {}}
+                onClick={() => {
+  setShowDiaryPinReset(true)
+  setMessage('')
+}}
               >
                 Change Diary Password
               </button>
             </div>
           </div>
         </>
-      ) : (
+      ) : showDiaryPinReset ? (
+  <div className="account-password-form">
+  <h3>Reset Diary PIN</h3>
+  <p>We'll send a verification code to your registered email:</p>
+
+  <p className="security-email">
+    {currentUser?.email || 'your email'}
+  </p>
+
+  {!diaryOtpSent && (
+    <button
+      className="setup-primary-button"
+      onClick={handleSendDiaryOtp}
+    >
+      Send OTP
+    </button>
+  )}
+
+  {diaryOtpSent && !diaryOtpVerified && (
+  <div className="otp-verification">
+    <label>Enter the 6-digit OTP</label>
+    <input
+      type="text"
+      maxLength="6"
+      value={diaryOtp}
+      onChange={(e) =>
+        setDiaryOtp(e.target.value.replace(/\D/g, ''))
+      }
+      placeholder="Enter OTP"
+      inputMode="numeric"
+    />
+  </div>
+)}
+
+{diaryOtpSent && !diaryOtpVerified && (
+  <button
+    className="setup-primary-button"
+    onClick={handleVerifyDiaryOtp}
+    disabled={diaryOtp.length !== 6}
+  >
+    Verify OTP
+  </button>
+)}
+{diaryOtpVerified && (
+  <div className="new-password-fields">
+    <label>New Diary PIN</label>
+    <input
+      type="password"
+      maxLength="4"
+      inputMode="numeric"
+      value={newDiaryPin}
+      onChange={(e) =>
+        setNewDiaryPin(e.target.value.replace(/\D/g, ''))
+      }
+      placeholder="Enter new 4-digit PIN"
+    />
+
+    <label>Confirm New Diary PIN</label>
+    <input
+      type="password"
+      maxLength="4"
+      inputMode="numeric"
+      value={confirmDiaryPin}
+      onChange={(e) =>
+        setConfirmDiaryPin(e.target.value.replace(/\D/g, ''))
+      }
+      placeholder="Confirm new 4-digit PIN"
+    />
+  </div>
+)}
+{diaryOtpVerified && (
+  <button
+    className="setup-primary-button"
+    onClick={handleUpdateDiaryPin}
+    disabled={
+      newDiaryPin.length !== 4 ||
+      confirmDiaryPin.length !== 4
+    }
+  >
+    Update Diary PIN
+  </button>
+)}
+</div>
+) : (
         <div className="account-password-form">
   <h3>Change Account Password</h3>
   {message && (
