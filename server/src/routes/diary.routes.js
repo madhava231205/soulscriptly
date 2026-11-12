@@ -151,12 +151,16 @@ router.post(
         })
       }
 
-      if (!/^[A-Za-z]$/.test(character)) {
-        return res.status(400).json({
-          status: 'ERROR',
-          message: 'Character must be a single uppercase letter',
-        })
-      }
+      if (
+  typeof character !== 'string' ||
+  Array.from(character).length !== 1 ||
+  character.trim() === ''
+) {
+  return res.status(400).json({
+    status: 'ERROR',
+    message: 'Please provide one valid character',
+  })
+}
 
       if (
         typeof imageData !== 'string' ||
