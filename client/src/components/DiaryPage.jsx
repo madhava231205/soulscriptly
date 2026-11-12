@@ -339,7 +339,7 @@ if (!exportContext) {
 const canvasWidth = 800
 const maxLetterWidth = 20
 const letterHeight = 30
-const spacing = 5
+const spacing = 3
 const spaceWidth = 20
 const lineHeight = 42
 const leftMargin = 10
@@ -358,11 +358,16 @@ await Promise.all(
     }
   })
 )
+const getCharacters = (value) =>
+  typeof Intl.Segmenter !== 'undefined'
+    ? [...new Intl.Segmenter(undefined, { granularity: 'grapheme' }).segment(value)]
+        .map((item) => item.segment)
+    : Array.from(value)
 const drawRuledLines = (context, height) => {
   context.strokeStyle = 'rgba(130, 120, 175, 0.38)'
   context.lineWidth = 1
 
-  for (let y = topMargin + 35; y < height - bottomMargin; y += lineHeight) {
+  for (let y = topMargin + 28; y < height - bottomMargin; y += lineHeight) {
     context.beginPath()
     context.moveTo(0, y)
     context.lineTo(canvasWidth, y)
@@ -372,9 +377,27 @@ const drawRuledLines = (context, height) => {
 const drawHandwrittenCharacter = (context, character, x, y, textLength) => {
   const image = handwritingImages[character]
 
-  if (!image) {
-    return maxLetterWidth + spacing
+ if (!image) {
+  const isEmoji = /[\p{Extended_Pictographic}\uFE0F\u20E3]/u.test(character)
+
+  context.save()
+
+  if (isEmoji) {
+    context.font = '24px "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif'
+  } else {
+    context.font = '24px Arial, sans-serif'
+    context.fillStyle = '#333333'
   }
+
+  context.textBaseline = 'alphabetic'
+  context.fillText(character, x, y + letterHeight)
+
+  const characterWidth = context.measureText(character).width
+
+  context.restore()
+
+  return Math.max(characterWidth, maxLetterWidth) + spacing
+}
 
   const aspectRatio = image.width / image.height
   const drawHeight = letterHeight
@@ -461,37 +484,117 @@ const drawHandwrittenCharacter = (context, character, x, y, textLength) => {
 
   return drawWidth + spacing
 }
-const drawHandwrittenText = (context, text) => {
-  let x = leftMargin
-  let y = topMargin + 35
+const getEstimatedCharacterWidth = (character) => {
+  const sample = handwritingImages[character]
 
-  for (const character of text) {
+  if (sample) {
+    return maxLetterWidth + spacing
+  }
+
+  exportContext.save()
+
+  exportContext.font =
+    '24px "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif'
+
+  const width =
+    Math.max(exportContext.measureText(character).width, maxLetterWidth) +
+    spacing
+
+  exportContext.restore()
+
+  return width
+}
+
+const wrapTextIntoLines = (text) => {
+  const characters = getCharacters(text)
+  const lines = []
+
+  let currentLine = ''
+  let x = leftMargin
+
+  for (let index = 0; index < characters.length; index++) {
+    const character = characters[index]
+
     if (character === '\n') {
+      lines.push(currentLine)
+      currentLine = ''
       x = leftMargin
-      y += lineHeight
       continue
     }
 
     if (character === ' ') {
+      currentLine += ' '
       x += spaceWidth
       continue
     }
 
-    if (x + maxLetterWidth > canvasWidth - rightMargin) {
-      x = leftMargin
-      y += lineHeight
+    // Check the complete word before drawing it.
+    if (
+      index === 0 ||
+      characters[index - 1] === ' ' ||
+      characters[index - 1] === '\n'
+    ) {
+      let wordLength = 0
+
+      while (
+        index + wordLength < characters.length &&
+        characters[index + wordLength] !== ' ' &&
+        characters[index + wordLength] !== '\n'
+      ) {
+        wordLength++
+      }
+
+      let estimatedWordWidth = 0
+
+      for (let wordIndex = 0; wordIndex < wordLength; wordIndex++) {
+        estimatedWordWidth += getEstimatedCharacterWidth(
+          characters[index + wordIndex]
+        )
+      }
+
+      estimatedWordWidth -= spacing
+
+      if (x + estimatedWordWidth > canvasWidth - rightMargin) {
+        lines.push(currentLine)
+        currentLine = ''
+        x = leftMargin
+      }
     }
 
-    x += drawHandwrittenCharacter(
-      context,
-      character,
-      x,
-      y,
-      text.length
-    )
+    currentLine += character
+    x += getEstimatedCharacterWidth(character)
   }
 
-  return y + lineHeight
+  lines.push(currentLine)
+
+  return lines
+}
+
+const drawHandwrittenText = (context, lines) => {
+  let y = topMargin + 35
+
+  for (const line of lines) {
+    let x = leftMargin
+
+    for (const character of getCharacters(line)) {
+      if (character === ' ') {
+        x += spaceWidth
+        continue
+      }
+
+      x += drawHandwrittenCharacter(
+        context,
+        character,
+        x,
+        y,
+        line.length
+      )
+    }
+
+    y += lineHeight
+  }
+
+  return y
 }
 const renderHandwritingPage = (pageText) => {
   exportCanvas.width = canvasWidth
@@ -505,60 +608,24 @@ const renderHandwritingPage = (pageText) => {
   return exportCanvas.toDataURL('image/png')
 }
 const splitTextIntoPages = (text) => {
-  const lines = []
-  let currentLine = ''
-  let currentWidth = 0
-
-  const availableWidth = canvasWidth - leftMargin - rightMargin
-
-  for (const character of text) {
-    if (character === '\n') {
-      lines.push(currentLine)
-      currentLine = ''
-      currentWidth = 0
-      continue
-    }
-
-    if (character === ' ') {
-      currentLine += character
-      currentWidth += spaceWidth
-      continue
-    }
-
-    const image = handwritingImages[character]
-
-    const aspectRatio = image
-      ? image.width / image.height
-      : 1
-
-    const characterWidth = image
-      ? Math.min(maxLetterWidth, letterHeight * aspectRatio)
-      : maxLetterWidth
-
-    if (currentWidth + maxLetterWidth > availableWidth) {
-      lines.push(currentLine)
-      currentLine = ''
-      currentWidth = 0
-    }
-
-    currentLine += character
-    currentWidth += characterWidth + spacing
-  }
-
-  lines.push(currentLine)
+  const lines = wrapTextIntoLines(text)
 
   const firstLineY = topMargin + 35
-const maxCharacterHeight = letterHeight * 1.03 + 2
+  const maxCharacterHeight = letterHeight * 1.03 + 2
 
-const linesPerPage = Math.floor(
-  (canvasPageHeight - bottomMargin - firstLineY - maxCharacterHeight) /
-  lineHeight
-) + 1
+  const linesPerPage = Math.floor(
+    (
+      canvasPageHeight -
+      bottomMargin -
+      firstLineY -
+      maxCharacterHeight
+    ) / lineHeight
+  ) + 1
 
   const pages = []
 
   for (let i = 0; i < lines.length; i += linesPerPage) {
-    pages.push(lines.slice(i, i + linesPerPage).join('\n'))
+    pages.push(lines.slice(i, i + linesPerPage))
   }
 
   return pages
@@ -1173,7 +1240,7 @@ return (
 </button>
 
 
-        </div>  
+        </div> 
 
         {(showCreateForm || editingEntry) && (
   <div className="diary-form-overlay">
@@ -1466,7 +1533,7 @@ return (
           selectedEntry.createdAt
         ).toLocaleDateString()}
       </div>
-      <p className="handwriting-test-note">Note: letters missing from your handwriting samples will appear as blank spaces.</p>
+      <p className="handwriting-test-note">Note: letters missing from your handwriting samples will appear as Normal Letters.</p>
 
 <div className="read-content">
   <HandwritingRenderer

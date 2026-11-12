@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 
-function HandwritingCanvas({ character, onSave, savedImage }) {
+function HandwritingCanvas({ character, onSave, savedImage,onClick }) {
   const canvasRef = useRef(null)
 
   const [isDrawing, setIsDrawing] = useState(false)
@@ -216,7 +216,11 @@ function saveSample() {
         <button
           className="handwriting-save-button"
           type="button"
-          onClick={saveSample}
+          onClick={()=>{
+            saveSample();
+            onClick();
+          }
+          }
         >
           Save Sample
         </button>

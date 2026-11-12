@@ -17,7 +17,7 @@ function HandwritingRenderer({ text, handwritingSamples }) {
     const canvasWidth = 800
     const maxLetterWidth = 20
     const letterHeight = 30
-    const spacing = 5
+    const spacing = 3
     const spaceWidth = 20
     const lineHeight = 42
     const leftMargin = 10
@@ -63,7 +63,56 @@ for (let lineY = topMargin + 35; lineY < canvas.height; lineY += lineHeight) {
     let y = topMargin
 
     async function drawText() {
-      for (const character of text) {
+     const characters = typeof Intl.Segmenter !== 'undefined'
+  ? [...new Intl.Segmenter(undefined, { granularity: 'grapheme' }).segment(text)].map(item => item.segment)
+  : Array.from(text)
+
+for (let index = 0; index < characters.length; index++) {
+  const character = characters[index]
+
+  // If this is the beginning of a word, check whether the whole word fits.
+  if (
+    character !== ' ' &&
+    character !== '\n' &&
+    (index === 0 || characters[index - 1] === ' ' || characters[index - 1] === '\n')
+  ) {
+    let wordLength = 0
+
+    while (
+      index + wordLength < characters.length &&
+      characters[index + wordLength] !== ' ' &&
+      characters[index + wordLength] !== '\n'
+    ) {
+      wordLength++
+    }
+
+    let estimatedWordWidth = 0
+
+for (let wordIndex = 0; wordIndex < wordLength; wordIndex++) {
+  const wordCharacter = characters[index + wordIndex]
+  const sample = handwritingSamples[wordCharacter]
+
+  if (sample) {
+    estimatedWordWidth += maxLetterWidth + spacing
+  } else {
+    context.save()
+    context.font = '24px "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif'
+    estimatedWordWidth += Math.max(
+      context.measureText(wordCharacter).width,
+      maxLetterWidth
+    ) + spacing
+    context.restore()
+  }
+}
+
+estimatedWordWidth -= spacing
+
+if (x + estimatedWordWidth > canvasWidth - rightMargin) {
+  x = leftMargin
+  y += lineHeight
+}
+    
+  }
         const charCode = character.charCodeAt(0)
 const heightVariation = 0.97 + ((charCode * (text.length + 1)) % 7) / 100
 const verticalOffset = ((charCode * 3) % 5) - 2
@@ -78,18 +127,22 @@ const verticalOffset = ((charCode * 3) % 5) - 2
           continue
         }
 
-        if (x + maxLetterWidth > canvasWidth - rightMargin) {
-          x = leftMargin
-          y += lineHeight
-        }
+        
+       const imageData = handwritingSamples[character]
 
-        const imageData = handwritingSamples[character]
+if (!imageData) {
+  context.save()
 
-        if (!imageData) {
-          x += maxLetterWidth + spacing
-          continue
-        }
+  context.font = '24px "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif'
+  context.textBaseline = 'alphabetic'
+  context.fillText(character, x, y + letterHeight)
 
+  const emojiWidth = context.measureText(character).width
+  context.restore()
+
+  x += Math.max(emojiWidth, maxLetterWidth) + spacing
+  continue
+}
         const image = new Image()
 
         await new Promise((resolve) => {

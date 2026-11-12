@@ -1,11 +1,14 @@
 import { useEffect, useState } from 'react'
 import HandwritingCanvas from './HandwritingCanvas'
 
-const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'.split('')
+const characters = [
+  ...'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789',
+  ...Array.from(".,!?;:'\"-()[]{}@#$%&*+=_/\\|<>~`^")]
 
 function HandwritingSetup() {
   const [currentIndex, setCurrentIndex] = useState(0)
   const [handwritingSamples, setHandwritingSamples] = useState({})
+  const [message, setMessage] = useState('')
 
   const currentCharacter = characters[currentIndex]
 
@@ -45,8 +48,10 @@ async function handleSaveSample(sample) {
       ...currentSamples,
       [sample.character]: sample.imageData,
     }))
+    setMessage(`Handwriting for ${sample.character} saved successfully!`)
+    setTimeout(() => setMessage(''), 3000)
 
-    alert(`Handwriting for ${sample.character} saved successfully!`)
+    
   } catch (error) {
     console.error('Save handwriting sample error:', error)
     alert('Unable to connect to the server.')
@@ -87,7 +92,7 @@ async function loadHandwritingSamples() {
 
     setHandwritingSamples(savedSamples)
 
-const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'.split('')
+
 
 const firstMissingIndex = characters.findIndex(
   (character) => !savedSamples[character]
@@ -164,6 +169,7 @@ useEffect(() => {
             character={currentCharacter}
             onSave={handleSaveSample}
             savedImage={handwritingSamples[currentCharacter]}
+            onClick={goToNextCharacter}
             
           />
         </div>
@@ -185,8 +191,30 @@ useEffect(() => {
           </div>
         </div>
       </div>
+      {message && (
+        <div className="toast-message">
+
+          <div className="toast-icon">
+            ✓
+          </div>
+
+          <div>
+            <strong>{message}</strong>
+            
+          </div>
+
+          <button
+            onClick={() => setMessage('')}
+          >
+            ×
+          </button>
+
+        </div>
+      )}
     </div>
   )
+
+    
 
 }
 
