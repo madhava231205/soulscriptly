@@ -1,6 +1,7 @@
 
 import { useEffect, useState } from 'react'
 import HandwritingRenderer from './HandwritingRenderer'
+import {API_BASE_URL} from "../api";
 
 function HandwritingTest() {
   const [text, setText] = useState('Hello')
@@ -16,7 +17,7 @@ function HandwritingTest() {
 
       try {
         const response = await fetch(
-          'http://localhost:5000/api/diary/handwriting',
+          `${API_BASE_URL}/api/diary/handwriting`,
           {
             headers: {
               Authorization: `Bearer ${token}`,

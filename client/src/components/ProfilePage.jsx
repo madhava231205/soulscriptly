@@ -1,5 +1,6 @@
 
 import { useEffect, useState } from 'react'
+import { API_BASE_URL} from "../api";
 
 function ProfilePage({ currentUser, setCurrentUser }) {
   const [isEditing, setIsEditing] = useState(false)
@@ -36,7 +37,7 @@ useEffect(() => {
       }
 
       const response = await fetch(
-        'http://localhost:5000/api/stats',
+        `${API_BASE_URL}/api/stats`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -80,7 +81,7 @@ useEffect(() => {
 
     try {
       const response = await fetch(
-        'http://localhost:5000/api/auth/profile/picture/image',
+        `${API_BASE_URL}/api/auth/profile/picture/image`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -129,7 +130,7 @@ useEffect(() => {
       
 
       const response = await fetch(
-        'http://localhost:5000/api/auth/profile',
+        `${API_BASE_URL}/api/auth/profile`,
         {
           method: 'PATCH',
           headers: {
@@ -177,7 +178,7 @@ useEffect(() => {
     formData.append('profilePicture', selectedPicture)
 
     const response = await fetch(
-      'http://localhost:5000/api/auth/profile/picture',
+      `${API_BASE_URL}/api/auth/profile/picture`,
       {
         method: 'PATCH',
         headers: {

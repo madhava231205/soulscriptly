@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import HandwritingRenderer from './HandwritingRenderer'
 import { jsPDF } from 'jspdf';
+import {API_BASE_URL} from "../api";
 
 function DiaryPage() {
   const [diaryEntries, setDiaryEntries] = useState([])
@@ -122,7 +123,7 @@ useEffect(() => {
       await Promise.all(
         diaryPhotos.map(async (photo) => {
           const response = await fetch(
-            `http://localhost:5000/api/diary/photos/${photo.id}/image`,
+            `${API_BASE_URL}/api/diary/photos/${photo.id}/image`,
             {
               headers: {
                 Authorization: `Bearer ${token}`,
@@ -174,7 +175,7 @@ async function getHandwritingSamples() {
 
   try {
     const response = await fetch(
-      'http://localhost:5000/api/diary/handwriting',
+      `${API_BASE_URL}/api/diary/handwriting`,
       {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -210,7 +211,7 @@ async function getDiaryEntries() {
 
     try {
       const response = await fetch(
-        'http://localhost:5000/api/diary',
+        `${API_BASE_URL}/api/diary`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -239,7 +240,7 @@ const getDiaryPhotos = async (diaryId) => {
     const token = localStorage.getItem('token')
 
     const response = await fetch(
-      `http://localhost:5000/api/diary/${diaryId}/photos`,
+      `${API_BASE_URL}/api/diary/${diaryId}/photos`,
       {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -651,7 +652,7 @@ handwritingPages.forEach((pageText, index) => {
   )
 })
 const photosResponse = await fetch(
-  `http://localhost:5000/api/diary/${selectedEntry.id}/photos`,
+  `${API_BASE_URL}/api/diary/${selectedEntry.id}/photos`,
   {
     headers: {
       Authorization: `Bearer ${token}`,
@@ -669,7 +670,7 @@ const photoDataUrls = []
 
 for (const photo of entryPhotos) {
   const imageResponse = await fetch(
-    `http://localhost:5000/api/diary/photos/${photo.id}/image`,
+    `${API_BASE_URL}/api/diary/photos/${photo.id}/image`,
     {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -785,7 +786,7 @@ const deleteDiaryPhoto = async (photoId) => {
   const token = localStorage.getItem('token')
 
   const response = await fetch(
-    `http://localhost:5000/api/diary/photos/${photoId}`,
+    `${API_BASE_URL}/api/diary/photos/${photoId}`,
     {
       method: 'DELETE',
       headers: {
@@ -808,7 +809,7 @@ async function uploadDiaryPhoto(diaryEntryId, photo, token) {
   formData.append('photo', photo)
 
   const response = await fetch(
-    `http://localhost:5000/api/diary/${diaryEntryId}/photos`,
+    `${API_BASE_URL}/api/diary/${diaryEntryId}/photos`,
     {
       method: 'POST',
       headers: {
@@ -848,7 +849,7 @@ async function uploadDiaryPhoto(diaryEntryId, photo, token) {
 
   try {
     const response = await fetch(
-      'http://localhost:5000/api/diary',
+      `${API_BASE_URL}/api/diary`,
       {
         method: 'POST',
         headers: {
@@ -914,7 +915,7 @@ async function updateDiaryEntry(event) {
 
   try {
     const response = await fetch(
-      `http://localhost:5000/api/diary/${editingEntry.id}`,
+      `${API_BASE_URL}/api/diary/${editingEntry.id}`,
       {
         method: 'PUT',
         headers: {
@@ -980,7 +981,7 @@ async function deleteDiaryEntry(entryId) {
 
   try {
     const response = await fetch(
-      `http://localhost:5000/api/diary/${entryId}`,
+      `${API_BASE_URL}/api/diary/${entryId}`,
       {
         method: 'DELETE',
         headers: {
@@ -1026,7 +1027,7 @@ async function unlockDiary(event) {
 
   try {
     const response = await fetch(
-      'http://localhost:5000/api/diary/unlock',
+      `${API_BASE_URL}/api/diary/unlock`,
       {
         method: 'POST',
         headers: {
@@ -1064,7 +1065,7 @@ async function checkDiaryPinStatus() {
 
   try {
     const response = await fetch(
-      'http://localhost:5000/api/diary/pin-status',
+      `${API_BASE_URL}/api/diary/pin-status`,
       {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -1110,7 +1111,7 @@ async function createDiaryPin(event) {
 
   try {
     const response = await fetch(
-      'http://localhost:5000/api/diary/pin',
+      `${API_BASE_URL}/api/diary/pin`,
       {
         method: 'POST',
         headers: {

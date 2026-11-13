@@ -1,5 +1,6 @@
 import {useEffect,  useState } from 'react'
 import './App.css'
+import {API_BASE_URL }from "./api";
 import Sidebar from './components/Sidebar'
 import NoteModal from './components/NoteModal'
 import ReadNoteModal from './components/ReadNoteModal'
@@ -71,7 +72,7 @@ const [isSidebarOpen, setIsSidebarOpen] = useState(false)
 
   try {
     const response = await fetch(
-      'http://localhost:5000/api/auth/register',
+      `${API_BASE_URL}/api/auth/register`,
       {
         method: 'POST',
         headers: {
@@ -111,7 +112,7 @@ async function handleVerifyOtp(event) {
 
   try {
     const response = await fetch(
-      'http://localhost:5000/api/auth/verify-registration-otp',
+      `${API_BASE_URL}/api/auth/verify-registration-otp`,
       {
         method: 'POST',
         headers: {
@@ -152,7 +153,7 @@ const handleResendOtp = async () => {
     setMessage('')
 
     const response = await fetch(
-      'http://localhost:5000/api/auth/resend-registration-otp',
+      `${API_BASE_URL}/api/auth/resend-registration-otp`,
       {
         method: 'POST',
         headers: {
@@ -186,7 +187,7 @@ const handleForgotPassword = async (event) => {
     setMessage('')
 
     const response = await fetch(
-      'http://localhost:5000/api/auth/forgot-password',
+      `${API_BASE_URL}/api/auth/forgot-password`,
       {
         method: 'POST',
         headers: {
@@ -222,7 +223,7 @@ const handleVerifyResetOtp = async (event) => {
     setMessage('')
 
     const response = await fetch(
-      'http://localhost:5000/api/auth/verify-reset-otp',
+      `${API_BASE_URL}/api/auth/verify-reset-otp`,
       {
         method: 'POST',
         headers: {
@@ -264,7 +265,7 @@ const handleResetPassword = async (event) => {
     setMessage('')
 
     const response = await fetch(
-      'http://localhost:5000/api/auth/reset-password',
+      `${API_BASE_URL}/api/auth/reset-password`,
       {
         method: 'POST',
         headers: {
@@ -310,7 +311,7 @@ setIsLogin(true)
 
     try {
       const response = await fetch(
-        'http://localhost:5000/api/auth/login',
+        `${API_BASE_URL}/api/auth/login`,
         {
           method: 'POST',
           headers: {
@@ -356,7 +357,7 @@ setIsLogin(true)
 
     try {
       const response = await fetch(
-        'http://localhost:5000/api/notes',
+        `${API_BASE_URL}/api/notes`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -396,7 +397,7 @@ useEffect(() => {
   async function restoreSession() {
     try {
       const response = await fetch(
-        'http://localhost:5000/api/auth/protected',
+        `${API_BASE_URL}/api/auth/protected`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -474,8 +475,8 @@ useEffect(() => {
       const isEditing = editingNote !== null
 
       const url = isEditing
-        ? `http://localhost:5000/api/notes/${editingNote.id}`
-        : 'http://localhost:5000/api/notes'
+        ? `${API_BASE_URL}/api/notes/${editingNote.id}`
+        : `${API_BASE_URL}/api/notes`
 
       const method = isEditing ? 'PUT' : 'POST'
 
@@ -539,7 +540,7 @@ useEffect(() => {
 
   try {
     const response = await fetch(
-      `http://localhost:5000/api/notes/${noteId}/favourite`,
+      `${API_BASE_URL}/api/notes/${noteId}/favourite`,
       {
         method: 'PATCH',
         headers: {
@@ -582,7 +583,7 @@ async function handleDeleteNote(noteId) {
 
   try {
     const response = await fetch(
-      `http://localhost:5000/api/notes/${noteId}`,
+      `${API_BASE_URL}/api/notes/${noteId}`,
       {
         method: 'DELETE',
         headers: {
