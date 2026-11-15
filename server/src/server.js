@@ -44,24 +44,6 @@ app.get("/api/health", (req, res) => {
   });
 });
 
-app.get("/api/db-test", async (req, res) => {
-  try {
-    const users = await prisma.user.findMany();
-
-    res.json({
-      status: "OK",
-      database: "connected",
-      users,
-    });
-  } catch (error) {
-    console.error(error);
-
-    res.status(500).json({
-      status: "ERROR",
-      message: "Database connection failed",
-    });
-  }
-});
 
 
 app.listen(PORT, () => {
