@@ -17,7 +17,7 @@ function HandwritingRenderer({ text, handwritingSamples }) {
     const canvasWidth = 800
     const maxLetterWidth = 20
     const letterHeight = 30
-    const spacing = 3
+    const spacing = 1.5
     const spaceWidth = 20
     const lineHeight = 42
     const leftMargin = 10
