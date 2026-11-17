@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import {API_BASE_URL} from "../api";
 
 
 const PasswordSecurity = ({ currentUser }) => {
@@ -29,7 +30,7 @@ const handleSendDiaryOtp = async () => {
     const token = localStorage.getItem('token')
 
     const response = await fetch(
-      'http://localhost:5000/api/diary/pin-reset/send-otp',
+      `${API_BASE_URL}/api/diary/pin-reset/send-otp`,
       {
         method: 'POST',
         headers: {
@@ -58,7 +59,7 @@ const handleSendOtp = async () => {
     const token = localStorage.getItem('token')
 
     const response = await fetch(
-      'http://localhost:5000/api/auth/change-password/send-otp',
+      `${API_BASE_URL}/api/auth/change-password/send-otp`,
       {
         method: 'POST',
         headers: {
@@ -87,7 +88,7 @@ const handleVerifyDiaryOtp = async () => {
     const token = localStorage.getItem('token')
 
     const response = await fetch(
-      'http://localhost:5000/api/diary/pin-reset/verify-otp',
+      `${API_BASE_URL}/api/diary/pin-reset/verify-otp`,
       {
         method: 'POST',
         headers: {
@@ -117,7 +118,7 @@ const handleVerifyOtp = async () => {
     const token = localStorage.getItem('token')
 
     const response = await fetch(
-      'http://localhost:5000/api/auth/change-password/verify-otp',
+      `${API_BASE_URL}/api/auth/change-password/verify-otp`,
       {
         method: 'POST',
         headers: {
@@ -157,7 +158,7 @@ const handleUpdateDiaryPin = async () => {
     const token = localStorage.getItem('token')
 
     const response = await fetch(
-      'http://localhost:5000/api/diary/pin-reset/update',
+      `${API_BASE_URL}/api/diary/pin-reset/update`,
       {
         method: 'POST',
         headers: {
@@ -204,7 +205,7 @@ const handleUpdatePassword = async () => {
     const token = localStorage.getItem('token')
 
     const response = await fetch(
-      'http://localhost:5000/api/auth/change-password/update',
+      `${API_BASE_URL}/api/auth/change-password/update`,
       {
         method: 'POST',
         headers: {

@@ -16,6 +16,7 @@ function Sidebar({
 <div className="brand-logo">
   <img src={logo} alt="✦"  />
 </div>
+
         <div>
           <h1>SoulScriptly</h1>
           <p>Your thoughts. Your story.</p>
