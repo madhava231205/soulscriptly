@@ -239,6 +239,7 @@ router.post("/verify-registration-otp", async (req, res) => {
     });
   }
 });
+
 router.post("/resend-registration-otp", async (req, res) => {
   try {
     const { email } = req.body || {};

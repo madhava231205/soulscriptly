@@ -4,10 +4,10 @@ import prisma from '../lib/prisma.js'
 import authenticateToken from '../middleware/auth.middleware.js'
 import bcrypt from 'bcrypt'
 import multer from 'multer'
-import path from 'path'
-import fs from 'fs'
-import { fileTypeFromFile } from 'file-type'
+import { uploadFile, getFile, deleteFile } from '../lib/storage.js'
+import { fileTypeFromBuffer } from 'file-type'
 import { sendEmail } from "../utils/email.js";
+
 import {
   generateOtp,
   hashOtp,
@@ -17,20 +17,7 @@ import {
 import crypto from "crypto";
 
 const router = express.Router()
-
-const uploadDir = path.join(process.cwd(), 'src', 'uploads')
-
-fs.mkdirSync(uploadDir, { recursive: true })
-
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, uploadDir)
-  },
-  filename: (req, file, cb) => {
-    const uniqueName = `${Date.now()}-${Math.round(Math.random() * 1e9)}${path.extname(file.originalname).toLowerCase()}`
-    cb(null, uniqueName)
-  },
-})
+const storage = multer.memoryStorage()
 
 const upload = multer({
   storage,
@@ -289,13 +276,13 @@ router.get('/:id/photos', authenticateToken, async (req, res) => {
 
 router.get('/photos/:photoId/image', authenticateToken, async (req, res) => {
   try {
-    const photoId = Number(req.params.photoId)
+    const photoId = Number(req.params.photoId);
 
     if (!Number.isInteger(photoId) || photoId <= 0) {
       return res.status(400).json({
         status: 'ERROR',
         message: 'Invalid photo ID',
-      })
+      });
     }
 
     const photo = await prisma.diaryPhoto.findFirst({
@@ -305,45 +292,43 @@ router.get('/photos/:photoId/image', authenticateToken, async (req, res) => {
           userId: req.user.userId,
         },
       },
-    })
+    });
 
     if (!photo) {
       return res.status(404).json({
         status: 'ERROR',
         message: 'Photo not found',
-      })
+      });
     }
 
-    const filename = path.basename(photo.imageUrl)
-    const imagePath = path.join(process.cwd(), 'src', 'uploads', filename)
+    const image = await getFile(photo.imageUrl);
 
-    if (!fs.existsSync(imagePath)) {
-      return res.status(404).json({
-        status: 'ERROR',
-        message: 'Image file not found',
-      })
-    }
+    res.setHeader(
+      'Content-Type',
+      image.ContentType || 'application/octet-stream'
+    );
+    res.setHeader('Cache-Control', 'private, max-age=3600');
 
-    return res.sendFile(imagePath)
+    return image.Body.pipe(res);
   } catch (error) {
-    console.error('Get private diary photo error:', error)
+    console.error('Get private diary photo error:', error);
 
     return res.status(500).json({
       status: 'ERROR',
       message: 'Unable to retrieve photo',
-    })
+    });
   }
-})
+});
 
 router.delete('/photos/:photoId', authenticateToken, async (req, res) => {
   try {
-    const photoId = Number(req.params.photoId)
+    const photoId = Number(req.params.photoId);
 
     if (!Number.isInteger(photoId) || photoId <= 0) {
       return res.status(400).json({
         status: 'ERROR',
         message: 'Invalid photo ID',
-      })
+      });
     }
 
     const photo = await prisma.diaryPhoto.findFirst({
@@ -353,114 +338,129 @@ router.delete('/photos/:photoId', authenticateToken, async (req, res) => {
           userId: req.user.userId,
         },
       },
-    })
+    });
 
     if (!photo) {
       return res.status(404).json({
         status: 'ERROR',
         message: 'Photo not found',
-      })
+      });
     }
 
     await prisma.diaryPhoto.delete({
       where: { id: photoId },
-    })
+    });
+
+    // Old photos used local /uploads/ paths, not Neon storage keys.
+    if (!photo.imageUrl.startsWith('/uploads/')) {
+      try {
+        await deleteFile(photo.imageUrl);
+      } catch (storageError) {
+        console.error('Neon photo deletion error:', storageError);
+      }
+    }
 
     return res.json({
       status: 'SUCCESS',
       message: 'Photo deleted successfully',
-    })
+    });
   } catch (error) {
-    console.error('Delete diary photo error:', error)
+    console.error('Delete diary photo error:', error);
 
     return res.status(500).json({
       status: 'ERROR',
       message: 'Unable to delete photo',
-    })
+    });
   }
-})
+});
 
 router.post(
   '/:id/photos',
   authenticateToken,
   upload.single('photo'),
   async (req, res) => {
-    let savedFilePath
+    let storageKey;
 
     try {
-      const diaryId = Number(req.params.id)
+      const diaryId = Number(req.params.id);
 
       if (!Number.isInteger(diaryId) || diaryId <= 0) {
         return res.status(400).json({
           status: 'ERROR',
           message: 'Invalid diary entry ID',
-        })
+        });
       }
 
       if (!req.file) {
-  return res.status(400).json({
-    status: 'ERROR',
-    message: 'Photo file is required',
-  })
-}
+        return res.status(400).json({
+          status: 'ERROR',
+          message: 'Photo file is required',
+        });
+      }
 
-savedFilePath = req.file.path
+      const detectedType = await fileTypeFromBuffer(req.file.buffer);
+      const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
 
-const detectedType = await fileTypeFromFile(savedFilePath)
-const allowedTypes = ['image/jpeg', 'image/png', 'image/webp']
-
-if (!detectedType || !allowedTypes.includes(detectedType.mime)) {
-  fs.unlinkSync(savedFilePath)
-  savedFilePath = undefined
-
-  return res.status(400).json({
-    status: 'ERROR',
-    message: 'Only valid JPG, PNG, and WebP images are allowed',
-  })
-}
+      if (!detectedType || !allowedTypes.includes(detectedType.mime)) {
+        return res.status(400).json({
+          status: 'ERROR',
+          message: 'Only valid JPG, PNG, and WebP images are allowed',
+        });
+      }
 
       const diaryEntry = await prisma.diaryEntry.findFirst({
         where: {
           id: diaryId,
           userId: req.user.userId,
         },
-      })
+      });
 
       if (!diaryEntry) {
-        fs.unlinkSync(savedFilePath)
-
         return res.status(404).json({
           status: 'ERROR',
           message: 'Diary entry not found',
-        })
+        });
       }
+
+      const filename = `${crypto.randomUUID()}.${detectedType.ext}`;
+      storageKey = `diary/${req.user.userId}/${diaryId}/${filename}`;
+
+      await uploadFile(
+        storageKey,
+        req.file.buffer,
+        detectedType.mime
+      );
 
       const photo = await prisma.diaryPhoto.create({
         data: {
-          imageUrl: `/uploads/${req.file.filename}`,
+          imageUrl: storageKey,
           diaryEntryId: diaryId,
         },
-      })
+      });
 
       return res.status(201).json({
         status: 'OK',
         message: 'Photo uploaded successfully',
         photo,
-      })
+      });
     } catch (error) {
-      if (savedFilePath && fs.existsSync(savedFilePath)) {
-        fs.unlinkSync(savedFilePath)
+      if (storageKey) {
+        try {
+          await deleteFile(storageKey);
+        } catch (deleteError) {
+          console.error('Storage cleanup error:', deleteError);
+        }
       }
 
-      console.error('Upload diary photo error:', error)
+      console.error('Upload diary photo error:', error);
 
       return res.status(500).json({
         status: 'ERROR',
         message: 'Unable to upload photo',
-      })
+      });
     }
   }
-)
+);
 
 
 router.get('/:id', authenticateToken, async (req, res) => {
