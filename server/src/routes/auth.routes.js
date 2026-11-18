@@ -4,9 +4,7 @@ import prisma from "../lib/prisma.js";
 import jwt from "jsonwebtoken";
 import authenticateToken from "../middleware/auth.middleware.js";
 import multer from "multer";
-import path from "path";
-import fs from "fs";
-import { fileTypeFromFile } from "file-type";
+import { fileTypeFromBuffer } from "file-type";
 import { sendEmail } from "../utils/email.js";
 import {
   generateOtp,
@@ -15,6 +13,7 @@ import {
   canResendOtp,
 } from "../utils/otp.js";
 import crypto from "crypto";
+import { uploadFile, getFile, deleteFile } from "../lib/storage.js";
 
 const router = express.Router();
 
@@ -825,19 +824,7 @@ router.get("/protected", authenticateToken, async (req, res) => {
   }
 });
 
-const uploadDir = path.join(process.cwd(), "src", "uploads");
-
-fs.mkdirSync(uploadDir, { recursive: true });
-
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, uploadDir);
-  },
-  filename: (req, file, cb) => {
-    const uniqueName = `${Date.now()}-${Math.round(Math.random() * 1e9)}${path.extname(file.originalname).toLowerCase()}`;
-    cb(null, uniqueName);
-  },
-});
+const storage = multer.memoryStorage();
 
 const upload = multer({
   storage,
@@ -910,8 +897,9 @@ router.patch(
     });
   },
   async (req, res) => {
+    let storageKey;
+
     try {
-      console.log("Profile picture route reached");
       if (!req.file) {
         return res.status(400).json({
           status: "ERROR",
@@ -919,9 +907,8 @@ router.patch(
         });
       }
 
-      console.log("Profile picture uploaded:", req.file.path);
-      // Verify the actual file type, not just its extension or MIME type
-      const fileType = await fileTypeFromFile(req.file.path);
+      // Verify the actual image content
+      const fileType = await fileTypeFromBuffer(req.file.buffer);
 
       const allowedTypes = [
         "image/jpeg",
@@ -930,21 +917,35 @@ router.patch(
       ];
 
       if (!fileType || !allowedTypes.includes(fileType.mime)) {
-        await fs.promises.unlink(req.file.path);
-
         return res.status(400).json({
           status: "ERROR",
           message: "Only JPEG, PNG, and WebP images are allowed",
         });
       }
-console.log("Image verified. Saving profile picture to database...");
+
+      // Get the user's current profile picture
+      const existingUser = await prisma.user.findUnique({
+        where: { id: req.user.userId },
+        select: { profilePicture: true },
+      });
+
+      if (!existingUser) {
+        return res.status(404).json({
+          status: "ERROR",
+          message: "User not found",
+        });
+      }
+
+      // Upload the new picture to Neon Object Storage
+      const filename = `${crypto.randomUUID()}.${fileType.ext}`;
+      storageKey = `profiles/${req.user.userId}/${filename}`;
+
+      await uploadFile(storageKey, req.file.buffer, fileType.mime);
+
+      // Save the storage key in the database
       const user = await prisma.user.update({
-        where: {
-          id: req.user.userId,
-        },
-        data: {
-          profilePicture: `/uploads/${req.file.filename}`,
-        },
+        where: { id: req.user.userId },
+        data: { profilePicture: storageKey },
         select: {
           id: true,
           name: true,
@@ -954,20 +955,35 @@ console.log("Image verified. Saving profile picture to database...");
         },
       });
 
-      res.json({
+      // Delete the previous Neon image after the database update succeeds
+      const oldPicture = existingUser.profilePicture;
+
+      if (oldPicture && !oldPicture.startsWith("/uploads/")) {
+        try {
+          await deleteFile(oldPicture);
+        } catch (deleteError) {
+          console.error("Old profile picture cleanup error:", deleteError);
+        }
+      }
+
+      return res.json({
         status: "OK",
         message: "Profile picture updated successfully",
         user,
       });
     } catch (error) {
-      // Remove the uploaded file if saving fails
-      if (req.file) {
-        await fs.promises.unlink(req.file.path).catch(() => {});
+      // Clean up the newly uploaded image if the database update fails
+      if (storageKey) {
+        try {
+          await deleteFile(storageKey);
+        } catch (deleteError) {
+          console.error("New profile picture cleanup error:", deleteError);
+        }
       }
 
       console.error("Profile picture update error:", error);
 
-      res.status(500).json({
+      return res.status(500).json({
         status: "ERROR",
         message: "Could not update profile picture",
       });
@@ -989,19 +1005,28 @@ router.get("/profile/picture/image", authenticateToken, async (req, res) => {
       });
     }
 
-    const filename = path.basename(user.profilePicture);
-    const imagePath = path.join(uploadDir, filename);
+    // Old local uploads cannot be retrieved from Neon Storage
+    if (user.profilePicture.startsWith("/uploads/")) {
+      return res.status(404).json({
+        status: "ERROR",
+        message: "Please upload your profile picture again",
+      });
+    }
 
-    res.sendFile(imagePath, (error) => {
-      if (error && !res.headersSent) {
-        res.status(error.statusCode === 404 ? 404 : 500).end();
-      }
-    });
+    const image = await getFile(user.profilePicture);
+
+    res.setHeader(
+      "Content-Type",
+      image.ContentType || "application/octet-stream"
+    );
+    res.setHeader("Cache-Control", "private, max-age=3600");
+
+    return image.Body.pipe(res);
   } catch (error) {
     console.error("Profile picture retrieval error:", error);
 
     if (!res.headersSent) {
-      res.status(500).json({
+      return res.status(500).json({
         status: "ERROR",
         message: "Could not retrieve profile picture",
       });
